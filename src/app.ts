@@ -13,6 +13,9 @@ if (process.env.NODE_MODE === 'development') app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+app.use('/health', (req: express.Request, res: express.Response) => {
+  res.status(200)
+})
 app.get('/', (req: express.Request, res: express.Response) => {
   res.send('hello!')
 })
