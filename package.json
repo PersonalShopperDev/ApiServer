@@ -4,9 +4,10 @@
   "description": "Personal Shopper Api Server",
   "main": "index.js",
   "scripts": {
+    "deploy": "npm run build && eb deploy",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node src/server.ts",
+    "dev": "nodemon --exec ts-node  -r dotenv/config src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts"
@@ -31,14 +32,14 @@
     "eslint": "^7.24.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "morgan": "^1.10.0",
     "nodemon": "^2.0.7",
-    "redoc-express": "^1.0.0",
-    "ts-node": "^9.1.1"
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
   },
   "dependencies": {
     "express": "^4.17.1",
     "http-errors": "^1.8.0",
-    "typescript": "^4.2.4"
+    "morgan": "^1.10.0",
+    "redoc-express": "^1.0.0"
   }
 }
