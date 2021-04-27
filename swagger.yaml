@@ -26,13 +26,15 @@ components:
       description: Get Access Token & Refresh Toekn
       content:
         application/json:
-          properties:
-            accessToken:
-              type: string
-              format: jwt
-            refreshToken:
-              type: string
-              description: 로그인 할 때, refreshToken 유효 시간이 얼마 남지 않았을 때 새로 발급
+          schema:
+            type: object
+            properties:
+              accessToken:
+                type: string
+                format: jwt
+              refreshToken:
+                type: string
+                description: 로그인 할 때, refreshToken 유효 시간이 얼마 남지 않았을 때 새로 발급
     UnauthorizedError:
       description: Access token is missing or invalid
 
@@ -45,6 +47,7 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
               type: object
               properties:
                 resource:
