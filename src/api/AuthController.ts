@@ -14,13 +14,13 @@ router.post(
   '/login',
   body('resource').isIn(resources),
   body('code').isString(),
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
     }
     const { resource, code } = req.body
 
-    const result = getTokenWithThirdParty(resource, code)
+    const result = await getTokenWithThirdParty(resource, code)
 
     if (result) {
       res.status(200).send(result)

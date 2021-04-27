@@ -2,9 +2,8 @@ import jwt from 'jsonwebtoken'
 import { NextFunction, Request, Response } from 'express'
 
 export default (req: Request, res: Response, next: NextFunction) => {
-  const auth = req.header('Authorization')
-
   try {
+    const auth = req.header('Authorization')
     const list = auth!.split(' ')
     if (list[0].toLowerCase() != 'bearer') {
       throw Error()

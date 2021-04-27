@@ -1,19 +1,12 @@
 import jwt from 'jsonwebtoken'
 import DIContainer, { AuthResources } from '../config/inversify.config'
-import AuthThirdParty, { createRefreshToken } from '../model/AuthModel'
-
-class AuthToken {
-  accessToken: string
-  refreshToken?: string
-
-  constructor(accessToken: string, refreshToken?: string) {
-    this.accessToken = accessToken
-    this.refreshToken = refreshToken
-  }
-}
+import { AuthThirdParty, createRefreshToken } from '../model/AuthModel'
 
 export const resources = ['kakao', 'naver']
-export const getTokenWithThirdParty = (resource: string, code: string) => {
+export const getTokenWithThirdParty = async (
+  resource: string,
+  code: string,
+) => {
   let model: AuthThirdParty | null = null
   for (const key in AuthResources) {
     if (resource === AuthResources[key].description) {
@@ -22,14 +15,14 @@ export const getTokenWithThirdParty = (resource: string, code: string) => {
     }
   }
 
-  if (!model) {
-    return null
-  }
+  if (!model) return null
 
-  const userId: boolean = model.verifyCode(code)
-  if (userId) {
-    // return null
-  }
+  const authToken = await model.getTokenWithCode(code)
+  console.log(authToken)
+  if (!authToken) return null
+
+  // const userId = await model.createOrGetUser(authToken)
+  // if (!userId) return null
 
   return newToken(0)
 }
@@ -44,8 +37,10 @@ export const newTokenWithRefreshToken = (refreshToken: string) => {
   // TODO: Refresh Token 검증
 
   // TODO: Refresh Token 짧을 경우 newToken()
+  const userId = 0
 
-  return new AuthToken(generateAccessToken(0))
+  const accessToken = generateAccessToken(userId)
+  return { accessToken }
 }
 
 /**
@@ -56,7 +51,7 @@ const newToken = (userId: number) => {
   const accessToken = generateAccessToken(userId)
   const refreshToken = createRefreshToken(userId)
 
-  return new AuthToken(accessToken, refreshToken)
+  return { accessToken, refreshToken }
 }
 
 const generateAccessToken = (userId: number) => {
