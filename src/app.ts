@@ -1,7 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express'
 import bodyParser from 'body-parser'
 import logger from 'morgan'
-import docRouter from './api/docs'
+import docController from './api/docs'
+import authController from './api/AuthController'
 
 const app = express()
 
@@ -13,10 +14,9 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use('/health', (req: express.Request, res: express.Response) => {
   res.sendStatus(200)
 })
-app.get('/', (req: express.Request, res: express.Response) => {
-  res.send('hello!')
-})
-if (docRouter) app.use('/docs', docRouter)
+
+if (docController) app.use('/docs', docController)
+app.use('/auth', authController)
 
 app.use(function (req: express.Request, res: express.Response) {
   res.sendStatus(404)

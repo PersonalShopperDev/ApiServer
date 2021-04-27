@@ -22,13 +22,48 @@ components:
       bearerFormat: JWT
 
   responses:
+    AuthToken:
+      description: Get Access Token & Refresh Toekn
+      content:
+        application/json:
+          properties:
+            accessToken:
+              type: string
+              format: jwt
+            refreshToken:
+              type: string
+              description: 로그인 할 때, refreshToken 유효 시간이 얼마 남지 않았을 때 새로 발급
     UnauthorizedError:
       description: Access token is missing or invalid
 
 paths:
-  /auth:
+  /auth/login:
     post:
-      summary: Get Auth Tokens
+      summary: Login with third party
+      description: Login using KaKao / Naver
+      tags: [ Auth ]
+      requestBody:
+        content:
+          application/json:
+              type: object
+              properties:
+                resource:
+                  type: string
+                  description: 사용하는 서드파티
+                  enum: [ naver, kakao ]
+                  required: true
+                code:
+                  type: string
+                  description: 서드파티 oAuth2 코드
+                  required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthToken'
+        '400':
+          description: code is invalid
+  /auth/token:
+    post:
+      summary: Get Access Tokens
       description: Get Access Token & Refresh Token
       tags: [ Auth ]
       requestBody:
@@ -37,33 +72,15 @@ paths:
             schema:
               type: object
               properties:
-                type:
+                refreshToken:
                   type: string
-                  enum: [ refresh, naver, kakao ]
+                  description: 발급 받앗던 Refresh Token
                   required: true
-                code:
-                  type: string
-                  description: Refresh Token 또는 서드파티 Auth 코드
-                  required: true
-      #            examples:
-      #              user:
-      #                summary: User Example
-      #                externalValue: 'http://foo.bar/examples/user-example.json'
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  accessToken:
-                    type: string
-                  refreshToken:
-                    type: string
-                    description: 필요 할 때만 나옴
+          $ref: '#/components/responses/AuthToken'
         '400':
-          description: code is invalid
+          description: refreshToken is invalid
   /auth/test:
     get:
       summary: Test API
