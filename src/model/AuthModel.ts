@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify'
 import 'reflect-metadata'
 import axios from 'axios'
 import crypto from 'crypto'
+import db from './db'
 
 export interface AuthThirdParty {
   getTokenWithCode(code: string): Promise<AuthToken | null>
@@ -48,8 +49,8 @@ export class NaverAuth implements AuthThirdParty {
     }
   }
 
-  createOrGetUser(token: AuthToken): Promise<number> {
-    return Promise.resolve(-1)
+  async createOrGetUser(token: AuthToken): Promise<number | null> {
+    return await createOrGetUser('naver', token)
   }
 }
 
@@ -60,11 +61,57 @@ export class KaKaoAuth implements AuthThirdParty {
   }
 
   async createOrGetUser(token: AuthToken): Promise<number | null> {
-    return null
+    return await createOrGetUser('kakao', token)
   }
 }
 
 export const createRefreshToken = (userId: number) => {
   // TODO: Refresh 토큰 생성 및 DB 저장
   return 'AASD'
+}
+
+const createOrGetUser = async (resource: string, token: AuthToken) => {
+  if (!token.refreshToken) return null
+  let userId = await getUserId(resource, token.refreshToken)
+  if (!userId) {
+    userId = await createUser(resource, token.refreshToken)
+  }
+  if (!userId) {
+    return null
+  }
+  return userId
+}
+
+const getUserId = async (resource: string, refreshToken: string) => {
+  const connection = await db.getConnection()
+  try {
+    const sql =
+      'SELECT `user_id` FROM `users` WHERE `third_party`=:resource and `third_party_refresh`=:refresh_token'
+    const value = { resource, refreshToken }
+
+    const [rows] = await connection.query(sql, value)
+    return rows[0].user_id
+  } catch (e) {
+    return null
+  } finally {
+    connection.release()
+  }
+}
+
+const createUser = async (resource: string, refreshToken: string) => {
+  const connection = await db.getConnection()
+  try {
+    const sql =
+      'INSERT INTO `users`(`third_party`, `third_party_refresh`) VALUES (:resource, :refreshToken)'
+    const value = { resource, refreshToken }
+
+    const [result] = await connection.query(sql, value)
+    if ('insertId' in result) return result.insertId
+
+    return null
+  } catch (e) {
+    return null
+  } finally {
+    connection.release()
+  }
 }

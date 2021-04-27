@@ -18,13 +18,12 @@ export const getTokenWithThirdParty = async (
   if (!model) return null
 
   const authToken = await model.getTokenWithCode(code)
-  console.log(authToken)
   if (!authToken) return null
 
-  // const userId = await model.createOrGetUser(authToken)
-  // if (!userId) return null
+  const userId = await model.createOrGetUser(authToken)
+  if (!userId) return null
 
-  return newToken(0)
+  return newToken(userId)
 }
 
 /**
