@@ -1,36 +1,57 @@
 import express, { NextFunction, Request, Response } from 'express'
-import AuthService from '../service/AuthService'
+import {
+  getTokenWithThirdParty,
+  newTokenWithRefreshToken,
+  resources,
+} from '../service/AuthService'
+import DIContainer from '../config/inversify.config'
 import AuthCheck from '../config/AuthCheck'
 import { body, validationResult } from 'express-validator'
 
 const router = express.Router()
 
 router.post(
-  '/token',
   '/login',
-  body('resource').isIn(AuthService.thirdParty),
+  body('resource').isIn(resources),
   body('code').isString(),
-  (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response) => {
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
     }
+    const { resource, code } = req.body
+
+    const result = getTokenWithThirdParty(resource, code)
+
+    if (result) {
+      res.status(200).send(result)
+    } else {
+      res.sendStatus(400)
+    }
+  },
+)
 
 router.post(
   '/token',
   body('refreshToken').isString(),
-  (req: Request, res: Response, next: NextFunction) => {
+  (req: Request, res: Response) => {
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
+    }
+
+    const refreshToken = req.body
+
+    const result = newTokenWithRefreshToken(refreshToken)
+
+    if (result) {
+      res.status(200).send(result)
+    } else {
+      res.sendStatus(400)
     }
   },
 )
 
-router.get(
-  '/test',
-  AuthCheck,
-  (req: Request, res: Response, next: NextFunction) => {
-    res.sendStatus(200)
-  },
-)
+router.get('/test', AuthCheck, (req: Request, res: Response) => {
+  res.sendStatus(200)
+})
 
 export default router
