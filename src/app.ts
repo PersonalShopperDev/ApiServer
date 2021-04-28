@@ -16,7 +16,7 @@ app.use('/health', (req: express.Request, res: express.Response) => {
 })
 
 if (docController) app.use('/docs', docController)
-app.use('/auth', authController)
+app.use('/v1/auth', authController)
 
 app.use(function (req: express.Request, res: express.Response) {
   res.sendStatus(404)

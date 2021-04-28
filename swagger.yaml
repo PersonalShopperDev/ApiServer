@@ -7,7 +7,7 @@ info:
 servers:
 #  - url: https://real/v1
 #    description: Production server
-  - url: http://devapi.ap-northeast-2.elasticbeanstalk.com/
+  - url: http://devapi.ap-northeast-2.elasticbeanstalk.com/v1
     description: Development server
 
 tags:
