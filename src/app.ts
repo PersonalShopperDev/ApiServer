@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import logger from 'morgan'
 import docController from './api/docs'
 import authController from './api/AuthController'
+import cors from 'cors'
 
 const app = express()
 
@@ -10,6 +11,7 @@ app.set('port', process.env.PORT || 3000)
 if (process.env.NODE_MODE === 'development') app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors())
 
 app.use('/health', (req: express.Request, res: express.Response) => {
   res.sendStatus(200)
