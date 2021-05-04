@@ -5,8 +5,8 @@ info:
   version: 0.0.1
 
 servers:
-#  - url: https://real/v1
-#    description: Production server
+  - url: https://real/v1
+    description: Production server
   - url: http://devapi.ap-northeast-2.elasticbeanstalk.com/v1
     description: Development server
 
@@ -96,4 +96,3 @@ paths:
           description: OK
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-

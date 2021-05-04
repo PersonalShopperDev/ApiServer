@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import DIContainer, { AuthResources } from '../config/inversify.config'
-import { AuthThirdParty, createRefreshToken } from '../model/AuthModel'
+import { AuthThirdParty, createRefreshToken } from '../model/auth-model'
 
 export const resources = ['kakao', 'naver']
 export const getTokenWithThirdParty = async (

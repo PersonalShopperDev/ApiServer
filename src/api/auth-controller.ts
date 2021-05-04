@@ -3,9 +3,9 @@ import {
   getTokenWithThirdParty,
   newTokenWithRefreshToken,
   resources,
-} from '../service/AuthService'
+} from '../service/auth-service'
 import DIContainer from '../config/inversify.config'
-import AuthCheck from '../config/AuthCheck'
+import AuthCheck from '../config/auth-check'
 import { body, validationResult } from 'express-validator'
 
 const router = express.Router()
