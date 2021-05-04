@@ -1,5 +1,5 @@
 import { Container } from 'inversify'
-import { AuthThirdParty, NaverAuth, KaKaoAuth } from '../model/auth-model'
+import { AuthThirdParty, NaverAuth, KaKaoAuth } from '../routes/auth/auth-model'
 
 export const AuthResources = {
   Kakao: Symbol('kaKao'),

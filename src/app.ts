@@ -1,8 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express'
 import bodyParser from 'body-parser'
 import logger from 'morgan'
-import docController from './api/docs'
-import authController from './api/auth-controller'
+import docController from './routes/docs'
+import authController from './routes/auth/auth-controller'
 import cors from 'cors'
 
 const app = express()

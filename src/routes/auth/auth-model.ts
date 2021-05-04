@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify'
 import 'reflect-metadata'
 import axios from 'axios'
 import crypto from 'crypto'
-import db from './db'
+import db from '../../config/db'
 
 export interface AuthThirdParty {
   getTokenWithCode(code: string): Promise<AuthToken | null>
