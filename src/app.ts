@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express'
 import bodyParser from 'body-parser'
 import logger from 'morgan'
 import docController from './routes/docs'
-import authController from './routes/auth/auth-controller'
+import authRouter from './routes/auth/auth-router'
 import cors from 'cors'
 
 const app = express()
@@ -18,7 +18,7 @@ app.use('/health', (req: express.Request, res: express.Response) => {
 })
 
 if (docController) app.use('/docs', docController)
-app.use('/v1/auth', authController)
+app.use('/v1/auth', authRouter)
 
 app.use(function (req: express.Request, res: express.Response) {
   res.sendStatus(404)
