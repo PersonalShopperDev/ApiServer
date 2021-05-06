@@ -12,7 +12,7 @@ router.get(
 )
 
 router.get('/swagger', (req: Request, res: Response) => {
-  res.sendFile('swagger.yaml', { root: '.' })
+  res.sendFile('dist/docs.yaml', { root: '.' })
 })
 
 export default process.env.NODE_MODE === 'development' ? router : null

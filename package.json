@@ -4,10 +4,11 @@
   "description": "Personal Shopper Api Server",
   "main": "index.js",
   "scripts": {
-    "deploy": "npm run build && eb deploy",
+    "deploy": "npm run build && npm run docs && eb deploy",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node  -r dotenv/config src/server.ts",
+    "dev": "npm run docs && nodemon --exec ts-node -r dotenv/config src/server.ts",
+    "docs": "swagger-cli bundle -t yaml -o dist/docs.yaml -r swagger.yaml",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts"
@@ -33,6 +34,7 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "nodemon": "^2.0.7",
+    "swagger-cli": "^4.0.4",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   },
