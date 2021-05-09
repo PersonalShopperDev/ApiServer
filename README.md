@@ -25,6 +25,9 @@
 ### /dist
 - Type Script 를 Java Script로 컴파일 한 코드
 - git Ignore 처리가 되어 있다.
+### /docs
+- API 문서를 작성하는데 필요한 파일들 (.yaml)
+- Swagger을 이용하고 있다.
 ### /src
 - ### /config
     - 설정 파일

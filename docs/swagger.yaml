@@ -22,9 +22,11 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  responses:
+  Errors:
     UnauthorizedError:
       description: Access token is missing or invalid
+    ParameterError:
+      description: Request parameters missing or invalid
 
 paths:
-  $ref: 'src/routes/auth/auth.yaml#/path'
+  $ref: 'auth.yaml#/path'

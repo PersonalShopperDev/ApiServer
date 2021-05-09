@@ -24,7 +24,7 @@ path :
         '200':
           description: OK
         '401':
-          $ref: '#../components/responses/UnauthorizedError'
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
   /auth/login:
     post:
       summary: Login with third party
@@ -41,15 +41,17 @@ path :
                   description: 사용하는 서드파티
                   enum: [ naver, kakao ]
                   required: true
-                code:
+                token:
                   type: string
-                  description: 서드파티 oAuth2 코드
+                  description: 서드파티 발급해 준 AccessToken
                   required: true
       responses:
         '200':
           $ref: '#/components/AuthToken'
         '400':
-          description: code is invalid
+          description: token is invalid
+        '422':
+          $ref: './swagger.yaml#/components/Errors/ParameterError'
   /auth/token:
     post:
       summary: Get Access Tokens
@@ -70,3 +72,5 @@ path :
           $ref: '#/components/AuthToken'
         '400':
           description: refreshToken is invalid
+        '422':
+          $ref: './swagger.yaml#/components/Errors/ParameterError'
