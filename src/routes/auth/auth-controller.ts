@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { login, newTokenWithRefreshToken, resources } from './auth-service'
 import DIContainer from '../../config/inversify.config'
 import { validationResult } from 'express-validator'
+import { deleteUser } from './auth-model'
 
 export default class AuthController {
   login = async (req: Request, res: Response) => {
@@ -20,6 +21,7 @@ export default class AuthController {
   }
 
   getToken = async (req: Request, res: Response) => {
+    console.log(req.body)
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
     }
@@ -37,5 +39,19 @@ export default class AuthController {
 
   test = (req: Request, res: Response) => {
     res.sendStatus(200)
+  }
+
+  withdraw = async (req: Request, res: Response) => {
+    if (!validationResult(req).isEmpty()) {
+      return res.sendStatus(422)
+    }
+
+    const { userId } = req['auth']
+    const result = await deleteUser(userId)
+    if (result) {
+      res.sendStatus(200)
+    } else {
+      res.sendStatus(400)
+    }
   }
 }

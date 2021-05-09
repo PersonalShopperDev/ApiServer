@@ -146,6 +146,21 @@ export const checkRefreshToken = async (
   }
 }
 
+export const deleteUser = async (userId: number): Promise<boolean> => {
+  const connection = await db.getConnection()
+  try {
+    const sql = 'DELETE FROM users WHERE user_id=:userId'
+    const value = { userId }
+    await connection.query(sql, value)
+
+    return true
+  } catch (e) {
+    return false
+  } finally {
+    connection.release()
+  }
+}
+
 const updateUserData = async (resource: string, userData: UserData) => {
   const connection = await db.getConnection()
   try {

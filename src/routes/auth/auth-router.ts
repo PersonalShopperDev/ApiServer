@@ -14,7 +14,9 @@ router.post(
   authController.login,
 )
 
-router.post('/token', body('refreshToken').isString(), authController.getToken)
+router.post('/token', body('refreshToken').isBase64(), authController.getToken)
+
+router.delete('/withdraw', AuthCheck, authController.withdraw)
 
 router.get('/test', AuthCheck, authController.test)
 

@@ -4,6 +4,7 @@ import {
   AuthThirdParty,
   createRefreshToken,
   checkRefreshToken,
+  deleteUser,
 } from './auth-model'
 
 export const resources = ['kakao', 'naver']
@@ -54,6 +55,10 @@ export const newTokenWithRefreshToken = async (refreshToken: string) => {
 
   const accessToken = generateAccessToken(userId)
   return { accessToken, refreshToken: newRefreshToken }
+}
+
+export const withdraw = async (userId: number): Promise<boolean> => {
+  return await deleteUser(userId)
 }
 
 /**
