@@ -10,7 +10,15 @@ export default (req: Request, res: Response, next: NextFunction) => {
     }
 
     const token = list[1]
-    req['auth'] = jwt.verify(token, process.env.JWT_KEY)
+    const verify = jwt.verify(token, process.env.JWT_KEY)
+
+    if (verify.exp > new Date().getTime() * 0.001) {
+      res.sendStatus(401)
+      next(401)
+      return
+    }
+
+    req['auth'] = verify
     next()
   } catch (e) {
     res.sendStatus(401)
