@@ -23,6 +23,11 @@ interface UserData {
   email?: string
 }
 
+type CheckRefreshTokenResult = {
+  userId: number
+  expire: Date
+}
+
 @injectable()
 export class NaverAuth implements AuthThirdParty {
   async login(token: string): Promise<UserData | null> {
@@ -92,7 +97,6 @@ export class KaKaoAuth implements AuthThirdParty {
     } catch (e) {
       return null
     }
-    return null
   }
 
   async updateUserData(userData: UserData): Promise<number | null> {
@@ -100,9 +104,46 @@ export class KaKaoAuth implements AuthThirdParty {
   }
 }
 
-export const createRefreshToken = (userId: number) => {
-  // TODO: Refresh 토큰 생성 및 DB 저장
-  return 'AASD'
+export const createRefreshToken = async (userId: number): Promise<string> => {
+  const refreshToken = crypto.randomBytes(384).toString('base64') // length - 512
+
+  const connection = await db.getConnection()
+  try {
+    const sql =
+      'UPDATE users SET refresh_token=:refreshToken, refresh_token_expire=DATE_ADD(NOW(), INTERVAL 90 DAY) where user_id=:userId'
+    const value = {
+      userId,
+      refreshToken,
+    }
+
+    await connection.query(sql, value)
+    return refreshToken
+  } catch (e) {
+    return await createRefreshToken(userId)
+  } finally {
+    connection.release()
+  }
+}
+
+export const checkRefreshToken = async (
+  refreshToken: string,
+): Promise<CheckRefreshTokenResult | null> => {
+  const connection = await db.getConnection()
+  try {
+    const sql =
+      'SELECT user_id, refresh_token_expire FROM users WHERE refresh_token=:refreshToken'
+    const value = { refreshToken }
+
+    const [rows] = await connection.query(sql, value)
+    return {
+      userId: rows[0].user_id,
+      expire: rows[0].refresh_token_expire,
+    }
+  } catch (e) {
+    return null
+  } finally {
+    connection.release()
+  }
 }
 
 const updateUserData = async (resource: string, userData: UserData) => {
@@ -123,7 +164,8 @@ const updateUserData = async (resource: string, userData: UserData) => {
 
     const [result] = await connection.query(sql, value)
     if ('insertId' in result) {
-      if (result.insertId == 0) return await getUserId(resource, userData.id)
+      if (result.insertId == 0)
+        return await getUserIdWithThirdPartyID(resource, userData.id)
       return result.insertId
     }
     return null
@@ -134,7 +176,7 @@ const updateUserData = async (resource: string, userData: UserData) => {
   }
 }
 
-const getUserId = async (resource: string, id: string) => {
+const getUserIdWithThirdPartyID = async (resource: string, id: string) => {
   const connection = await db.getConnection()
   try {
     const sql =

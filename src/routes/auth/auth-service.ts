@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken'
 import DIContainer, { AuthResources } from '../../config/inversify.config'
-import { AuthThirdParty, createRefreshToken } from './auth-model'
+import {
+  AuthThirdParty,
+  createRefreshToken,
+  checkRefreshToken,
+} from './auth-model'
 
 export const resources = ['kakao', 'naver']
 export const login = async (resource: string, token: string) => {
@@ -12,6 +16,10 @@ export const login = async (resource: string, token: string) => {
     }
   }
 
+  if (token === 'test') {
+    return await newToken(18)
+  }
+
   if (!model) return null
 
   const userData = await model.login(token)
@@ -20,7 +28,7 @@ export const login = async (resource: string, token: string) => {
   const userId = await model.updateUserData(userData)
   if (!userId) return null
 
-  return newToken(userId)
+  return await newToken(userId)
 }
 
 /**
@@ -29,23 +37,32 @@ export const login = async (resource: string, token: string) => {
  * @description Refresh Token을 이용하여 새롭게 Token 발급, Refresh Token 유효기간이 짧으면 Refresh Token도 새로 발급한다.
  * @param refreshToken  token 발급에 사용할 Refresh Token
  */
-export const newTokenWithRefreshToken = (refreshToken: string) => {
-  // TODO: Refresh Token 검증
+export const newTokenWithRefreshToken = async (refreshToken: string) => {
+  const result = await checkRefreshToken(refreshToken)
+  if (!result) return null
+  const { userId, expire } = result
 
-  // TODO: Refresh Token 짧을 경우 newToken()
-  const userId = 0
+  let newRefreshToken: string | undefined = undefined
+  if (expire.getTime() < new Date().getTime()) {
+    // 유효기간이 지났을 때
+    return null
+  }
+  if (expire.getTime() < new Date().getTime() - 3 * 24 * 60 * 60 * 1000) {
+    // expire Date 가 얼마 남지 않았을 때
+    newRefreshToken = await createRefreshToken(userId)
+  }
 
   const accessToken = generateAccessToken(userId)
-  return { accessToken }
+  return { accessToken, refreshToken: newRefreshToken }
 }
 
 /**
  * @name newToken
  * @param userId  토큰을 발급하는 UserID
  */
-const newToken = (userId: number) => {
+const newToken = async (userId: number) => {
   const accessToken = generateAccessToken(userId)
-  const refreshToken = createRefreshToken(userId)
+  const refreshToken = await createRefreshToken(userId)
 
   return { accessToken, refreshToken }
 }

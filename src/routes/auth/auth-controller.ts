@@ -19,14 +19,14 @@ export default class AuthController {
     }
   }
 
-  getToken = (req: Request, res: Response) => {
+  getToken = async (req: Request, res: Response) => {
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
     }
 
-    const refreshToken = req.body
+    const { refreshToken } = req.body
 
-    const result = newTokenWithRefreshToken(refreshToken)
+    const result = await newTokenWithRefreshToken(refreshToken)
 
     if (result) {
       res.status(200).send(result)
