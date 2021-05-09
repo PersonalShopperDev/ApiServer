@@ -3,10 +3,7 @@ import DIContainer, { AuthResources } from '../../config/inversify.config'
 import { AuthThirdParty, createRefreshToken } from './auth-model'
 
 export const resources = ['kakao', 'naver']
-export const getTokenWithThirdParty = async (
-  resource: string,
-  code: string,
-) => {
+export const login = async (resource: string, token: string) => {
   let model: AuthThirdParty | null = null
   for (const key in AuthResources) {
     if (resource === AuthResources[key].description) {
@@ -17,10 +14,10 @@ export const getTokenWithThirdParty = async (
 
   if (!model) return null
 
-  const authToken = await model.getTokenWithCode(code)
-  if (!authToken) return null
+  const userData = await model.login(token)
+  if (!userData) return null
 
-  const userId = await model.createOrGetUser(authToken)
+  const userId = await model.updateUserData(userData)
   if (!userId) return null
 
   return newToken(userId)

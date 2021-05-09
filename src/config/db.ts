@@ -14,7 +14,7 @@ export default mysql.createPool({
       }
       return txt
     })
-    if (process.env.MODE === 'development') console.log(resultQuery)
+    if (process.env.NODE_MODE === 'development') console.log(resultQuery)
     return resultQuery
   },
 })

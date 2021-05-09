@@ -1,9 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import {
-  getTokenWithThirdParty,
-  newTokenWithRefreshToken,
-  resources,
-} from './auth-service'
+import { login, newTokenWithRefreshToken, resources } from './auth-service'
 import DIContainer from '../../config/inversify.config'
 import { validationResult } from 'express-validator'
 
@@ -12,9 +8,9 @@ export default class AuthController {
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
     }
-    const { resource, code } = req.body
+    const { resource, token } = req.body
 
-    const result = await getTokenWithThirdParty(resource, code)
+    const result = await login(resource, token)
 
     if (result) {
       res.status(200).send(result)

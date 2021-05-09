@@ -10,7 +10,7 @@ const authController = new AuthController()
 router.post(
   '/login',
   body('resource').isIn(resources),
-  body('code').isString(),
+  body('token').isString(),
   authController.login,
 )
 

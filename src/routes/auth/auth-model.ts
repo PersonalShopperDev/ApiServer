@@ -5,8 +5,9 @@ import crypto from 'crypto'
 import db from '../../config/db'
 
 export interface AuthThirdParty {
-  getTokenWithCode(code: string): Promise<AuthToken | null>
-  createOrGetUser(token: AuthToken): Promise<number | null>
+  login(token: string): Promise<UserData | null>
+
+  updateUserData(userData: UserData): Promise<number | null>
 }
 
 export interface AuthToken {
@@ -14,54 +15,56 @@ export interface AuthToken {
   refreshToken?: string
 }
 
-interface NaverResponse {
-  access_token: string
-  refresh_token: string
-  token_type: string
-  expires_in: number
+interface UserData {
+  id: string
+  gender?: string
+  birthday?: string
+  phone?: string
+  email?: string
 }
 
 @injectable()
 export class NaverAuth implements AuthThirdParty {
-  async getTokenWithCode(code: string): Promise<AuthToken | null> {
-    const state = crypto.randomBytes(10).toString('hex')
-
+  async login(token: string): Promise<UserData | null> {
     try {
-      const result = await axios.post<NaverResponse>(
-        'https://nid.naver.com/oauth2.0/token',
+      const result = await axios.get<UserData>(
+        `https://openapi.naver.com/v1/nid/me`,
         {
-          grant_type: 'authorization_code',
-          client_id: process.env.NAVER_CLIENT_ID,
-          client_secret: process.env.NAVER_CLIENT_SECRET,
-          code,
-          state: encodeURIComponent(state),
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
       )
-      const { access_token, refresh_token } = result.data
-      if (access_token && refresh_token)
-        return {
-          accessToken: access_token,
-          refreshToken: refresh_token,
-        }
-      else return null
+
+      const { id, gender, birthday, birthyear, mobile, email } = result.data[
+        'response'
+      ]
+
+      return {
+        id,
+        gender,
+        email,
+        birthday: `${birthyear}-${birthday}`,
+        phone: mobile,
+      }
     } catch (e) {
       return null
     }
   }
 
-  async createOrGetUser(token: AuthToken): Promise<number | null> {
-    return await createOrGetUser('naver', token)
+  async updateUserData(userData: UserData): Promise<number | null> {
+    return await updateUserData('naver', userData)
   }
 }
 
 @injectable()
 export class KaKaoAuth implements AuthThirdParty {
-  async getTokenWithCode(code: string): Promise<AuthToken | null> {
+  async login(token: string): Promise<UserData | null> {
     return null
   }
 
-  async createOrGetUser(token: AuthToken): Promise<number | null> {
-    return await createOrGetUser('kakao', token)
+  async updateUserData(userData: UserData): Promise<number | null> {
+    return await updateUserData('kakao', userData)
   }
 }
 
@@ -70,45 +73,45 @@ export const createRefreshToken = (userId: number) => {
   return 'AASD'
 }
 
-const createOrGetUser = async (resource: string, token: AuthToken) => {
-  if (!token.refreshToken) return null
-  let userId = await getUserId(resource, token.refreshToken)
-  if (!userId) {
-    userId = await createUser(resource, token.refreshToken)
-  }
-  if (!userId) {
-    return null
-  }
-  return userId
-}
-
-const getUserId = async (resource: string, refreshToken: string) => {
+const updateUserData = async (resource: string, userData: UserData) => {
   const connection = await db.getConnection()
   try {
     const sql =
-      'SELECT `user_id` FROM `users` WHERE `third_party`=:resource and `third_party_refresh`=:refresh_token'
-    const value = { resource, refreshToken }
+      'INSERT INTO users(birthday, gender, phone, email, third_party, third_party_id)' +
+      ' VALUES (:birthday, :gender, :phone, :email, :resource, :id)' +
+      ' ON DUPLICATE KEY UPDATE birthday=:birthday,gender=:gender,phone=:phone,email=:email'
+    const value = {
+      resource,
+      id: userData.id,
+      birthday: userData.birthday,
+      phone: userData.phone,
+      gender: userData.gender,
+      email: userData.email,
+    }
 
-    const [rows] = await connection.query(sql, value)
-    return rows[0].user_id
+    const [result] = await connection.query(sql, value)
+    if ('insertId' in result) {
+      if (result.insertId == 0) return await getUserId(resource, userData.id)
+      return result.insertId
+    }
+    return null
   } catch (e) {
+    console.log(e)
     return null
   } finally {
     connection.release()
   }
 }
 
-const createUser = async (resource: string, refreshToken: string) => {
+const getUserId = async (resource: string, id: string) => {
   const connection = await db.getConnection()
   try {
     const sql =
-      'INSERT INTO `users`(`third_party`, `third_party_refresh`) VALUES (:resource, :refreshToken)'
-    const value = { resource, refreshToken }
+      'SELECT user_id FROM users WHERE third_party=:resource AND third_party_id=:id'
+    const value = { resource, id }
 
-    const [result] = await connection.query(sql, value)
-    if ('insertId' in result) return result.insertId
-
-    return null
+    const [rows] = await connection.query(sql, value)
+    return rows[0].user_id
   } catch (e) {
     return null
   } finally {
