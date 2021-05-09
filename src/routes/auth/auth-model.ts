@@ -60,6 +60,38 @@ export class NaverAuth implements AuthThirdParty {
 @injectable()
 export class KaKaoAuth implements AuthThirdParty {
   async login(token: string): Promise<UserData | null> {
+    try {
+      const result = await axios.get<UserData>(
+        `https://kapi.kakao.com/v2/user/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      const { id } = result.data
+      const {
+        gender,
+        birthday,
+        has_gender,
+        // birthyear, TODO
+        mobile,
+        email,
+      } = result.data['kakao_account']
+
+      const birthyear = '00'
+
+      return {
+        id: String(id),
+        gender: has_gender ? (gender === 'female' ? 'F' : 'M') : undefined,
+        email,
+        birthday: `${birthyear}${birthday}`,
+        phone: mobile,
+      }
+    } catch (e) {
+      return null
+    }
     return null
   }
 
@@ -96,7 +128,6 @@ const updateUserData = async (resource: string, userData: UserData) => {
     }
     return null
   } catch (e) {
-    console.log(e)
     return null
   } finally {
     connection.release()
