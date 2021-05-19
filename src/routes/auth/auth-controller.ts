@@ -1,17 +1,17 @@
-import { NextFunction, Request, Response } from 'express'
-import { login, newTokenWithRefreshToken, resources } from './auth-service'
-import DIContainer from '../../config/inversify.config'
-import { validationResult } from 'express-validator'
-import { deleteUser } from './auth-model'
+import {NextFunction, Request, Response} from 'express'
+import AuthService from './auth-service'
+import {validationResult} from 'express-validator'
 
 export default class AuthController {
-  login = async (req: Request, res: Response) => {
+  login = async (req: Request, res: Response): Promise<void> => {
     if (!validationResult(req).isEmpty()) {
-      return res.sendStatus(422)
+      res.sendStatus(422)
+      return
     }
-    const { resource, token } = req.body
+    const {resource, token} = req.body
 
-    const result = await login(resource, token)
+    const service = new AuthService()
+    const result = await service.login(resource, token)
 
     if (result) {
       res.status(200).send(result)
@@ -21,14 +21,14 @@ export default class AuthController {
   }
 
   getToken = async (req: Request, res: Response) => {
-    console.log(req.body)
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
     }
 
-    const { refreshToken } = req.body
+    const {refreshToken} = req.body
 
-    const result = await newTokenWithRefreshToken(refreshToken)
+    const service = new AuthService()
+    const result = await service.newTokenWithRefreshToken(refreshToken)
 
     if (result) {
       res.status(200).send(result)
@@ -41,13 +41,16 @@ export default class AuthController {
     res.sendStatus(200)
   }
 
-  withdraw = async (req: Request, res: Response) => {
+  withdraw = async (req: Request, res: Response): Promise<void> => {
     if (!validationResult(req).isEmpty()) {
-      return res.sendStatus(422)
+      res.sendStatus(422)
+      return
     }
 
-    const { userId } = req['auth']
-    const result = await deleteUser(userId)
+    const {userId} = req['auth']
+    const service = new AuthService()
+    const result = await service.withdraw(userId)
+
     if (result) {
       res.sendStatus(200)
     } else {

@@ -1,15 +1,15 @@
 import express from 'express'
-import { resources } from './auth-service'
 import { body } from 'express-validator'
 import AuthCheck from '../../config/auth-check'
 import AuthController from './auth-controller'
+import AuthService from './auth-service'
 
 const router = express.Router()
 const authController = new AuthController()
 
 router.post(
   '/login',
-  body('resource').isIn(resources),
+  body('resource').isIn(AuthService.resources),
   body('token').isString(),
   authController.login,
 )

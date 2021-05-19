@@ -1,8 +1,9 @@
-import { injectable, inject } from 'inversify'
+import { injectable } from 'inversify'
 import 'reflect-metadata'
 import axios from 'axios'
 import crypto from 'crypto'
 import db from '../../config/db'
+import jwt from 'jsonwebtoken'
 
 export interface AuthThirdParty {
   login(token: string): Promise<UserData | null>
@@ -15,7 +16,7 @@ export interface AuthToken {
   refreshToken?: string
 }
 
-interface UserData {
+type UserData = {
   id: string
   gender?: string
   birthday?: string
@@ -58,7 +59,8 @@ export class NaverAuth implements AuthThirdParty {
   }
 
   async updateUserData(userData: UserData): Promise<number | null> {
-    return await updateUserData('naver', userData)
+    const userManager = new UserManager()
+    return await UserManager.updateUserData('naver', userData)
   }
 }
 
@@ -100,109 +102,133 @@ export class KaKaoAuth implements AuthThirdParty {
   }
 
   async updateUserData(userData: UserData): Promise<number | null> {
-    return await updateUserData('kakao', userData)
+    return await UserManager.updateUserData('kakao', userData)
   }
 }
 
-export const createRefreshToken = async (userId: number): Promise<string> => {
-  const refreshToken = crypto.randomBytes(384).toString('base64') // length - 512
-
-  const connection = await db.getConnection()
-  try {
-    const sql =
-      'UPDATE users SET refresh_token=:refreshToken, refresh_token_expire=DATE_ADD(NOW(), INTERVAL 90 DAY) where user_id=:userId'
-    const value = {
-      userId,
-      refreshToken,
+export class TokenManager {
+  static generateRefreshToken = async (userId: number): Promise<string> => {
+    const refreshToken = crypto.randomBytes(384).toString('base64') // length - 512
+    const result = await TokenManager.saveRefreshToken(userId, refreshToken)
+    if (!result) {
+      return TokenManager.generateRefreshToken(userId)
     }
-
-    await connection.query(sql, value)
     return refreshToken
-  } catch (e) {
-    return await createRefreshToken(userId)
-  } finally {
-    connection.release()
   }
-}
 
-export const checkRefreshToken = async (
-  refreshToken: string,
-): Promise<CheckRefreshTokenResult | null> => {
-  const connection = await db.getConnection()
-  try {
-    const sql =
-      'SELECT user_id, refresh_token_expire FROM users WHERE refresh_token=:refreshToken'
-    const value = { refreshToken }
+  static checkRefreshToken = async (
+    refreshToken: string,
+  ): Promise<CheckRefreshTokenResult | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'SELECT user_id, refresh_token_expire FROM users WHERE refresh_token=:refreshToken'
+      const value = { refreshToken }
 
-    const [rows] = await connection.query(sql, value)
-    return {
-      userId: rows[0].user_id,
-      expire: rows[0].refresh_token_expire,
+      const [rows] = await connection.query(sql, value)
+      return {
+        userId: rows[0].user_id,
+        expire: rows[0].refresh_token_expire,
+      }
+    } catch (e) {
+      return null
+    } finally {
+      connection.release()
     }
-  } catch (e) {
-    return null
-  } finally {
-    connection.release()
   }
-}
 
-export const deleteUser = async (userId: number): Promise<boolean> => {
-  const connection = await db.getConnection()
-  try {
-    const sql = 'DELETE FROM users WHERE user_id=:userId'
-    const value = { userId }
-    await connection.query(sql, value)
-
-    return true
-  } catch (e) {
-    return false
-  } finally {
-    connection.release()
+  static generateAccessToken = (userId: number): string => {
+    return jwt.sign({ userId }, process.env.JWT_KEY, {
+      expiresIn: 30 * 60 * 1000,
+    })
   }
-}
 
-const updateUserData = async (resource: string, userData: UserData) => {
-  const connection = await db.getConnection()
-  try {
-    const sql =
-      'INSERT INTO users(birthday, gender, phone, email, third_party, third_party_id)' +
-      ' VALUES (:birthday, :gender, :phone, :email, :resource, :id)' +
-      ' ON DUPLICATE KEY UPDATE birthday=:birthday,gender=:gender,phone=:phone,email=:email'
-    const value = {
-      resource,
-      id: userData.id,
-      birthday: userData.birthday,
-      phone: userData.phone,
-      gender: userData.gender,
-      email: userData.email,
+  private static saveRefreshToken = async (
+    userId: number,
+    refreshToken: string,
+  ): Promise<boolean> => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'UPDATE users SET refresh_token=:refreshToken, refresh_token_expire=DATE_ADD(NOW(), INTERVAL 90 DAY) where user_id=:userId'
+      const value = {
+        userId,
+        refreshToken,
+      }
+
+      await connection.query(sql, value)
+      return true
+    } catch (e) {
+      await TokenManager.generateRefreshToken(userId)
+      return false
+    } finally {
+      connection.release()
     }
-
-    const [result] = await connection.query(sql, value)
-    if ('insertId' in result) {
-      if (result.insertId == 0)
-        return await getUserIdWithThirdPartyID(resource, userData.id)
-      return result.insertId
-    }
-    return null
-  } catch (e) {
-    return null
-  } finally {
-    connection.release()
   }
 }
 
-const getUserIdWithThirdPartyID = async (resource: string, id: string) => {
-  const connection = await db.getConnection()
-  try {
-    const sql =
-      'SELECT user_id FROM users WHERE third_party=:resource AND third_party_id=:id'
-    const value = { resource, id }
+export class UserManager {
+  static getUserIdWithThirdPartyID = async (resource: string, id: string) => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'SELECT user_id FROM users WHERE third_party=:resource AND third_party_id=:id'
+      const value = { resource, id }
 
-    const [rows] = await connection.query(sql, value)
-    return rows[0].user_id
-  } catch (e) {
-    return null
-  } finally {
-    connection.release()
+      const [rows] = await connection.query(sql, value)
+      return rows[0].user_id
+    } catch (e) {
+      return null
+    } finally {
+      connection.release()
+    }
+  }
+
+  static updateUserData = async (resource: string, userData: UserData) => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'INSERT INTO users(birthday, gender, phone, email, third_party, third_party_id)' +
+        ' VALUES (:birthday, :gender, :phone, :email, :resource, :id)' +
+        ' ON DUPLICATE KEY UPDATE birthday=:birthday,gender=:gender,phone=:phone,email=:email'
+      const value = {
+        resource,
+        id: userData.id,
+        birthday: userData.birthday,
+        phone: userData.phone,
+        gender: userData.gender,
+        email: userData.email,
+      }
+
+      const [result] = await connection.query(sql, value)
+      if ('insertId' in result) {
+        if (result.insertId == 0)
+          return await UserManager.getUserIdWithThirdPartyID(
+            resource,
+            userData.id,
+          )
+        return result.insertId
+      }
+      return null
+    } catch (e) {
+      return null
+    } finally {
+      connection.release()
+    }
+  }
+
+  static deleteUser = async (userId: number): Promise<boolean> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = 'DELETE FROM users WHERE user_id=:userId'
+      const value = { userId }
+      await connection.query(sql, value)
+
+      return true
+    } catch (e) {
+      return false
+    } finally {
+      connection.release()
+    }
   }
 }
