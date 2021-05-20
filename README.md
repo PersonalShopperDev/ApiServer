@@ -6,6 +6,8 @@
 - 로컬 서버에서 테스트를 위해 실행할 명령어
 ### npm run deploy
 - eb를 이용하여 컴파일 및 배포
+### npm test
+- test 코드 전체 실행
 
 ## Naming Convention
 |이름|기본|

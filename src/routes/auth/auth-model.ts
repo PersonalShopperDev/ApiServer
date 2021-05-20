@@ -108,7 +108,7 @@ export class KaKaoAuth implements AuthThirdParty {
 
 export class TokenManager {
   static generateRefreshToken = async (userId: number): Promise<string> => {
-    const refreshToken = crypto.randomBytes(384).toString('base64') // length - 512
+    const refreshToken = crypto.randomBytes(384).toString('base64') // length = 512
     const result = await TokenManager.saveRefreshToken(userId, refreshToken)
     if (!result) {
       return TokenManager.generateRefreshToken(userId)
