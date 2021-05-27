@@ -13,6 +13,8 @@ servers:
 tags:
   - name: Auth
     description: 로그인 관련
+  - name: Home
+    description: 홈 화면 관련
 
 
 components:
@@ -29,4 +31,4 @@ components:
       description: Request parameters missing or invalid
 
 paths:
-  $ref: 'auth.yaml#/path'
+  $ref: 'path.yaml'

@@ -1,0 +1,11 @@
+/auth/login:
+  $ref: 'auth.yaml#/path/~1auth~1login'
+/auth/token:
+  $ref: 'auth.yaml#/path/~1auth~1token'
+/auth/withdraw:
+  $ref: 'auth.yaml#/path/~1auth~1withdraw'
+/auth/test:
+  $ref: 'auth.yaml#/path/~1auth~1test'
+
+/home:
+  $ref: 'home.yaml#/path/~1home'

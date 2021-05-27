@@ -1,0 +1,59 @@
+components:
+
+path:
+  /home:
+    get:
+      summary: Home 화면 기본 정보
+      description: Home 화면에 보여줄 기본적인 정보
+      tags: [ Home ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  banners:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        img:
+                          type: string
+                          description: 배너 이미지 URL
+                  stylelists:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        img:
+                          type: string
+                          description: 스타일 리스트 프로필 이미지 URL
+                        name:
+                          type: string
+                          description: 스타일 리스트 프로필 이미지 URL
+                        hire:
+                          type: number
+                          description: 고용된 횟수
+                        review:
+                          type: number
+                          description: 리뷰 개수
+                  reviews:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        beforeImg:
+                          type: string
+                          description: 리뷰 before 이미지
+                        afterImg:
+                          type: string
+                          description: 리뷰 after 이미지
+                        title:
+                          type: string
+                          description: 제목
+                        name:
+                          type: string
+                          description: 작성자 이름
+
