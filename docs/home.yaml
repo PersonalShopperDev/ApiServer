@@ -22,7 +22,7 @@ path:
                         img:
                           type: string
                           description: 배너 이미지 URL
-                  stylelists:
+                  stylists:
                     type: array
                     items:
                       type: object
