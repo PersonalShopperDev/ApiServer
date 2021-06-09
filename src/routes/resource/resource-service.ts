@@ -9,4 +9,10 @@ export default class ResourceService {
 
     return await this.model.getResourceFromS3(`${baseKey}${id}`)
   }
+
+  getBannerImg = async (id): Promise<Resource | null> => {
+    const baseKey = 'banner/'
+
+    return await this.model.getResourceFromS3(`${baseKey}${id}`)
+  }
 }
