@@ -1,17 +1,24 @@
+export interface HomeData {
+  banners: Array<Banner>
+  stylists: Array<Stylist>
+  reviews: Array<Review>
+}
+
 export interface Banner {
   img: string
 }
 
 export interface Stylist {
-  img: string
+  id: number
+  img: string | null
   name: string
-  hire: number
-  review: number
+  hireCount: number
+  reviewCount: number
 }
 
 export interface Review {
+  id: number
   beforeImg: string
   afterImg: string
   title: string
-  name: string
 }
