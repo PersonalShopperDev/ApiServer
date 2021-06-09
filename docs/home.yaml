@@ -27,16 +27,19 @@ path:
                     items:
                       type: object
                       properties:
+                        id:
+                          type: number
+                          description: 스타일리스트 ID
                         img:
                           type: string
-                          description: 스타일 리스트 프로필 이미지 URL
+                          description: 스타일리스트 프로필 이미지 URL
                         name:
                           type: string
-                          description: 스타일 리스트 프로필 이미지 URL
-                        hire:
+                          description: 스타일리스트 프로필 이미지 URL
+                        hireCount:
                           type: number
                           description: 고용된 횟수
-                        review:
+                        reviewCount:
                           type: number
                           description: 리뷰 개수
                   reviews:
@@ -44,6 +47,9 @@ path:
                     items:
                       type: object
                       properties:
+                        id:
+                          type: number
+                          description: 리뷰 ID
                         beforeImg:
                           type: string
                           description: 리뷰 before 이미지
@@ -53,7 +59,4 @@ path:
                         title:
                           type: string
                           description: 제목
-                        name:
-                          type: string
-                          description: 작성자 이름
 
