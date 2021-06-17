@@ -5,6 +5,7 @@ import docController from './routes/docs'
 import authRouter from './routes/auth/auth-router'
 import homeRouter from './routes/home/home-router'
 import resourceRouter from './routes/resource/resource-router'
+import stylistRouter from './routes/stylist/stylist-router'
 import cors from 'cors'
 
 const app = express()
@@ -23,6 +24,7 @@ if (docController) app.use('/docs', docController)
 app.use('/v1/resource', resourceRouter)
 app.use('/v1/auth', authRouter)
 app.use('/v1/home', homeRouter)
+app.use('/v1/stylist', stylistRouter)
 
 app.use(function (req: express.Request, res: express.Response) {
   res.sendStatus(404)
