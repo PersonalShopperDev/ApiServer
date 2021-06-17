@@ -1,0 +1,100 @@
+components:
+  stylistData:
+    application/json:
+      schema:
+        type: object
+        properties:
+          totalCount:
+            type: number
+            description: 전체 데이터 개수
+          list:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                  description: Stylist Id
+                img:
+                  type: string
+                  description: Stylist 프로필 사진 URL
+                name:
+                  type: string
+                  description: Stylist 이름
+                rating:
+                  type: number
+                  description: 리뷰 평점
+                hireCount:
+                  type: number
+                  description: 고용된 횟수
+                reviewCount:
+                  type: number
+                  description: 리뷰 개수
+                styleType:
+                  type: array
+                  description: 선호 스타일 목록
+                  items:
+                    type: string
+  sort:
+    name: sort
+    in: 'query'
+    description: 정렬 기준
+    schema:
+      type: string
+      enum: [ popular, priceLow, professional ]
+      default: popular
+
+path:
+  /stylist:
+    get:
+      summary: Stylist 전체 목록
+      description: User 맞춤 추천 Stylist 목록을 반환 합니다. Paging 처리가 되어 있습니다.
+      tags: [ Stylist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: './swagger.yaml#/components/Request/page'
+        - $ref: '#/components/sort'
+      responses:
+        '200':
+          description: OK
+          content:
+            $ref: '#/components/stylistData'
+#  /stylist/{id}:
+#    get:
+#      summary: Home 화면 기본 정보
+#      description: Home 화면에 보여줄 기본적인 정보
+#      tags: [ Stylist ]
+#      security:
+#        - bearerAuth: [ ]
+#      responses:
+#        '200':
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                type: object
+#                properties:
+  /stylist/search:
+    get:
+      summary: Search Stylist
+      description: Style 종류로 Stylist 검색
+      tags: [ Stylist ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: './swagger.yaml#/components/Request/page'
+        - $ref: '#/components/sort'
+        - name: type
+          in: 'query'
+          description: 검색하고자 하는 style 종류. 스타일을 '|' 로 구분
+          example: 스타일1|스타일2|스타일3
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            $ref: '#/components/stylistData'
