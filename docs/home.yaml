@@ -1,11 +1,11 @@
-components:
-
 path:
   /home:
     get:
       summary: Home 화면 기본 정보
       description: Home 화면에 보여줄 기본적인 정보
       tags: [ Home ]
+      security:
+        - bearerAuth: [ ]
       responses:
         '200':
           description: OK
@@ -50,6 +50,9 @@ path:
                         id:
                           type: number
                           description: 리뷰 ID
+                        stylistId:
+                          type: number
+                          description: 해당 리뷰의 스타일리스트 ID
                         beforeImg:
                           type: string
                           description: 리뷰 before 이미지

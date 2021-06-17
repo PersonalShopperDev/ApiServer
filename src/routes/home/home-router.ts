@@ -6,6 +6,6 @@ import HomeController from './home-controller'
 const router = express.Router()
 const controller = new HomeController()
 
-router.get('/', controller.getHomeData)
+router.get('/', AuthCheck, controller.getHomeData)
 
 export default router

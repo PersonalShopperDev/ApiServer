@@ -26,14 +26,25 @@ export default class HomeModel {
     }
   }
 
-  getStylists = async (): Promise<Array<Stylist> | null> => {
+  getStylists = async (userId: number): Promise<Array<Stylist> | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT s.user_id, name, profile, introduction,   hireCount, reviewCount FROM stylists s JOIN users  u ON s.user_id = u.user_id 
-LEFT JOIN ( SELECT stylist_id, COUNT(*) AS hireCount FROM coordinations GROUP BY stylist_id) h ON h.stylist_id = s.user_id
-LEFT JOIN ( SELECT stylist_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY stylist_id) r ON r.stylist_id = s.user_id;`
+      const sql = `SELECT a.user_id, name, profile, introduction, hireCount, reviewCount, typeCount FROM 
+(
+    SELECT a.user_id, introduction, COUNT(*) as typeCount FROM user_style a
+    RIGHT JOIN (SELECT style_id FROM user_style WHERE user_id = :userId) b ON a.style_id = b.style_id
+    INNER JOIN (SELECT user_id, introduction FROM stylists) c ON a.user_id = c.user_id
+    GROUP BY a.user_id
+    HAVING COUNT(*) >= 2
+) a
+LEFT JOIN users u ON a.user_id = u.user_id 
+LEFT JOIN ( SELECT stylist_id, COUNT(*) AS hireCount FROM coordinations GROUP BY stylist_id) h ON h.stylist_id = a.user_id
+LEFT JOIN ( SELECT stylist_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY stylist_id) r ON r.stylist_id = a.user_id
+ORDER BY typeCount DESC, hireCount DESC
+LIMIT 6;`
 
-      const [rows] = (await connection.query(sql)) as RowDataPacket[]
+      const value = { userId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
       return rows.map((row) => {
         return {
@@ -56,13 +67,14 @@ LEFT JOIN ( SELECT stylist_id, COUNT(*) AS reviewCount FROM coordination_reviews
   getReviews = async (): Promise<Array<Review> | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT coordination_id as id, title FROM coordination_reviews LIMIT 5;`
+      const sql = `SELECT r.coordination_id as id, c.stylist_id as stylistId, title FROM coordination_reviews r JOIN coordinations c on c.coordination_id = r.coordination_id LIMIT 5;`
 
       const [rows] = (await connection.query(sql)) as RowDataPacket[]
 
       return rows.map((row) => {
         return {
           id: row.id,
+          stylistId: row.stylistId,
           title: row.title,
           beforeImg: '',
           afterImg: '',

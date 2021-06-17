@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 
 export default (req: Request, res: Response, next: NextFunction) => {
   if (req.header('Authorization') === 'test') {
+    req['auth'] = { userId: 54 }
     next()
     return
   }

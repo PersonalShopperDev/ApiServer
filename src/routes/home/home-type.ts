@@ -18,6 +18,7 @@ export interface Stylist {
 
 export interface Review {
   id: number
+  stylistId: number
   beforeImg: string
   afterImg: string
   title: string
