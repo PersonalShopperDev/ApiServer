@@ -6,7 +6,10 @@ export default class HomeService {
 
   getHomeData = async (userId): Promise<HomeData | null> => {
     const banners = await this.model.getBanners()
-    const stylists = await this.model.getStylists(userId)
+    const stylists =
+      userId == null
+        ? await this.model.getStylists()
+        : await this.model.getStylistsWithStyle(userId)
     const reviews = await this.model.getReviews()
 
     if (!banners || !stylists || !reviews) return null

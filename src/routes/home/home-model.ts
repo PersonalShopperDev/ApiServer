@@ -26,7 +26,9 @@ export default class HomeModel {
     }
   }
 
-  getStylists = async (userId: number): Promise<Array<Stylist> | null> => {
+  getStylistsWithStyle = async (
+    userId: number,
+  ): Promise<Array<Stylist> | null> => {
     const connection = await db.getConnection()
     try {
       const sql = `SELECT a.user_id, name, profile, introduction, hireCount, reviewCount, typeCount FROM 
@@ -45,6 +47,36 @@ LIMIT 6;`
 
       const value = { userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows.map((row) => {
+        return {
+          id: row.user_id,
+          img: row.profile
+            ? `${process.env.DOMAIN}v1/resource/user/profile/${row.profile}`
+            : null,
+          name: row.name,
+          hireCount: row.hireCount ? row.hireCount : 0,
+          reviewCount: row.reviewCount ? row.reviewCount : 0,
+        }
+      })
+    } catch (e) {
+      return null
+    } finally {
+      connection.release()
+    }
+  }
+
+  getStylists = async (): Promise<Array<Stylist> | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT a.user_id, name, profile, introduction, price, hireCount, reviewCount FROM stylists a
+LEFT JOIN users u ON a.user_id = u.user_id 
+LEFT JOIN ( SELECT stylist_id, COUNT(*) AS hireCount FROM coordinations GROUP BY stylist_id) h ON h.stylist_id = a.user_id
+LEFT JOIN ( SELECT stylist_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY stylist_id) r ON r.stylist_id = a.user_id
+ORDER BY hireCount DESC, reviewCount DESC, price ASC
+LIMIT 6;`
+
+      const [rows] = (await connection.query(sql)) as RowDataPacket[]
 
       return rows.map((row) => {
         return {
