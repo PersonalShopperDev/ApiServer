@@ -1,40 +1,49 @@
 import jwt from 'jsonwebtoken'
 import { NextFunction, Request, Response } from 'express'
 
-export default (req: Request, res: Response, next: NextFunction) => {
+export const AuthRequire = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (auth(req)) {
+    next()
+  } else {
+    res.sendStatus(401)
+    next(401)
+  }
+}
+
+export const AuthCheck = (req: Request, res: Response, next: NextFunction) => {
+  auth(req)
+  next()
+}
+
+const auth = (req: Request): boolean => {
   const auth = req.header('Authorization')
   if (auth === 'test') {
     req['auth'] = { userId: 54 }
-    next()
-    return
+    return true
   }
   try {
     if (auth == null) {
-      error401(res, next)
-      return
+      return false
     }
     const list = auth.split(' ')
     if (list[0].toLowerCase() != 'bearer') {
-      error401(res, next)
-      return
+      return false
     }
 
     const token = list[1]
     const verify = jwt.verify(token, process.env.JWT_KEY)
 
     if (verify.exp < new Date().getTime() * 0.001) {
-      error401(res, next)
-      return
+      return false
     }
 
     req['auth'] = verify
-    next()
+    return true
   } catch (e) {
-    error401(res, next)
+    return false
   }
-}
-
-const error401 = (res: Response, next: NextFunction) => {
-  res.sendStatus(401)
-  next(401)
 }

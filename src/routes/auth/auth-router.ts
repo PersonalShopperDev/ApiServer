@@ -1,6 +1,6 @@
 import express from 'express'
 import { body } from 'express-validator'
-import AuthCheck from '../../config/auth-check'
+import { AuthRequire } from '../../config/auth-check'
 import AuthController from './auth-controller'
 import AuthService from './auth-service'
 
@@ -16,8 +16,8 @@ router.post(
 
 router.post('/token', body('refreshToken').isBase64(), authController.getToken)
 
-router.delete('/withdraw', AuthCheck, authController.withdraw)
+router.delete('/withdraw', AuthRequire, authController.withdraw)
 
-router.get('/test', AuthCheck, authController.test)
+router.get('/test', AuthRequire, authController.test)
 
 export default router
