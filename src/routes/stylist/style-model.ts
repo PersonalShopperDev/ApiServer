@@ -66,10 +66,10 @@ export default class StyleModel {
 ) a
 LEFT JOIN users u ON a.user_id = u.user_id
 LEFT JOIN ( 
-\tSELECT user_id, json_arrayagg(VALUE) as type FROM (
-\t\tSELECT user_id, st.value FROM user_style us JOIN style_type st ON us.style_id = st.style_id ORDER BY us.style_id ASC
-\t) b
-\tGROUP BY user_id
+    SELECT user_id, json_arrayagg(VALUE) as type FROM (
+        SELECT user_id, st.value FROM user_style us JOIN style_type st ON us.style_id = st.style_id ORDER BY us.style_id ASC
+    ) b
+    GROUP BY user_id
 ) st ON st.user_id = a.user_id
 LEFT JOIN ( SELECT stylist_id, COUNT(*) AS hireCount FROM coordinations GROUP BY stylist_id) h ON h.stylist_id = a.user_id
 LEFT JOIN ( SELECT stylist_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY stylist_id) r ON r.stylist_id = a.user_id
@@ -88,11 +88,34 @@ LIMIT :pageOffset, :pageAmount;
             : null,
           name: row.name,
           price: row.price,
+          rating: 3.0,
           type: row.type,
           hireCount: row.hireCount ? row.hireCount : 0,
           reviewCount: row.reviewCount ? row.reviewCount : 0,
         }
       })
+    } catch (e) {
+      return null
+    } finally {
+      connection.release()
+    }
+  }
+
+  getStylistCount = async (type) => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT COUNT(*) as count FROM
+(
+    SELECT us.user_id, COUNT(*) as typeCount FROM user_style us
+    INNER JOIN (SELECT user_id FROM stylists) s ON us.user_id = s.user_id
+    WHERE style_id IN (:type)
+    GROUP BY us.user_id
+) a; `
+
+      const value = { type }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows[0].count
     } catch (e) {
       return null
     } finally {

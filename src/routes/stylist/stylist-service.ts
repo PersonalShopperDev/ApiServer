@@ -1,4 +1,4 @@
-import { Stylist } from './style-type'
+import { Stylist, StylistList } from './style-type'
 import StyleModel from './style-model'
 
 export default class StylistService {
@@ -8,7 +8,7 @@ export default class StylistService {
     userId: number,
     page: number,
     sort: string,
-  ): Promise<Array<Stylist> | null> => {
+  ): Promise<StylistList | null> => {
     const typeList = await this.model.getStyleTypeId(userId)
 
     if (typeList == null) {
@@ -22,7 +22,7 @@ export default class StylistService {
     type: string,
     page: number,
     sort: string,
-  ): Promise<Array<Stylist> | null> => {
+  ): Promise<StylistList | null> => {
     const typeList = await this.model.convertStyleTypeIdFromString(
       type.replace('|', ','),
     )
@@ -38,7 +38,15 @@ export default class StylistService {
     page: number,
     sort: string,
     typeList: number[],
-  ): Promise<Array<Stylist> | null> => {
-    return await this.model.getStylists(typeList, page, sort)
+  ): Promise<StylistList | null> => {
+    const result = await this.model.getStylists(typeList, page, sort)
+    const totalCount = await this.model.getStylistCount(typeList)
+
+    if (result == null) return null
+
+    return {
+      list: result,
+      totalCount: totalCount,
+    }
   }
 }

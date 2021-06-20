@@ -6,3 +6,8 @@ export interface Stylist {
   reviewCount: number
   type: Array<string>
 }
+
+export interface StylistList {
+  list: Array<Stylist>
+  totalCount: number
+}
