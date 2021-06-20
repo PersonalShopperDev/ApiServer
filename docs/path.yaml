@@ -16,3 +16,6 @@
 #  $ref: 'stylist.yaml#/path/~1stylist~1{id}'
 /stylist/search:
   $ref: 'stylist.yaml#/path/~1stylist~1search'
+
+/profile:
+  $ref: 'profile.yaml#/path/~1profile'

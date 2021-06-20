@@ -1,0 +1,114 @@
+components:
+  profileData:
+
+    body:
+      type: number
+      description: 체형 ID
+    skin:
+      type: number
+      description: 피부톤 ID
+    topSize:
+      type: number
+      description: 상의 Size ID
+    bottomSize:
+      type: number
+      description: 하의 Size ID
+    shoulderSize:
+      type: number
+      description: 어깨 Size ID
+    waistSize:
+      type: number
+      description: 허리 Size ID
+    bellySize:
+      type: number
+      description: 배 Size ID
+    hipSize:
+      type: number
+      description: 엉덩이 Size ID
+    topPrice:
+      $ref: '#/components/priceContent'
+    bottomPrice:
+      $ref: '#/components/priceContent'
+    dressPrice:
+      $ref: '#/components/priceContent'
+    shoesPrice:
+      $ref: '#/components/priceContent'
+    bagPrice:
+      $ref: '#/components/priceContent'
+    accessoryPrice:
+      $ref: '#/components/priceContent'
+  priceContent:
+    type: object
+    properties:
+      min:
+        type: number
+        required: true
+      max:
+        type: number
+        required: true
+path:
+  /profile:
+    put:
+      summary: Profile 입력
+      description: 프로필 전체 정보 입력, 온보딩 등에서 사용하시면 됩니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userType:
+                  type: string
+                  description: 사용자의 타입(일반 유저 D, 스타일리스트 S)
+                  enum: [ D, S ]
+                gender:
+                  type: string
+                  description: 사용자의 성별
+                  enum: [ M,F ]
+                $ref: '#/components/profileData'
+              required:
+                - userType
+                - gender
+                - body
+                - skin
+                - topSize
+                - bottomSize
+                - shoulderSize
+                - waistSize
+                - bellySize
+                - hipSize
+                - topPrice
+                - bottomPrice
+                - dressPrice
+                - shoesPrice
+                - bagPrice
+                - accessoryPrice
+
+      responses:
+        '200':
+          description: Auth Token 정보. 유저 정보가 업데이트 되어 AccessKey를 재발급
+          $ref: './auth.yaml#/components/AuthToken'
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+    patch:
+      summary: Profile 수정
+      description: 프로필 부분 정보 수정. 입력된 내용만 수정 됩니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                $ref: '#/components/profileData'
+
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'

@@ -1,6 +1,5 @@
 components:
   AuthToken:
-    description: Get Access Token & Refresh Toekn
     content:
       application/json:
         schema:
@@ -47,6 +46,7 @@ path :
                   required: true
       responses:
         '200':
+          description: Get Access Token & Refresh Toekn
           $ref: '#/components/AuthToken'
         '400':
           description: token is invalid
@@ -69,6 +69,7 @@ path :
                   required: true
       responses:
         '200':
+          description: Get Access Token & Refresh Toekn
           $ref: '#/components/AuthToken'
         '400':
           description: refreshToken is invalid
