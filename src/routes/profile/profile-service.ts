@@ -4,6 +4,10 @@ import ProfileModel from './profile-model'
 export default class ProfileService {
   model = new ProfileModel()
 
+  getOnBoardData = async (userId: number): Promise<ProfileData> => {
+    return await this.model.getOnBoardData(userId)
+  }
+
   saveOnBoardData = async (
     userId: number,
     inputData: ProfileData,
