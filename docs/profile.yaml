@@ -1,6 +1,5 @@
 components:
   profileData:
-
     body:
       type: number
       description: 체형 ID
@@ -27,16 +26,25 @@ components:
       description: 엉덩이 Size ID
     topPrice:
       $ref: '#/components/priceContent'
+      description: 상의 선호 가격
     bottomPrice:
       $ref: '#/components/priceContent'
+      description: 하의 선호 가격
     dressPrice:
       $ref: '#/components/priceContent'
+      description: 원피스/세트 선호 가격
     shoesPrice:
       $ref: '#/components/priceContent'
+      description: 신발 선호 가격
     bagPrice:
       $ref: '#/components/priceContent'
+      description: 가방 선호 가격
     accessoryPrice:
       $ref: '#/components/priceContent'
+      description: 악세서리 선호 가격
+    hatPrice:
+      $ref: '#/components/priceContent'
+      description: 모자 선호 가격
   priceContent:
     type: object
     properties:
@@ -47,10 +55,10 @@ components:
         type: number
         required: true
 path:
-  /profile:
+  /profile/data:
     put:
-      summary: Profile 입력
-      description: 프로필 전체 정보 입력, 온보딩 등에서 사용하시면 됩니다.
+      summary: 온보딩 입력
+      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등을 설정합니다.
       tags: [ Profile ]
       security:
         - bearerAuth: [ ]
@@ -69,6 +77,11 @@ path:
                   description: 사용자의 성별
                   enum: [ M,F ]
                 $ref: '#/components/profileData'
+                stylePicture:
+                  type: array
+                  description: 사용자가 선택한 스타일 이미지 사진 ID
+                  items:
+                    type: number
               required:
                 - userType
                 - gender
@@ -80,21 +93,15 @@ path:
                 - waistSize
                 - bellySize
                 - hipSize
-                - topPrice
-                - bottomPrice
-                - dressPrice
-                - shoesPrice
-                - bagPrice
-                - accessoryPrice
-
+                - stylePicture
       responses:
         '200':
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     patch:
-      summary: Profile 수정
-      description: 프로필 부분 정보 수정. 입력된 내용만 수정 됩니다.
+      summary: 온보딩 데이터 수정
+      description: 온보딩 데이터 부분 정보 수정. 입력된 내용만 수정 됩니다.
       tags: [ Profile ]
       security:
         - bearerAuth: [ ]
@@ -105,7 +112,6 @@ path:
               type: object
               properties:
                 $ref: '#/components/profileData'
-
       responses:
         '200':
           description: OK

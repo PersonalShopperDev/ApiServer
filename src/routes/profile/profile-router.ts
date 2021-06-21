@@ -6,7 +6,7 @@ import ProfileController from './profile-controller'
 const router = express.Router()
 const controller = new ProfileController()
 
-router.put('/', AuthRequire, controller.putProfileData)
-router.patch('/', AuthRequire, controller.patchProfileData)
+router.put('/data', AuthRequire, controller.putProfileData)
+router.patch('/data', AuthRequire, controller.patchProfileData)
 
 export default router
