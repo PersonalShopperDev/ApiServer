@@ -6,7 +6,7 @@ import { RowDataPacket } from 'mysql2'
 import { ProfileData } from './profile-type'
 
 export default class ProfileModel {
-  saveProfileData = async (userId: number, data: ProfileData) => {
+  saveOnBoardData = async (userId: number, data: ProfileData) => {
     const connection = await db.getConnection()
     const sql = 'UPDATE users SET data=:data WHERE user_id=:userId'
 
@@ -16,7 +16,7 @@ export default class ProfileModel {
     connection.release()
   }
 
-  getProfileData = async (userId: number): Promise<ProfileData> => {
+  getOnBoardData = async (userId: number): Promise<ProfileData> => {
     const connection = await db.getConnection()
     const sql = 'SELECT data FROM users WHERE user_id=:userId'
 

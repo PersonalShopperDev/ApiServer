@@ -4,7 +4,7 @@ import ProfileModel from './profile-model'
 export default class ProfileService {
   model = new ProfileModel()
 
-  saveProfileData = async (
+  saveOnBoardData = async (
     userId: number,
     inputData: ProfileData,
   ): Promise<void> => {
@@ -14,14 +14,14 @@ export default class ProfileService {
       data[k] = inputData[k]
     }
 
-    await this.model.saveProfileData(userId, data as ProfileData)
+    await this.model.saveOnBoardData(userId, data as ProfileData)
   }
 
-  updateProfileData = async (
+  updateOnBoardData = async (
     userId: number,
     data: ProfileData,
   ): Promise<void> => {
-    const baseData = await this.model.getProfileData(userId)
+    const baseData = await this.model.getOnBoardData(userId)
 
     for (const k of ProfileDataFields) {
       if (checkProperty(k, data)) {
@@ -29,6 +29,6 @@ export default class ProfileService {
       }
     }
 
-    await this.model.saveProfileData(userId, baseData)
+    await this.model.saveOnBoardData(userId, baseData)
   }
 }

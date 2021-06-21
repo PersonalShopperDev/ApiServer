@@ -6,7 +6,7 @@ import { isProfileData, ProfileData } from './profile-type'
 export default class ProfileController {
   service = new ProfileService()
 
-  putProfileData = async (req: Request, res: Response): Promise<void> => {
+  getOnBoardData = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
     const data = req.body
     if (!isProfileData(data)) {
@@ -14,19 +14,34 @@ export default class ProfileController {
     }
 
     try {
-      await this.service.saveProfileData(userId, data)
+      await this.service.saveOnBoardData(userId, data)
       res.sendStatus(200)
     } catch (e) {
       res.sendStatus(500)
     }
   }
 
-  patchProfileData = async (req: Request, res: Response): Promise<void> => {
+  putOnBoardData = async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req['auth']
+    const data = req.body
+    if (!isProfileData(data)) {
+      res.sendStatus(422)
+    }
+
+    try {
+      await this.service.saveOnBoardData(userId, data)
+      res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  patchOnBoardData = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
     const data = req.body as ProfileData
 
     try {
-      await this.service.updateProfileData(userId, data)
+      await this.service.updateOnBoardData(userId, data)
 
       res.sendStatus(200)
     } catch (e) {
