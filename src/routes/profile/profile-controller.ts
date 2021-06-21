@@ -9,9 +9,15 @@ export default class ProfileController {
   getOnBoardData = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
 
-    const result = await this.service.getOnBoardData(userId)
+    const targetId = req.params['id']
+    console.log(targetId)
 
-    if (result == null) res.sendStatus(400)
+    const result = await this.service.getOnBoardData(
+      targetId == null ? userId : targetId,
+      userId,
+    )
+
+    if (result == null) res.sendStatus(404)
     else res.status(200).json(result)
   }
 

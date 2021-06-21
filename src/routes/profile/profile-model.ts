@@ -36,7 +36,7 @@ export default class ProfileModel {
     connection.release()
   }
 
-  getOnBoardData = async (userId: number): Promise<ProfileData> => {
+  getOnBoardData = async (userId: number): Promise<ProfileData | null> => {
     const connection = await db.getConnection()
     const sql = 'SELECT data FROM users WHERE user_id=:userId'
 
@@ -45,6 +45,8 @@ export default class ProfileModel {
     const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
     connection.release()
-    return rows[0].data
+
+    if (rows[0] == null) return null
+    return rows[0]['data']
   }
 }
