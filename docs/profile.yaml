@@ -1,12 +1,23 @@
 components:
-
-  profileData:
+  responseonBoardData:
+    type: object
+    $ref: '#/components/onBoardData'
+    required:
+      - body
+      - skin
+      - topSize
+      - bottomSize
+      - shoulderSize
+      - waistSize
+      - bellySize
+      - hipSize
+  onBoardData:
     type: object
     allOf:
-      - $ref: '#/components/profileDataBasic'
-      - $ref: '#/components/profileDataSize'
-      - $ref: '#/components/profileDataPrice'
-  profileDataBasic:
+      - $ref: '#/components/onBoardDataBasic'
+      - $ref: '#/components/onBoardDataSize'
+      - $ref: '#/components/onBoardDataPrice'
+  onBoardDataBasic:
     type: object
     properties:
       body:
@@ -15,7 +26,7 @@ components:
       skin:
         type: number
         description: 피부톤 ID
-  profileDataSize:
+  onBoardDataSize:
     type: object
     properties:
       topSize:
@@ -36,7 +47,7 @@ components:
       hipSize:
         type: number
         description: 엉덩이 Size ID
-  profileDataPrice:
+  onBoardDataPrice:
     type: object
     properties:
       topPrice:
@@ -83,17 +94,7 @@ path:
           content:
             application/json:
               schema:
-                type: object
-                $ref: '#/components/profileData'
-                required:
-                  - body
-                  - skin
-                  - topSize
-                  - bottomSize
-                  - shoulderSize
-                  - waistSize
-                  - bellySize
-                  - hipSize
+                $ref: '#/components/responseonBoardData'
     put:
       summary: 온보딩 입력
       description: 사용자의 신체 사이즈, 선호 가격, 스타일 등을 설정합니다.
@@ -105,7 +106,7 @@ path:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/profileData'
+                - $ref: '#/components/onBoardData'
                 - type: object
                   properties:
                     userType:
@@ -138,6 +139,7 @@ path:
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+    /profile/data/{id}:
     patch:
       summary: 온보딩 데이터 수정
       description: 온보딩 데이터 부분 정보 수정. 입력된 내용만 수정 됩니다.
@@ -148,9 +150,35 @@ path:
         content:
           application/json:
             schema:
-              $ref: '#/components/profileData'
+              $ref: '#/components/onBoardData'
       responses:
         '200':
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+
+  /profile/data/{id}:
+    get:
+      summary: 온보딩 데이터 불러오기 (다른 유저)
+      description: |
+        사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
+
+        Response는 온보딩 데이터 불러오기 (profile/data) 와 똑같습니다.
+
+        private 정보는 권한에 따라 따로 처리됩니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: 'path'
+          description: 열람하고자 하는 userId
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responseonBoardData'
