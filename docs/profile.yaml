@@ -89,8 +89,7 @@ path:
 
       responses:
         '200':
-          description: Auth Token 정보. 유저 정보가 업데이트 되어 AccessKey를 재발급
-          $ref: './auth.yaml#/components/AuthToken'
+          description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     patch:
