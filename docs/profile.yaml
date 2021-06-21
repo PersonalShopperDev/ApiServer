@@ -1,50 +1,65 @@
 components:
+
   profileData:
-    body:
-      type: number
-      description: 체형 ID
-    skin:
-      type: number
-      description: 피부톤 ID
-    topSize:
-      type: number
-      description: 상의 Size ID
-    bottomSize:
-      type: number
-      description: 하의 Size ID
-    shoulderSize:
-      type: number
-      description: 어깨 Size ID
-    waistSize:
-      type: number
-      description: 허리 Size ID
-    bellySize:
-      type: number
-      description: 배 Size ID
-    hipSize:
-      type: number
-      description: 엉덩이 Size ID
-    topPrice:
-      $ref: '#/components/priceContent'
-      description: 상의 선호 가격
-    bottomPrice:
-      $ref: '#/components/priceContent'
-      description: 하의 선호 가격
-    dressPrice:
-      $ref: '#/components/priceContent'
-      description: 원피스/세트 선호 가격
-    shoesPrice:
-      $ref: '#/components/priceContent'
-      description: 신발 선호 가격
-    bagPrice:
-      $ref: '#/components/priceContent'
-      description: 가방 선호 가격
-    accessoryPrice:
-      $ref: '#/components/priceContent'
-      description: 악세서리 선호 가격
-    hatPrice:
-      $ref: '#/components/priceContent'
-      description: 모자 선호 가격
+    type: object
+    allOf:
+      - $ref: '#/components/profileDataBasic'
+      - $ref: '#/components/profileDataSize'
+      - $ref: '#/components/profileDataPrice'
+  profileDataBasic:
+    type: object
+    properties:
+      body:
+        type: number
+        description: 체형 ID
+      skin:
+        type: number
+        description: 피부톤 ID
+  profileDataSize:
+    type: object
+    properties:
+      topSize:
+        type: number
+        description: 상의 Size ID
+      bottomSize:
+        type: number
+        description: 하의 Size ID
+      shoulderSize:
+        type: number
+        description: 어깨 Size ID
+      waistSize:
+        type: number
+        description: 허리 Size ID
+      bellySize:
+        type: number
+        description: 배 Size ID
+      hipSize:
+        type: number
+        description: 엉덩이 Size ID
+  profileDataPrice:
+    type: object
+    properties:
+      topPrice:
+        $ref: '#/components/priceContent'
+        description: 상의 선호 가격
+      bottomPrice:
+        $ref: '#/components/priceContent'
+        description: 하의 선호 가격
+      dressPrice:
+        $ref: '#/components/priceContent'
+        description: 원피스/세트 선호 가격
+      shoesPrice:
+        $ref: '#/components/priceContent'
+        description: 신발 선호 가격
+      bagPrice:
+        $ref: '#/components/priceContent'
+        description: 가방 선호 가격
+      accessoryPrice:
+        $ref: '#/components/priceContent'
+        description: 악세서리 선호 가격
+      hatPrice:
+        $ref: '#/components/priceContent'
+        description: 모자 선호 가격
   priceContent:
     type: object
     properties:
@@ -56,6 +71,29 @@ components:
         required: true
 path:
   /profile/data:
+    get:
+      summary: 온보딩 데이터 불러오기
+      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/profileData'
+                required:
+                  - body
+                  - skin
+                  - topSize
+                  - bottomSize
+                  - shoulderSize
+                  - waistSize
+                  - bellySize
+                  - hipSize
     put:
       summary: 온보딩 입력
       description: 사용자의 신체 사이즈, 선호 가격, 스타일 등을 설정합니다.
@@ -66,22 +104,23 @@ path:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                userType:
-                  type: string
-                  description: 사용자의 타입(일반 유저 D, 스타일리스트 S)
-                  enum: [ D, S ]
-                gender:
-                  type: string
-                  description: 사용자의 성별
-                  enum: [ M,F ]
-                $ref: '#/components/profileData'
-                stylePicture:
-                  type: array
-                  description: 사용자가 선택한 스타일 이미지 사진 ID
-                  items:
-                    type: number
+              allOf:
+                - $ref: '#/components/profileData'
+                - type: object
+                  properties:
+                    userType:
+                      type: string
+                      description: 사용자의 타입(일반 유저 D, 스타일리스트 S)
+                      enum: [ D, S ]
+                    gender:
+                      type: string
+                      description: 사용자의 성별
+                      enum: [ M,F ]
+                    stylePicture:
+                      type: array
+                      description: 사용자가 선택한 스타일 이미지 사진 ID
+                      items:
+                        type: number
               required:
                 - userType
                 - gender
@@ -109,9 +148,7 @@ path:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                $ref: '#/components/profileData'
+              $ref: '#/components/profileData'
       responses:
         '200':
           description: OK
