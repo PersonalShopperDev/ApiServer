@@ -14,10 +14,15 @@ export default class ProfileService {
   ): Promise<void> => {
     const data = {}
 
-    for (const k in ProfileDataFields) {
+    for (const k of ProfileDataFields) {
       data[k] = inputData[k]
     }
 
+    await this.model.saveBasicUserData(
+      userId,
+      inputData['gender'],
+      inputData['userType'],
+    )
     await this.model.saveOnBoardData(userId, data as ProfileData)
   }
 

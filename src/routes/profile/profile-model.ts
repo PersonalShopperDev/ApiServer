@@ -16,6 +16,26 @@ export default class ProfileModel {
     connection.release()
   }
 
+  saveBasicUserData = async (
+    userId: number,
+    gender: string,
+    userType: string,
+  ) => {
+    const connection = await db.getConnection()
+    const value = { userId, gender }
+
+    const sql = 'UPDATE users SET gender=:gender WHERE user_id=:userId;'
+    await connection.query(sql, value)
+
+    if (userType == 'S') {
+      const sql2 =
+        'INSERT IGNORE INTO stylists(user_id, status) VALUES(:userId, 0);'
+      await connection.query(sql2, value)
+    }
+
+    connection.release()
+  }
+
   getOnBoardData = async (userId: number): Promise<ProfileData> => {
     const connection = await db.getConnection()
     const sql = 'SELECT data FROM users WHERE user_id=:userId'

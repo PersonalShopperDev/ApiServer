@@ -25,7 +25,22 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      description: 'payload - userId: number, gender: F|M, userType: N|D|S'
+      description: |
+        payload
+
+        ```json
+        {
+          "userId": "number",
+          "gender": "F|M",
+          "userType": "N|D|S|W"
+        }
+        ```
+
+        userType은
+          * N: 미등록
+          * D: 일반 유저
+          * S: 스타일리스트
+          * W: 스타일리스트 인가 대기
   Request:
     page:
       name: page
