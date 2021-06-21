@@ -25,6 +25,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      description: 'payload - userId: number, gender: F|M, userType: N|D|S'
   Request:
     page:
       name: page

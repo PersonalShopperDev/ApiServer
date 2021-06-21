@@ -126,6 +126,7 @@ export class TokenManager {
       const value = { refreshToken }
 
       const [rows] = await connection.query(sql, value)
+
       return {
         userId: rows[0].user_id,
         expire: rows[0].refresh_token_expire,
@@ -137,8 +138,19 @@ export class TokenManager {
     }
   }
 
-  static generateAccessToken = (userId: number): string => {
-    return jwt.sign({ userId }, process.env.JWT_KEY, {
+  static generateAccessToken = async (userId: number): Promise<string> => {
+    const connection = await db.getConnection()
+    const sql = 'SELECT gender, data FROM users WHERE user_id=:userId'
+    const value = { userId }
+
+    const [rows] = await connection.query(sql, value)
+
+    const { data, gender } = rows[0]
+    const userType = data == null ? 'N' : data.userType
+
+    connection.release()
+
+    return jwt.sign({ userId, gender, userType }, process.env.JWT_KEY, {
       expiresIn: 30 * 60 * 1000,
     })
   }

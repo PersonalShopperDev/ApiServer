@@ -56,7 +56,7 @@ export default class AuthService {
       newRefreshToken = await TokenManager.generateRefreshToken(userId)
     }
 
-    const accessToken = TokenManager.generateAccessToken(userId)
+    const accessToken = await TokenManager.generateAccessToken(userId)
     return { accessToken, refreshToken: newRefreshToken }
   }
 
@@ -65,7 +65,7 @@ export default class AuthService {
   }
 
   private newToken = async (userId: number): Promise<AuthToken | null> => {
-    const accessToken = TokenManager.generateAccessToken(userId)
+    const accessToken = await TokenManager.generateAccessToken(userId)
     const refreshToken = await TokenManager.generateRefreshToken(userId)
 
     return { accessToken, refreshToken }
