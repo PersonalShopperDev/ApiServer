@@ -57,7 +57,7 @@ export default class StyleModel {
 
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT a.user_id, name, profile, hireCount, reviewCount, typeCount, price, type FROM
+      const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount, price, type FROM
 (
     SELECT a.user_id, price, COUNT(*) as typeCount FROM user_style a
     INNER JOIN (SELECT user_id, price FROM stylists) c ON a.user_id = c.user_id
@@ -83,8 +83,8 @@ LIMIT :pageOffset, :pageAmount;
       return rows.map((row) => {
         return {
           id: row.user_id,
-          img: row.profile
-            ? `${process.env.DOMAIN}v1/resource/user/profile/${row.profile}`
+          img: row.img
+            ? `${process.env.DOMAIN}v1/resource/user/profile/${row.img}`
             : null,
           name: row.name,
           price: row.price,

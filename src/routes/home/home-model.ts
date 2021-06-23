@@ -27,7 +27,7 @@ export default class HomeModel {
   ): Promise<Array<Stylist> | null> => {
     const connection = await db.getConnection()
 
-    const sql = `SELECT a.user_id, name, profile, hireCount, reviewCount, typeCount FROM 
+    const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount FROM 
 (
     SELECT a.user_id, COUNT(*) as typeCount FROM user_style a
     RIGHT JOIN (SELECT style_id FROM user_style WHERE user_id = :userId) b ON a.style_id = b.style_id
@@ -48,8 +48,8 @@ LIMIT 6;`
     return rows.map((row) => {
       return {
         id: row.user_id,
-        img: row.profile
-          ? `${process.env.DOMAIN}v1/resource/user/profile/${row.profile}`
+        img: row.img
+          ? `${process.env.DOMAIN}v1/resource/user/profile/${row.img}`
           : null,
         name: row.name,
         hireCount: row.hireCount ? row.hireCount : 0,
@@ -61,7 +61,7 @@ LIMIT 6;`
   getStylists = async (): Promise<Array<Stylist> | null> => {
     const connection = await db.getConnection()
 
-    const sql = `SELECT a.user_id, name, profile, price, hireCount, reviewCount FROM stylists a
+    const sql = `SELECT a.user_id, name, img, price, hireCount, reviewCount FROM stylists a
 LEFT JOIN users u ON a.user_id = u.user_id 
 LEFT JOIN ( SELECT stylist_id, COUNT(*) AS hireCount FROM coordinations GROUP BY stylist_id) h ON h.stylist_id = a.user_id
 LEFT JOIN ( SELECT stylist_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY stylist_id) r ON r.stylist_id = a.user_id
@@ -74,8 +74,8 @@ LIMIT 6;`
     return rows.map((row) => {
       return {
         id: row.user_id,
-        img: row.profile
-          ? `${process.env.DOMAIN}v1/resource/user/profile/${row.profile}`
+        img: row.img
+          ? `${process.env.DOMAIN}v1/resource/user/profile/${row.img}`
           : null,
         name: row.name,
         hireCount: row.hireCount ? row.hireCount : 0,
