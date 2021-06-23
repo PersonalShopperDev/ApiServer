@@ -6,6 +6,7 @@ import authRouter from './routes/auth/auth-router'
 import homeRouter from './routes/home/home-router'
 import resourceRouter from './routes/resource/resource-router'
 import stylistRouter from './routes/stylist/stylist-router'
+import styleRouter from './routes/style/style-router'
 import profileRouter from './routes/profile/profile-router'
 
 import cors from 'cors'
@@ -27,6 +28,7 @@ app.use('/v1/resource', resourceRouter)
 app.use('/v1/auth', authRouter)
 app.use('/v1/home', homeRouter)
 app.use('/v1/stylist', stylistRouter)
+app.use('/v1/style', styleRouter)
 app.use('/v1/profile', profileRouter)
 
 app.use(function (req: express.Request, res: express.Response) {

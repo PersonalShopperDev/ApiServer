@@ -1,34 +1,6 @@
 import * as fs from 'fs'
 
-export const getStyleTypeList = (M: boolean, F: boolean) => {
-  const result = {}
-
-  if (M) {
-    result['male'] = male.map((item) => {
-      const { id, value } = item
-      return { id, value }
-    })
-  }
-
-  if (F) {
-    result['female'] = female.map((item) => {
-      const { id, value } = item
-      return { id, value }
-    })
-  }
-
-  return result
-}
-
-export const getStyleImgList = (gender: string) => {
-  const list = gender == 'M' ? male : female
-  return list.map((item) => {
-    const { id, img } = item
-    return { id, img }
-  })
-}
-
-const male = [
+export const maleSyleList = [
   {
     id: 11,
     value: '캐주얼',
@@ -72,7 +44,7 @@ const male = [
   },
 ]
 
-const female = [
+export const femaleStyleList = [
   {
     id: 12,
     value: '캐주얼',
