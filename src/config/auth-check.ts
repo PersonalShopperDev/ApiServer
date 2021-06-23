@@ -23,11 +23,6 @@ const auth = (req: Request): boolean => {
   const auth = req.header('Authorization')
   req['auth'] = {}
 
-  if (auth === 'test') {
-    req['auth'] = { userId: 54 }
-    return true
-  }
-
   try {
     if (auth == null) {
       return false
