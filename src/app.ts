@@ -6,6 +6,7 @@ import authRouter from './routes/auth/auth-router'
 import homeRouter from './routes/home/home-router'
 import resourceRouter from './routes/resource/resource-router'
 import stylistRouter from './routes/stylist/stylist-router'
+import onboardRouter from './routes/onboard/onboard-router'
 import styleRouter from './routes/style/style-router'
 import profileRouter from './routes/profile/profile-router'
 
@@ -28,6 +29,7 @@ app.use('/v1/resource', resourceRouter)
 app.use('/v1/auth', authRouter)
 app.use('/v1/home', homeRouter)
 app.use('/v1/stylist', stylistRouter)
+app.use('/v1/onboard', onboardRouter)
 app.use('/v1/style', styleRouter)
 app.use('/v1/profile', profileRouter)
 
