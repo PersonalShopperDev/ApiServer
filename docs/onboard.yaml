@@ -141,6 +141,8 @@ path:
                 oneOf:
                   - $ref: '#/components/scheme/demander'
                   - $ref: '#/components/scheme/supplier'
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     put:
       summary: 온보딩 입력
       description: |
@@ -208,3 +210,5 @@ path:
             application/json:
               schema:
                 $ref: '#/components/scheme/demander'
+        '404':
+          description: User Not Found

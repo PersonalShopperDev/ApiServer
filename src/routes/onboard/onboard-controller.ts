@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import OnboardService from './onboard-service'
 import { isOnboardData, OnboardDemander, OnboardSupplier } from './onboard-type'
+import { validationResult } from 'express-validator'
 
 export default class OnboardController {
   service = new OnboardService()
@@ -8,21 +9,29 @@ export default class OnboardController {
   getOnboard = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
 
-    const targetId = req.params['id']
+    const targetId = req.params['id'] == null ? userId : req.params['id']
 
-    const result = await this.service.getOnboardData(
-      targetId == null ? userId : targetId,
-    )
+    if (targetId == null) {
+      res.sendStatus(400)
+      return
+    }
 
-    if (result == null) res.sendStatus(404)
-    else res.status(200).json(result)
+    try {
+      const result = await this.service.getOnboardData(targetId)
+
+      if (result == null) res.sendStatus(404)
+      else res.status(200).json(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
   }
 
   putOnboard = async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req['auth']
-    if (!isOnboardData(req.body)) {
+    if (!validationResult(req).isEmpty() || !isOnboardData(req.body)) {
       res.sendStatus(422)
     }
+
+    const { userId } = req['auth']
     const data = req.body as OnboardDemander | OnboardSupplier
 
     try {

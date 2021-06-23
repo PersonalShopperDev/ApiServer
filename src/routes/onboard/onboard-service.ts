@@ -53,12 +53,4 @@ export default class OnboardService {
 
     await this.model.saveOnboardData(userId, baseData)
   }
-
-  getSupplyGender = async (userId: number): Promise<any> => {
-    const result = await this.model.getOnboardData(userId)
-    if (result == null) {
-      return {}
-    }
-    return result
-  }
 }
