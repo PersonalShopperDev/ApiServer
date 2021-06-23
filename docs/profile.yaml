@@ -1,5 +1,5 @@
 components:
-  responseonBoardData:
+  responseBoardData:
     type: object
     $ref: '#/components/onBoardData'
     required:
@@ -76,10 +76,125 @@ components:
     properties:
       min:
         type: number
-        required: true
       max:
         type: number
-        required: true
+    requirement:
+      - min
+      - max
+  profileStyles:
+    type: object
+    properties:
+      styles:
+        type: array
+        description: 사용자가 선택한 Style ID
+        items:
+          type: number
+  profileCommonData:
+    type: object
+    properties:
+      name:
+        type: string
+        description: 이름
+      introduction:
+        type: string
+        description: 자기소개
+        maxLength: 100
+  profileUserData:
+    allOf:
+      - $ref: '#/components/profileCommonData'
+      - type: object
+        properties:
+          hopeToStylist:
+            type: string
+            description: 스타일리스트에게 바라는 점
+            maxLength: 500
+          bodyStat:
+            type: object
+            description: 신체 정보
+            properties:
+              isPublic:
+                type: boolean
+                description: 공개 여부
+                default: false
+              height:
+                type: number
+                description: 키
+              weight:
+                type: number
+                description: 몸무게
+  profileAddtionalUserData:
+    type: object
+    properties:
+      closet:
+        type: array
+        description: 옷장
+        maxItems: 20
+        items:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 옷장 ID
+            img:
+              type: string
+              description: 옷 이미지 URL
+          required:
+            - id
+            - img
+      review:
+        type: array
+        description: 내 리뷰 목록
+        maxItems: 3
+        items:
+          type: object
+          properties:
+            id:
+              type: number
+              description: 리뷰 ID
+            status:
+              type: number
+              description: |
+                리뷰의 작성 상태
+
+                0: 미작성
+                1: 완료
+            img:
+              type: string
+              description: 리뷰 썸네일 Image URL
+  profileStylistData:
+    allOf:
+      - $ref: '#/components/profileCommonData'
+      - type: object
+        properties:
+          careerList:
+            type: array
+            description: 경력 목록
+            items:
+              type: object
+              properties:
+                value:
+                  type: string
+                  description: 경력 내용
+                type:
+                  type: number
+                  description: 경력 종류 (아이콘이 다르기에 추가)
+          price:
+            type: number
+            description: 코디 가격
+          coord:
+            type: array
+            description: 대표 코디 목록, Image Url Array
+            maxItems: 4
+            items:
+              type: string
+  #      lookbook:
+  #        type: object
+  #        description: 코디 리스트
+  #        properties:
+  #          type: object
+  #          properties:
+
+
 path:
   /profile/data:
     get:
@@ -94,7 +209,7 @@ path:
           content:
             application/json:
               schema:
-                $ref: '#/components/responseonBoardData'
+                $ref: '#/components/responseBoardData'
     put:
       summary: 온보딩 입력
       description: 사용자의 신체 사이즈, 선호 가격, 스타일 등을 설정합니다.
@@ -109,10 +224,6 @@ path:
                 - $ref: '#/components/onBoardData'
                 - type: object
                   properties:
-                    userType:
-                      type: string
-                      description: 사용자의 타입(일반 유저 D, 스타일리스트 S)
-                      enum: [ D, S ]
                     gender:
                       type: string
                       description: 사용자의 성별
@@ -181,4 +292,166 @@ path:
           content:
             application/json:
               schema:
-                $ref: '#/components/responseonBoardData'
+                $ref: '#/components/responseBoardData'
+  /profile:
+    get:
+      summary: 프로필 정보 가져오기
+      description: 프로필 정보를 가져옵니다. 스타일 리스트와 일반 사용자의 Response가 다릅니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                oneOf:
+                  - allOf:
+                      - type: object
+                        properties:
+                          userType:
+                            type: string
+                            description: 유저 타입 "D"
+                            example: D
+                        required:
+                          - userType
+                      - $ref: '#/components/profileStyles'
+                      - $ref: '#/components/profileUserData'
+                      - $ref: '#/components/profileAddtionalUserData'
+                  - allOf:
+                      - type: object
+                        properties:
+                          userType:
+                            type: string
+                            description: 유저 타입 "S"
+                            example: S
+                        required:
+                          - userType
+                      - $ref: '#/components/profileStyles'
+                      - $ref: '#/components/profileStylistData'
+        #              examples:
+        #                - summary: user
+        #                  value:
+        #                    {
+        #                      userType: 'D',
+        #                      introduction: string
+        #                    }
+        #
+        #                - summary: stylist
+        #                  value:
+        #                    {
+        #                      userType: 'S',
+        #                      introduction: string
+        #                    }
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+    patch:
+      summary: 프로필 정보 수정
+      description: 프로필 정보를 수정합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/profileUserData'
+                - allOf:
+                    - $ref: '#/components/profileStylistData'
+                    - $ref: '#/components/profileStyles'
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+  /profile/{id}/lookbook:
+    get:
+      summary: 코디 룩북 리스트
+      description: |
+        코디 룩북 목록을 가져옵니다.
+
+        id를 생략시 자기 자신의 룩북을 가져옵니다.
+
+        paging 처리가 되어 있습니다.
+      tags: [ Profile ]
+      parameters:
+        - name: id
+          in: 'path'
+          description: 열람하고자 하는 userId
+          schema:
+            type: number
+        - $ref: './swagger.yaml#/components/Request/page'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                          description: 룩북 ID
+                        img:
+                          type: string
+                          description: Img URL
+
+  /profile/lookbook:
+    post:
+      summary: 코디 기록 추가하기
+      description: 코디 이미지를 추가합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: R
+          in: 'query'
+          description: 대표 코디 여부
+          schema:
+            type: boolean
+      requestBody:
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+
+  /profile/closet:
+    post:
+      summary: 내 옷장 추가하기
+      description: 내 옷장에 이미지를 추가합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
