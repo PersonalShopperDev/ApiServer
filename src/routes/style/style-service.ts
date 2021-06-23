@@ -1,9 +1,11 @@
-import DIContainer from '../../config/inversify.config'
-import ProfileModel from '../profile/profile-model'
-import { maleSyleList, femaleStyleList } from './style'
+import ProfileModel from '../onboard/onboard-model'
+import { femaleStyleList, maleSyleList } from './style'
+import StyleModel from './style-model'
+import { OnboardSupplier } from '../onboard/onboard-type'
 
 export default class StyleService {
-  model = new ProfileModel()
+  profileModel = new ProfileModel()
+  model = new StyleModel()
 
   getStyleTypeList = (M: boolean, F: boolean) => {
     const result = {}
@@ -33,11 +35,16 @@ export default class StyleService {
     })
   }
 
-  getSupplyGender = async (userId: number): Promise<any> => {
-    const result = await this.model.getOnBoardData(userId)
+  getSupplyGender = async (userId: number): Promise<OnboardSupplier> => {
+    const result = await this.profileModel.getOnboardData(userId)
     if (result == null) {
-      return {}
+      return {} as OnboardSupplier
     }
-    return result
+    return result as OnboardSupplier
+  }
+
+  saveStyle = async (userId: number, styles: number[]): Promise<void> => {
+    await this.model.deleteStyle(userId)
+    await this.model.saveStyle(userId, styles)
   }
 }

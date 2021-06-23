@@ -67,6 +67,14 @@ path:
                   description: Id 목록
                   items:
                     type: number
+      responses:
+        200:
+          description: OK
+        401:
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        422:
+          $ref: './swagger.yaml#/components/Errors/ParameterError'
+
 
   /style/img:
     get:
@@ -123,5 +131,12 @@ path:
                   description: Id 목록
                   items:
                     type: number
+      responses:
+        200:
+          description: OK
+        401:
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        422:
+          $ref: './swagger.yaml#/components/Errors/ParameterError'
 
   

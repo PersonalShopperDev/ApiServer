@@ -1,35 +1,66 @@
 import { Request, Response } from 'express'
 import StyleService from './style-service'
+import { validationResult } from 'express-validator'
 
 export default class StyleController {
   service = new StyleService()
 
-  getStyle = async (req: Request, res: Response) => {
+  getStyle = async (req: Request, res: Response): Promise<void> => {
     const { userId, userType } = req['auth']
-    let { supplyMale, supplyFemale } = await this.service.getSupplyGender(
-      userId,
-    )
 
-    if (supplyMale == null) {
-      supplyMale = req.query['male']
-    }
-    if (!(userType == 'S' || userType == 'W')) {
-      supplyFemale = req.query['female']
-    } else {
-    }
+    try {
+      let { supplyMale, supplyFemale } = await this.service.getSupplyGender(
+        userId,
+      )
 
-    const result = this.service.getStyleTypeList(supplyMale, supplyFemale)
-    res.status(200).json(result)
+      if (supplyMale == null) {
+        supplyMale = req.query['male'] as any
+      }
+      if (supplyFemale == null) {
+        supplyFemale = req.query['female'] as any
+      }
+
+      if (supplyMale == null || supplyFemale == null) {
+        res.sendStatus(400)
+        return
+      }
+      const result = this.service.getStyleTypeList(supplyMale, supplyFemale)
+      res.status(200).json(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
   }
 
-  getStyleImg = (req: Request, res: Response) => {
+  getStyleImg = (req: Request, res: Response): void => {
     let { gender } = req['auth']
 
     if (gender == null) {
       gender = req.query['gender']
     }
 
-    const result = this.service.getStyleImgList(gender)
-    res.status(200).json(result)
+    try {
+      const result = this.service.getStyleImgList(gender)
+      res.status(200).json(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  putStyle = async (req: Request, res: Response): Promise<void> => {
+    if (!validationResult(req).isEmpty()) {
+      res.sendStatus(422)
+      return
+    }
+
+    const { userId } = req['auth']
+
+    const { list } = req.body
+    try {
+      await this.service.saveStyle(userId, list)
+
+      res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
   }
 }

@@ -9,4 +9,7 @@ const controller = new StyleController()
 router.get('/', AuthCheck, controller.getStyle)
 router.get('/img', AuthCheck, controller.getStyleImg)
 
+router.put('/', AuthRequire, controller.putStyle)
+router.put('/img', body('list').isArray, AuthRequire, controller.putStyle)
+
 export default router
