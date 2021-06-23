@@ -7,8 +7,6 @@ path:
 
         사용자가 제공하는 성별에 맞춰 데이터를 보냅니다.
       tags: [ Style ]
-      security:
-        - bearerAuth: [ ]
       parameters:
         - name: male
           in: 'query'
@@ -49,6 +47,27 @@ path:
                         value:
                           type: string
                           description: 스타일 명
+    put:
+      summary: 선호 Style 변경하기
+      description: |
+        User의 선호 또는 스타일 가능한 Style Type 을 변경합니다.
+
+        기존의 Style Type은 전부 지워지고 새롭게 작성됩니다.
+      tags: [ Style ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                list:
+                  type: array
+                  description: Id 목록
+                  items:
+                    type: number
+
   /style/img:
     get:
       summary: Style Image 불러오기
@@ -82,4 +101,27 @@ path:
                         img:
                           type: string
                           description: 스타일 URL
+    put:
+      summary: 선호 Style 변경하기 (Image 이용)
+      description: |
+        User의 선호 또는 스타일 가능한 Style Type 을 변경합니다.
+
+        기존의 Style Type은 전부 지워지고 새롭게 작성됩니다.
+
+        이미지에 알맞는 스타일이 자동으로 적용됩니다.
+      tags: [ Style ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                list:
+                  type: array
+                  description: Id 목록
+                  items:
+                    type: number
+
   
