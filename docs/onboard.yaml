@@ -1,0 +1,209 @@
+components:
+  put:
+    demander:
+      allOf:
+        - $ref: '#/components/scheme/gender'
+        - $ref: '#/components/scheme/demanderBasic'
+        - $ref: '#/components/scheme/demanderSize'
+        - $ref: '#/components/scheme/demanderPrice'
+      required:
+        - gender
+        - body
+        - skin
+        - topSize
+        - bottomSize
+        - shoulderSize
+        - waistSize
+        - bellySize
+        - hipSize
+        - stylePicture
+    supplier:
+      allOf:
+        - $ref: '#/components/scheme/gender'
+        - $ref: '#/components/scheme/supplier'
+      required:
+        - gender
+        - supplyMale
+        - supplyFemale
+        - career
+
+  scheme:
+    gender:
+      type: object
+      properties:
+        gender:
+          type: string
+          description: 사용자의 성별
+          enum: [ M,F ]
+    supplier:
+      type: object
+      properties:
+        supplyMale:
+          type: boolean
+          description: 남성 코디 가능 여부
+        supplyFemale:
+          type: boolean
+          description: 여성 코디 가능 여부
+        career:
+          type: number
+          description: 코디 경력 종류 ID
+    demander:
+      type: object
+      allOf:
+        - $ref: '#/components/scheme/gender'
+        - $ref: '#/components/scheme/demanderBasic'
+        - $ref: '#/components/scheme/demanderSize'
+        - $ref: '#/components/scheme/demanderPrice'
+    demanderBasic:
+      type: object
+      properties:
+        body:
+          type: number
+          description: 체형 ID
+        skin:
+          type: number
+          description: 피부톤 ID
+        stylePicture:
+          type: array
+          description: 사용자가 선택한 스타일 이미지 사진 ID
+          items:
+            type: number
+    demanderSize:
+      type: object
+      properties:
+        topSize:
+          type: number
+          description: 상의 Size ID
+        bottomSize:
+          type: number
+          description: 하의 Size ID
+        shoulderSize:
+          type: number
+          description: 어깨 Size ID
+        waistSize:
+          type: number
+          description: 허리 Size ID
+        bellySize:
+          type: number
+          description: 배 Size ID
+        hipSize:
+          type: number
+          description: 엉덩이 Size ID
+    demanderPrice:
+      type: object
+      properties:
+        topPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 상의 선호 가격
+        bottomPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 하의 선호 가격
+        dressPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 원피스/세트 선호 가격
+        shoesPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 신발 선호 가격
+        bagPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 가방 선호 가격
+        accessoryPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 악세서리 선호 가격
+        hatPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 모자 선호 가격
+    priceContent:
+      type: object
+      properties:
+        min:
+          type: number
+        max:
+          type: number
+      requirement:
+        - min
+        - max
+
+
+path:
+  /onboard:
+    get:
+      summary: 온보딩 데이터 불러오기
+      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
+      tags: [ Onboard ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/scheme/demander'
+    put:
+      summary: 온보딩 입력
+      description: |
+        Demander
+
+        사용자의 신체 사이즈, 선호 가격, 스타일 등을 설정합니다.
+
+        Supplier
+
+        성별 및 스타일리스트의 최소 정보를 설정합니다
+      tags: [ Onboard ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/put/demander'
+                - $ref: '#/components/put/supplier'
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+    patch:
+      summary: 온보딩 데이터 수정
+      description: 온보딩 데이터 부분 정보 수정. 입력된 내용만 수정 됩니다.
+      tags: [ Onboard ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/scheme/demander'
+                - $ref: '#/components/scheme/supplier'
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+
+  /onboard/{id}:
+    get:
+      summary: 다른 유저 온보딩 데이터 불러오기
+      description: |
+        사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
+
+        Response는 온보딩 데이터 불러오기 (profile) 와 똑같습니다.
+      tags: [ Onboard ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: 'path'
+          description: 열람하고자 하는 demanderId
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/scheme/demander'

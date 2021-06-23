@@ -1,424 +1,125 @@
 components:
-  responseBoardData:
-    type: object
-    $ref: '#/components/onBoardDataUser'
-    required:
-      - body
-      - skin
-      - topSize
-      - bottomSize
-      - shoulderSize
-      - waistSize
-      - bellySize
-      - hipSize
-  onBoardDataCommon:
-    type: object
-    properties:
-      gender:
-        type: string
-        description: 사용자의 성별
-        enum: [ M,F ]
-  onBoardDataUser:
+  demander:
     type: object
     allOf:
-      - $ref: '#/components/onBoardDataBasic'
-      - $ref: '#/components/onBoardDataSize'
-      - $ref: '#/components/onBoardDataPrice'
-      - type: object
-        properties:
-          stylePicture:
-            type: array
-            description: 사용자가 선택한 스타일 이미지 사진 ID
-            items:
-              type: number
-  onBoardDataBasic:
+      - $ref: '#/components/scheme/common'
+      - $ref: '#/components/scheme/demanderEdit'
+      - $ref: '#/components/scheme/demanderNotEdit'
+  supplier:
     type: object
-    properties:
-      body:
-        type: number
-        description: 체형 ID
-      skin:
-        type: number
-        description: 피부톤 ID
-  onBoardDataSize:
-    type: object
-    properties:
-      topSize:
-        type: number
-        description: 상의 Size ID
-      bottomSize:
-        type: number
-        description: 하의 Size ID
-      shoulderSize:
-        type: number
-        description: 어깨 Size ID
-      waistSize:
-        type: number
-        description: 허리 Size ID
-      bellySize:
-        type: number
-        description: 배 Size ID
-      hipSize:
-        type: number
-        description: 엉덩이 Size ID
-  onBoardDataPrice:
-    type: object
-    properties:
-      topPrice:
-        $ref: '#/components/priceContent'
-        description: 상의 선호 가격
-      bottomPrice:
-        $ref: '#/components/priceContent'
-        description: 하의 선호 가격
-      dressPrice:
-        $ref: '#/components/priceContent'
-        description: 원피스/세트 선호 가격
-      shoesPrice:
-        $ref: '#/components/priceContent'
-        description: 신발 선호 가격
-      bagPrice:
-        $ref: '#/components/priceContent'
-        description: 가방 선호 가격
-      accessoryPrice:
-        $ref: '#/components/priceContent'
-        description: 악세서리 선호 가격
-      hatPrice:
-        $ref: '#/components/priceContent'
-        description: 모자 선호 가격
-  priceContent:
-    type: object
-    properties:
-      min:
-        type: number
-      max:
-        type: number
-    requirement:
-      - min
-      - max
-
-
-  profileStyles:
-    type: object
-    properties:
-      styles:
-        type: array
-        description: 사용자가 선택한 Style ID
-        items:
-          type: number
-  profileCommonData:
-    type: object
-    properties:
-      name:
-        type: string
-        description: 이름
-      introduction:
-        type: string
-        description: 자기소개
-        maxLength: 100
-  profileUserData:
     allOf:
-      - $ref: '#/components/profileCommonData'
-      - type: object
-        properties:
-          hopeToStylist:
-            type: string
-            description: 스타일리스트에게 바라는 점
-            maxLength: 500
-          bodyStat:
-            type: object
-            description: 신체 정보
-            properties:
-              isPublic:
-                type: boolean
-                description: 공개 여부
-                default: false
-              height:
-                type: number
-                description: 키
-              weight:
-                type: number
-                description: 몸무게
-  profileAdditionalUserData:
-    type: object
-    properties:
-      closet:
-        type: array
-        description: 옷장
-        maxItems: 20
-        items:
-          type: object
-          properties:
-            id:
-              type: number
-              description: 옷장 ID
-            img:
-              type: string
-              description: 옷 이미지 URL
-          required:
-            - id
-            - img
-      review:
-        type: array
-        description: 내 리뷰 목록
-        maxItems: 3
-        items:
-          type: object
-          properties:
-            id:
-              type: number
-              description: 리뷰 ID
-            status:
-              type: number
-              description: |
-                리뷰의 작성 상태
+      - $ref: '#/components/scheme/common'
+      - $ref: '#/components/scheme/supplierEdit'
+      - $ref: '#/components/scheme/supplierNotEdit'
+  scheme:
 
-                0: 미작성
-                1: 완료
-            img:
-              type: string
-              description: 리뷰 썸네일 Image URL
-
-  profileStylistData:
-    allOf:
-      - $ref: '#/components/profileCommonData'
-      - type: object
-        properties:
-          careerList:
-            type: array
-            description: 경력 목록
-            items:
-              type: object
-              properties:
-                value:
-                  type: string
-                  description: 경력 내용
-                type:
-                  type: number
-                  description: 경력 종류 (아이콘이 다르기에 추가)
-          price:
-            type: number
-            description: 코디 가격
-  #      lookbook:
-  #        type: object
-  #        description: 코디 리스트
-  #        properties:
-  #          type: object
-  #          properties:
-  profileAdditionalStylistData:
-    type: object
-    properties:
-      coord:
-        type: array
-        description: 대표 코디 목록, Image Url Array
-        maxItems: 4
-        items:
+    common:
+      type: object
+      properties:
+        name:
           type: string
+          description: 이름
+        introduction:
+          type: string
+          description: 자기소개
+          maxLength: 100
+        styles:
+          type: array
+          description: 사용자가 선택한 Style ID
+          items:
+            type: number
 
+    demanderEdit:
+      type: object
+      properties:
+        hopeTosupplier:
+          type: string
+          description: 스타일리스트에게 바라는 점
+          maxLength: 500
+        bodyStat:
+          type: object
+          description: 신체 정보
+          properties:
+            isPublic:
+              type: boolean
+              description: 공개 여부
+              default: false
+            height:
+              type: number
+              description: 키
+            weight:
+              type: number
+              description: 몸무게
 
+    demanderNotEdit:
+      type: object
+      properties:
+        closet:
+          type: array
+          description: 옷장
+          maxItems: 20
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+                description: 옷장 ID
+              img:
+                type: string
+                description: 옷 이미지 URL
+            required:
+              - id
+              - img
+        review:
+          type: array
+          description: 내 리뷰 목록
+          maxItems: 3
+          items:
+            type: object
+            properties:
+              id:
+                type: number
+                description: 리뷰 ID
+              status:
+                type: number
+                description: |
+                  리뷰의 작성 상태
+
+                  0: 미작성
+                  1: 완료
+              img:
+                type: string
+                description: 리뷰 썸네일 Image URL
+
+    supplierEdit:
+      type: object
+      properties:
+        careerList:
+          type: array
+          description: 경력 목록
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+                description: 경력 내용
+              type:
+                type: number
+                description: 경력 종류 (아이콘이 다르기에 추가)
+        price:
+          type: number
+          description: 코디 가격
+    supplierNotEdit:
+      type: object
+      properties:
+        coord:
+          type: array
+          description: 대표 코디 목록, Image Url Array
+          maxItems: 4
+          items:
+            type: string
 
 path:
-  /profile/data/demander:
-    put:
-      summary: 온보딩 입력 - Demander
-      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등을 설정합니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      requestBody:
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/onBoardDataCommon'
-                - $ref: '#/components/onBoardDataUser'
-              required:
-                - gender
-                - body
-                - skin
-                - topSize
-                - bottomSize
-                - shoulderSize
-                - waistSize
-                - bellySize
-                - hipSize
-                - stylePicture
-      responses:
-        '200':
-          description: OK
-        '401':
-          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-  /profile/data/supplier:
-    put:
-      summary: 온보딩 입력 - Supplier
-      description: 사용자의 기본 정보를 받아옵니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      requestBody:
-        content:
-          application/json:
-            schema:
-              allOf:
-                - $ref: '#/components/onBoardDataCommon'
-                - type: object
-                  properties:
-                    supplyMale:
-                      type: boolean
-                      description: 남성 코디 가능 여부
-                    supplyFemale:
-                      type: boolean
-                      description: 여성 코디 가능 여부
-                    career:
-                      type: number
-                      description: 코디 경력 종류 ID
-              required:
-                - gender
-                - supplyMale
-                - supplyFemale
-                - career
-      responses:
-        '200':
-          description: OK
-        '401':
-          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-  /profile/data:
-    get:
-      summary: 온보딩 데이터 불러오기
-      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responseBoardData'
-    patch:
-      summary: 온보딩 데이터 수정
-      description: 온보딩 데이터 부분 정보 수정. 입력된 내용만 수정 됩니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/onBoardDataUser'
-      responses:
-        '200':
-          description: OK
-        '401':
-          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-  /profile/style:
-    get:
-      summary: Style Text 불러오기
-      description: |
-        Style Type 전체 목록을 불러옵니다.
-
-        사용자가 제공하는 성별에 맞춰 데이터를 보냅니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      parameters:
-        - name: male
-          in: 'query'
-          schema:
-            type: boolean
-        - name: female
-          in: 'query'
-          schema:
-            type: boolean
-
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  male:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                          description: 스타일 ID
-                        value:
-                          type: string
-                          description: 스타일 명
-                  female:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                          description: 스타일 ID
-                        value:
-                          type: string
-                          description: 스타일 명
-  /profile/style/img:
-    get:
-      summary: Style Image 불러오기
-      description: |
-        Style Type을 선택하는 Image를 불러옵니다.
-
-        로그인 시, 사용자가 제공하는 성별에 맞춰 데이터를 보냅니다.
-        관련 정보가 없을 때는 파라미터를 기준으로 합니다.
-      tags: [ Profile ]
-      parameters:
-        - name: gender
-          in: 'query'
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  list:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                          description: 스타일 사진 ID
-                        img:
-                          type: string
-                          description: 스타일 URL
-  /profile/data/{id}:
-    get:
-      summary: 온보딩 데이터 불러오기 (다른 유저)
-      description: |
-        사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
-
-        Response는 온보딩 데이터 불러오기 (profile/data) 와 똑같습니다.
-
-        private 정보는 권한에 따라 따로 처리됩니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      parameters:
-        - name: id
-          in: 'path'
-          description: 열람하고자 하는 userId
-          schema:
-            type: number
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responseBoardData'
   /profile:
     get:
       summary: 프로필 정보 가져오기
@@ -437,41 +138,23 @@ path:
                   - allOf:
                       - type: object
                         properties:
-                          userType:
+                          demanderType:
                             type: string
                             description: 유저 타입 "D"
                             example: D
                         required:
-                          - userType
-                      - $ref: '#/components/profileStyles'
-                      - $ref: '#/components/profileUserData'
-                      - $ref: '#/components/profileAdditionalUserData'
+                          - demanderType
+                      - $ref: '#/components/demander'
                   - allOf:
                       - type: object
                         properties:
-                          userType:
+                          demanderType:
                             type: string
                             description: 유저 타입 "S"
                             example: S
                         required:
-                          - userType
-                      - $ref: '#/components/profileStyles'
-                      - $ref: '#/components/profileStylistData'
-                      - $ref: '#/components/profileAdditionalStylistData'
-        #              examples:
-        #                - summary: user
-        #                  value:
-        #                    {
-        #                      userType: 'D',
-        #                      introduction: string
-        #                    }
-        #
-        #                - summary: stylist
-        #                  value:
-        #                    {
-        #                      userType: 'S',
-        #                      introduction: string
-        #                    }
+                          - demanderType
+                      - $ref: '#/components/supplier'
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     patch:
@@ -485,13 +168,14 @@ path:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/profileUserData'
-                - $ref: '#/components/profileStylistData'
+                - $ref: '#/components/demander'
+                - $ref: '#/components/supplier'
       responses:
         '200':
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+
   /profile/{id}/lookbook:
     get:
       summary: 코디 룩북 리스트
@@ -505,7 +189,7 @@ path:
       parameters:
         - name: id
           in: 'path'
-          description: 열람하고자 하는 userId
+          description: 열람하고자 하는 supplier Id
           schema:
             type: number
         - $ref: './swagger.yaml#/components/Request/page'

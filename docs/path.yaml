@@ -17,18 +17,16 @@
 /stylist/search:
   $ref: 'stylist.yaml#/path/~1stylist~1search'
 
-/profile/data/demander:
-  $ref: 'profile.yaml#/path/~1profile~1data~1demander'
-/profile/data/supplier:
-  $ref: 'profile.yaml#/path/~1profile~1data~1supplier'
-/profile/data:
-  $ref: 'profile.yaml#/path/~1profile~1data'
-/profile/style:
-  $ref: 'profile.yaml#/path/~1profile~1style'
-/profile/style/img:
-  $ref: 'profile.yaml#/path/~1profile~1style~1img'
-/profile/data/{id}:
-  $ref: 'profile.yaml#/path/~1profile~1data~1{id}'
+/onboard:
+  $ref: 'onboard.yaml#/path/~1onboard'
+/onboard/{id}:
+  $ref: 'onboard.yaml#/path/~1onboard~1{id}'
+
+/style:
+  $ref: 'style.yaml#/path/~1style'
+/style/img:
+  $ref: 'style.yaml#/path/~1style~1img'
+
 /profile:
   $ref: 'profile.yaml#/path/~1profile'
 /profile/{id}/lookbook:

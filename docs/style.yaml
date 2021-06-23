@@ -1,0 +1,85 @@
+path:
+  /style:
+    get:
+      summary: Style Text 불러오기
+      description: |
+        Style Type 전체 목록을 불러옵니다.
+
+        사용자가 제공하는 성별에 맞춰 데이터를 보냅니다.
+      tags: [ Style ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: male
+          in: 'query'
+          schema:
+            type: boolean
+        - name: female
+          in: 'query'
+          schema:
+            type: boolean
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  male:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                          description: 스타일 ID
+                        value:
+                          type: string
+                          description: 스타일 명
+                  female:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                          description: 스타일 ID
+                        value:
+                          type: string
+                          description: 스타일 명
+  /style/img:
+    get:
+      summary: Style Image 불러오기
+      description: |
+        Style Type을 선택하는 Image를 불러옵니다.
+
+        로그인 시, 사용자가 제공하는 성별에 맞춰 데이터를 보냅니다.
+        관련 정보가 없을 때는 파라미터를 기준으로 합니다.
+      tags: [ Style ]
+      parameters:
+        - name: gender
+          in: 'query'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                          description: 스타일 사진 ID
+                        img:
+                          type: string
+                          description: 스타일 URL
+  
