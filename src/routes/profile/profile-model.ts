@@ -3,7 +3,7 @@ import axios from 'axios'
 import db from '../../config/db'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
-import { OnBoardingData } from './profile-type'
+import { OnBoardingData, OnBoardingDataStylist } from './profile-type'
 
 export default class ProfileModel {
   saveOnBoardData = async (userId: number, data: OnBoardingData) => {
@@ -36,7 +36,9 @@ export default class ProfileModel {
     connection.release()
   }
 
-  getOnBoardData = async (userId: number): Promise<OnBoardingData | null> => {
+  getOnBoardData = async (
+    userId: number,
+  ): Promise<OnBoardingData | OnBoardingDataStylist | null> => {
     const connection = await db.getConnection()
     const sql = 'SELECT data FROM users WHERE user_id=:userId'
 

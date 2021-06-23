@@ -7,5 +7,6 @@ const controller = new ResourceController()
 
 router.get('/user/profile/:id', controller.getProfileImg)
 router.get('/banner/:id', controller.getBannerImg)
+router.get('/style/:id', controller.getStyleImg)
 
 export default router

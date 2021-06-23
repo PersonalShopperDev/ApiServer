@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import DIContainer from '../../config/inversify.config'
 import ProfileService from './profile-service'
 import { isOnBoardingData, OnBoardingData } from './profile-type'
+import { getStyleImgList, getStyleTypeList } from '../../data/style'
 
 export default class ProfileController {
   service = new ProfileService()
@@ -47,6 +48,35 @@ export default class ProfileController {
     } catch (e) {
       res.sendStatus(500)
     }
+  }
+
+  getStyle = async (req: Request, res: Response) => {
+    const { userId, userType } = req['auth']
+    let { supplyMale, supplyFemale } = await this.service.getSupplyGender(
+      userId,
+    )
+
+    if (supplyMale == null) {
+      supplyMale = req.query['male']
+    }
+    if (!(userType == 'S' || userType == 'W')) {
+      supplyFemale = req.query['female']
+    } else {
+    }
+
+    const result = getStyleTypeList(supplyMale, supplyFemale)
+    res.status(200).json(result)
+  }
+
+  getStyleImg = (req: Request, res: Response) => {
+    let { gender } = req['auth']
+
+    if (gender == null) {
+      gender = req.query['gender']
+    }
+
+    const result = getStyleImgList(gender)
+    res.status(200).json(result)
   }
 
   // getMyProfile = async (req: Request, res: Response): Promise<void> => {

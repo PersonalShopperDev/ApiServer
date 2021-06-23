@@ -2,8 +2,11 @@ import {
   checkProperty,
   OnBoardingData,
   OnBoardingDataFields,
+  OnBoardingDataStylist,
 } from './profile-type'
 import ProfileModel from './profile-model'
+import db from '../../config/db'
+import { RowDataPacket } from 'mysql2'
 
 export default class ProfileService {
   model = new ProfileModel()
@@ -16,7 +19,7 @@ export default class ProfileService {
 
     if (result == null) return null
 
-    return result
+    return result as OnBoardingData
   }
 
   saveOnBoardData = async (
@@ -41,9 +44,7 @@ export default class ProfileService {
     userId: number,
     data: OnBoardingData,
   ): Promise<void> => {
-    const baseData: OnBoardingData | null = await this.model.getOnBoardData(
-      userId,
-    )
+    const baseData = await this.model.getOnBoardData(userId)
 
     if (baseData == null) throw Error
 
@@ -53,7 +54,15 @@ export default class ProfileService {
       }
     }
 
-    await this.model.saveOnBoardData(userId, baseData)
+    await this.model.saveOnBoardData(userId, baseData as OnBoardingData)
+  }
+
+  getSupplyGender = async (userId: number): Promise<any> => {
+    const result = await this.model.getOnBoardData(userId)
+    if (result == null) {
+      return {}
+    }
+    return result
   }
 
   getMyProfileStylist = async () => {}

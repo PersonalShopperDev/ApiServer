@@ -60,6 +60,12 @@ export type OnBoardingData = {
   accessoryPrice: PriceContent | undefined
 }
 
+export type OnBoardingDataStylist = {
+  supplyMale: boolean | undefined
+  supplyFemale: boolean | undefined
+  career: number | undefined
+}
+
 interface PriceContent {
   min: number
   max: number

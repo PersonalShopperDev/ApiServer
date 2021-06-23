@@ -15,4 +15,10 @@ export default class ResourceService {
 
     return await this.model.getResourceFromS3(`${baseKey}${id}`)
   }
+
+  getStyle = async (id): Promise<Resource | null> => {
+    const baseKey = 'style/'
+
+    return await this.model.getResourceFromS3(`${baseKey}${id}`)
+  }
 }
