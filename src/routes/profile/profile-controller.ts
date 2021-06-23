@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import DIContainer from '../../config/inversify.config'
 import ProfileService from './profile-service'
-import { isProfileData, ProfileData } from './profile-type'
+import { isOnBoardingData, OnBoardingData } from './profile-type'
 
 export default class ProfileController {
   service = new ProfileService()
@@ -24,7 +24,7 @@ export default class ProfileController {
   putOnBoardData = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
     const data = req.body
-    if (!isProfileData(data)) {
+    if (!isOnBoardingData(data)) {
       res.sendStatus(422)
     }
 
@@ -38,13 +38,53 @@ export default class ProfileController {
 
   patchOnBoardData = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
-    const data = req.body as ProfileData
+    const data = req.body as OnBoardingData
 
     try {
       await this.service.updateOnBoardData(userId, data)
 
       res.sendStatus(200)
     } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  // getMyProfile = async (req: Request, res: Response): Promise<void> => {
+  //   const { userId, userType } = req['auth']
+  //
+  //   switch (userType) {
+  //     case 'S':
+  //       await this.service.updateOnBoardData(userId)
+  //       break
+  //     case 'D':
+  //       break
+  //     default:
+  //       res.sendStatus(200)
+  //       return
+  //   }
+  // }
+
+  patchMyProfile = async (req: Request, res: Response): Promise<void> => {
+    const { userId, userType } = req['auth']
+
+    console.log(userId + ' ' + userType)
+
+    try {
+      switch (userType) {
+        case 'D':
+          await this.service.patchProfileUser(userId, req.body)
+          break
+        case 'S':
+          await this.service.patchProfileStylist(userId, req.body)
+          break
+        default:
+          res.sendStatus(400)
+          return
+      }
+
+      res.sendStatus(200)
+    } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }

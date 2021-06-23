@@ -11,4 +11,7 @@ router.put('/data', AuthRequire, controller.putOnBoardData)
 router.patch('/data', AuthRequire, controller.patchOnBoardData)
 router.get('/data/:id', AuthRequire, controller.getOnBoardData)
 
+// router.get('/', AuthRequire, controller.getMyProfile)
+router.patch('/', AuthRequire, controller.patchMyProfile)
+
 export default router

@@ -1,4 +1,4 @@
-export const ProfileDataFields = [
+export const OnBoardingDataFields = [
   'body',
   'skin',
   'topSize',
@@ -16,9 +16,9 @@ export const ProfileDataFields = [
 ]
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const isProfileData = (object): object is ProfileData => {
+export const isOnBoardingData = (object): object is OnBoardingData => {
   let key: string
-  for (key of ProfileDataFields) {
+  for (key of OnBoardingDataFields) {
     if (!checkProperty(key, object)) {
       return false
     }
@@ -40,7 +40,7 @@ export const checkProperty = (key: string, object): boolean => {
   return true
 }
 
-export type ProfileData = {
+export type OnBoardingData = {
   body: number | undefined
   skin: number | undefined
   topSize: number | undefined
@@ -60,4 +60,41 @@ export type ProfileData = {
 interface PriceContent {
   min: number
   max: number
+}
+
+export interface MyProfile {
+  userType: string
+  styles: number[] | undefined
+  name: string | undefined
+  introduction: string | undefined
+}
+
+export interface MyProfileStylist extends MyProfile {
+  price: number | undefined
+  careerList: Career[] | undefined
+  coord: string[] | undefined
+}
+
+export interface MyProfileUser extends MyProfile {
+  hopeToStylist: string | undefined
+  bodyStat: BodyStat | undefined
+  closet: string[] | undefined
+  review: Review[] | undefined
+}
+
+interface BodyStat {
+  isPublic: boolean
+  height: number
+  weight: number
+}
+
+interface Career {
+  type: number
+  value: string
+}
+
+interface Review {
+  id: number
+  img: string
+  status: number
 }

@@ -122,7 +122,7 @@ components:
               weight:
                 type: number
                 description: 몸무게
-  profileAddtionalUserData:
+  profileAdditionalUserData:
     type: object
     properties:
       closet:
@@ -161,6 +161,7 @@ components:
             img:
               type: string
               description: 리뷰 썸네일 Image URL
+
   profileStylistData:
     allOf:
       - $ref: '#/components/profileCommonData'
@@ -181,20 +182,21 @@ components:
           price:
             type: number
             description: 코디 가격
-          coord:
-            type: array
-            description: 대표 코디 목록, Image Url Array
-            maxItems: 4
-            items:
-              type: string
   #      lookbook:
   #        type: object
   #        description: 코디 리스트
   #        properties:
   #          type: object
   #          properties:
-
-
+  profileAdditionalStylistData:
+    type: object
+    properties:
+      coord:
+        type: array
+        description: 대표 코디 목록, Image Url Array
+        maxItems: 4
+        items:
+          type: string
 path:
   /profile/data:
     get:
@@ -319,7 +321,7 @@ path:
                           - userType
                       - $ref: '#/components/profileStyles'
                       - $ref: '#/components/profileUserData'
-                      - $ref: '#/components/profileAddtionalUserData'
+                      - $ref: '#/components/profileAdditionalUserData'
                   - allOf:
                       - type: object
                         properties:
@@ -331,6 +333,7 @@ path:
                           - userType
                       - $ref: '#/components/profileStyles'
                       - $ref: '#/components/profileStylistData'
+                      - $ref: '#/components/profileAdditionalStylistData'
         #              examples:
         #                - summary: user
         #                  value:
@@ -359,9 +362,7 @@ path:
             schema:
               oneOf:
                 - $ref: '#/components/profileUserData'
-                - allOf:
-                    - $ref: '#/components/profileStylistData'
-                    - $ref: '#/components/profileStyles'
+                - $ref: '#/components/profileStylistData'
       responses:
         '200':
           description: OK
