@@ -1,6 +1,9 @@
-import * as fs from 'fs'
+export interface StyleType {
+  id: number
+  value: string
+}
 
-export const maleSyleList = [
+export const maleStyleList = [
   {
     id: 11,
     value: '캐주얼',

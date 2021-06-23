@@ -1,6 +1,12 @@
 import { Request, Response } from 'express'
 import OnboardService from './onboard-service'
-import { isOnboardData, OnboardDemander, OnboardSupplier } from './onboard-type'
+import {
+  isOnboardData,
+  OnboardDemander,
+  OnboardDemanderPut,
+  OnboardSupplier,
+  OnboardSupplierPut,
+} from './onboard-type'
 import { validationResult } from 'express-validator'
 
 export default class OnboardController {
@@ -32,7 +38,7 @@ export default class OnboardController {
     }
 
     const { userId } = req['auth']
-    const data = req.body as OnboardDemander | OnboardSupplier
+    const data = req.body as OnboardDemanderPut | OnboardSupplierPut
 
     try {
       await this.service.saveOnboardData(userId, data)

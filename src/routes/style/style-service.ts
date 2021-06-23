@@ -1,5 +1,5 @@
 import ProfileModel from '../onboard/onboard-model'
-import { femaleStyleList, maleSyleList } from './style'
+import { femaleStyleList, maleStyleList } from './style-type'
 import StyleModel from './style-model'
 import { OnboardSupplier } from '../onboard/onboard-type'
 
@@ -11,7 +11,7 @@ export default class StyleService {
     const result = {}
 
     if (M) {
-      result['male'] = maleSyleList.map((item) => {
+      result['male'] = maleStyleList.map((item) => {
         const { id, value } = item
         return { id, value }
       })
@@ -28,7 +28,7 @@ export default class StyleService {
   }
 
   getStyleImgList = (gender: string) => {
-    const list = gender == 'M' ? maleSyleList : femaleStyleList
+    const list = gender == 'M' ? maleStyleList : femaleStyleList
     return list.map((item) => {
       const { id, img } = item
       return { id, img }

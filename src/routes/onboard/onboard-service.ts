@@ -1,27 +1,35 @@
 import {
   checkProperty,
   OnboardDemander,
+  OnboardDemanderGet,
+  OnboardDemanderPut,
   OnBoardingDataFields,
   OnboardSupplier,
+  OnboardSupplierGet,
+  OnboardSupplierPut,
 } from './onboard-type'
 import OnboardModel from './onboard-model'
+import StyleModel from '../style/style-model'
 
 export default class OnboardService {
   model = new OnboardModel()
 
   getOnboardData = async (
     targetId: number,
-  ): Promise<OnboardDemander | OnboardSupplier | null> => {
-    const result = await this.model.getOnboardData(targetId)
+  ): Promise<OnboardDemanderGet | OnboardSupplierGet | null> => {
+    const onboard = await this.model.getOnboardData(targetId)
+    if (onboard == null) return null
 
-    if (result == null) return null
+    const styles = await StyleModel.getUserStyle(targetId)
 
-    return result
+    const result = { styles: styles, ...onboard }
+
+    return result as any
   }
 
   saveOnboardData = async (
     userId: number,
-    inputData: OnboardDemander | OnboardSupplier,
+    inputData: OnboardDemanderPut | OnboardSupplierPut,
   ): Promise<void> => {
     const data = {} as OnboardDemander | OnboardSupplier
 

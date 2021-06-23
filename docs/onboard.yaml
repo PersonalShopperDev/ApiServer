@@ -1,4 +1,12 @@
 components:
+  get:
+    demander:
+      allOf:
+        - $ref: '#/components/scheme/demander'
+    supplier:
+      allOf:
+        - $ref: '#/components/scheme/supplier'
+
   put:
     demander:
       allOf:
@@ -122,6 +130,21 @@ components:
       requirement:
         - min
         - max
+    styles:
+      type: array
+      description:
+        선택한 스타일 목록
+      items:
+        type: object
+        properties:
+          id:
+            type: number
+          value:
+            type: string
+        required:
+          - id
+          - value
+
 
 
 path:
@@ -139,8 +162,8 @@ path:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '#/components/scheme/demander'
-                  - $ref: '#/components/scheme/supplier'
+                  - $ref: '#/components/get/demander'
+                  - $ref: '#/components/get/supplier'
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     put:
@@ -195,8 +218,6 @@ path:
 
         Response는 온보딩 데이터 불러오기 (profile) 와 똑같습니다.
       tags: [ Onboard ]
-      security:
-        - bearerAuth: [ ]
       parameters:
         - name: id
           in: 'path'
@@ -209,6 +230,8 @@ path:
           content:
             application/json:
               schema:
-                $ref: '#/components/scheme/demander'
+                oneOf:
+                  - $ref: '#/components/get/demander'
+                  - $ref: '#/components/get/supplier'
         '404':
           description: User Not Found

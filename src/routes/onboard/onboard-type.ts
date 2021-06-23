@@ -1,3 +1,5 @@
+import { StyleType } from '../style/style-type'
+
 export const OnBoardingDataFields = [
   'body',
   'skin',
@@ -69,7 +71,14 @@ export interface OnboardSupplier {
 }
 
 export interface OnboardDemanderPut extends OnboardDemander, PutData {}
-export interface OnboardDemanderPut extends OnboardSupplier, PutData {}
+export interface OnboardSupplierPut extends OnboardSupplier, PutData {}
+
+export interface OnboardDemanderGet extends OnboardDemander {
+  styles: StyleType[]
+}
+export interface OnboardSupplierGet extends OnboardSupplier {
+  styles: StyleType[]
+}
 
 interface PutData {
   userType: string
