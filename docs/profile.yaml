@@ -1,7 +1,7 @@
 components:
   responseBoardData:
     type: object
-    $ref: '#/components/onBoardData'
+    $ref: '#/components/onBoardDataUser'
     required:
       - body
       - skin
@@ -11,7 +11,14 @@ components:
       - waistSize
       - bellySize
       - hipSize
-  onBoardData:
+  onBoardDataCommon:
+    type: object
+    properties:
+      gender:
+        type: string
+        description: 사용자의 성별
+        enum: [ M,F ]
+  onBoardDataUser:
     type: object
     allOf:
       - $ref: '#/components/onBoardDataBasic'
@@ -81,6 +88,8 @@ components:
     requirement:
       - min
       - max
+
+
   profileStyles:
     type: object
     properties:
@@ -197,23 +206,13 @@ components:
         maxItems: 4
         items:
           type: string
+
+
+
 path:
-  /profile/data:
-    get:
-      summary: 온보딩 데이터 불러오기
-      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responseBoardData'
+  /profile/data/demander:
     put:
-      summary: 온보딩 입력
+      summary: 온보딩 입력 - Demander
       description: 사용자의 신체 사이즈, 선호 가격, 스타일 등을 설정합니다.
       tags: [ Profile ]
       security:
@@ -223,20 +222,16 @@ path:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/onBoardData'
+                - $ref: '#/components/onBoardDataCommon'
+                - $ref: '#/components/onBoardDataUser'
                 - type: object
                   properties:
-                    gender:
-                      type: string
-                      description: 사용자의 성별
-                      enum: [ M,F ]
                     stylePicture:
                       type: array
                       description: 사용자가 선택한 스타일 이미지 사진 ID
                       items:
                         type: number
               required:
-                - userType
                 - gender
                 - body
                 - skin
@@ -252,7 +247,54 @@ path:
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-    /profile/data/{id}:
+  /profile/data/supplier:
+    put:
+      summary: 온보딩 입력 - Supplier
+      description: 사용자의 기본 정보를 받아옵니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/onBoardDataCommon'
+                - type: object
+                  properties:
+                    supplyMale:
+                      type: boolean
+                      description: 남성 코디 가능 여부
+                    supplyFemale:
+                      type: boolean
+                      description: 여성 코디 가능 여부
+                    career:
+                      type: number
+                      description: 코디 경력 종류 ID
+              required:
+                - gender
+                - supplyMale
+                - supplyFemale
+                - career
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+  /profile/data:
+    get:
+      summary: 온보딩 데이터 불러오기
+      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responseBoardData'
     patch:
       summary: 온보딩 데이터 수정
       description: 온보딩 데이터 부분 정보 수정. 입력된 내용만 수정 됩니다.
@@ -263,7 +305,7 @@ path:
         content:
           application/json:
             schema:
-              $ref: '#/components/onBoardData'
+              $ref: '#/components/onBoardDataUser'
       responses:
         '200':
           description: OK

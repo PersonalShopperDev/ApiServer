@@ -17,6 +17,10 @@
 /stylist/search:
   $ref: 'stylist.yaml#/path/~1stylist~1search'
 
+/profile/data/demander:
+  $ref: 'profile.yaml#/path/~1profile~1data~1demander'
+/profile/data/supplier:
+  $ref: 'profile.yaml#/path/~1profile~1data~1supplier'
 /profile/data:
   $ref: 'profile.yaml#/path/~1profile~1data'
 /profile/data/{id}:

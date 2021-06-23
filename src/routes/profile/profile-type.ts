@@ -13,6 +13,9 @@ export const OnBoardingDataFields = [
   'shoesPrice',
   'bagPrice',
   'accessoryPrice',
+  'supplyMale',
+  'supplyFemale',
+  'career',
 ]
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
