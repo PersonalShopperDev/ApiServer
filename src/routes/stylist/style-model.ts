@@ -57,10 +57,10 @@ export default class StyleModel {
 
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT a.user_id, name, profile, introduction, hireCount, reviewCount, typeCount, price, type FROM
+      const sql = `SELECT a.user_id, name, profile, hireCount, reviewCount, typeCount, price, type FROM
 (
-    SELECT a.user_id, introduction, price, COUNT(*) as typeCount FROM user_style a
-    INNER JOIN (SELECT user_id, introduction, price FROM stylists) c ON a.user_id = c.user_id
+    SELECT a.user_id, price, COUNT(*) as typeCount FROM user_style a
+    INNER JOIN (SELECT user_id, price FROM stylists) c ON a.user_id = c.user_id
     WHERE style_id in (:type)
     GROUP BY a.user_id
 ) a
