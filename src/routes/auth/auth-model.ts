@@ -141,14 +141,14 @@ export class TokenManager {
   static generateAccessToken = async (userId: number): Promise<string> => {
     const connection = await db.getConnection()
     const sql =
-      'SELECT gender, data, s.status FROM users u JOIN stylists s on u.user_id = s.user_id WHERE u.user_id=:userId '
+      'SELECT gender, onboard, s.status FROM users u JOIN stylists s on u.user_id = s.user_id WHERE u.user_id=:userId '
     const value = { userId }
 
     const [rows] = await connection.query(sql, value)
 
-    const { data, gender, status } = rows[0]
+    const { data: onboard, gender, status } = rows[0]
     const userType =
-      data == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
+      onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
 
     connection.release()
 
