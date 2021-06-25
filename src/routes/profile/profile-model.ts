@@ -3,70 +3,10 @@ import axios from 'axios'
 import db from '../../config/db'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
-import { OnBoardingData, OnBoardingDataStylist } from './profile-type'
+import { ProfileDemanderPatch, ProfileSupplierPatch } from './profile-type'
 
 export default class ProfileModel {
-  saveOnBoardData = async (userId: number, data: OnBoardingData) => {
-    const connection = await db.getConnection()
-    const sql = 'UPDATE users SET data=:data WHERE user_id=:userId'
-
-    const value = { userId, data: JSON.stringify(data) }
-
-    await connection.query(sql, value)
-    connection.release()
-  }
-
-  saveBasicUserData = async (
-    userId: number,
-    gender: string,
-    userType: string,
-  ) => {
-    const connection = await db.getConnection()
-    const value = { userId, gender }
-
-    const sql = 'UPDATE users SET gender=:gender WHERE user_id=:userId;'
-    await connection.query(sql, value)
-
-    if (userType == 'S') {
-      const sql2 =
-        'INSERT IGNORE INTO stylists(user_id, status) VALUES(:userId, 0);'
-      await connection.query(sql2, value)
-    }
-
-    connection.release()
-  }
-
-  getOnBoardData = async (
-    userId: number,
-  ): Promise<OnBoardingData | OnBoardingDataStylist | null> => {
-    const connection = await db.getConnection()
-    const sql = 'SELECT data FROM users WHERE user_id=:userId'
-
-    const value = { userId }
-
-    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-
-    connection.release()
-
-    if (rows[0] == null) return null
-    return rows[0]['data']
-  }
-
-  getUserData = async (userId: number) => {
-    const connection = await db.getConnection()
-    const sql = 'SELECT name, introduction FROM users WHERE user_id=:userId'
-
-    const value = { userId }
-
-    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-
-    connection.release()
-
-    if (rows[0] == null) return null
-    return rows[0]['data']
-  }
-
-  updateUserBasicData = async (
+  saveProfile = async (
     userId: number,
     name: string | undefined,
     introduction: string | undefined,
@@ -93,7 +33,9 @@ export default class ProfileModel {
     connection.release()
   }
 
-  getUserProfileData = async (userId: number): Promise<any> => {
+  getBasicProfile = async (
+    userId: number,
+  ): Promise<ProfileDemanderPatch | ProfileSupplierPatch | null> => {
     const connection = await db.getConnection()
     const sql =
       'SELECT name, introduction, profile FROM users WHERE user_id=:userId'
@@ -105,7 +47,10 @@ export default class ProfileModel {
     connection.release()
 
     if (rows[0] == null) return null
-    return rows[0]
+    const { name, introduction, profile } = rows[0]
+    profile['name'] = name
+    profile['introduction'] = introduction
+    return profile
   }
 
   updateStylistData = async (userId: number, price: number): Promise<void> => {

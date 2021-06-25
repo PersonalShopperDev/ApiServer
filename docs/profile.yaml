@@ -1,18 +1,29 @@
 components:
-  demander:
-    type: object
-    allOf:
-      - $ref: '#/components/scheme/common'
-      - $ref: '#/components/scheme/demanderEdit'
-      - $ref: '#/components/scheme/demanderNotEdit'
-  supplier:
-    type: object
-    allOf:
-      - $ref: '#/components/scheme/common'
-      - $ref: '#/components/scheme/supplierEdit'
-      - $ref: '#/components/scheme/supplierNotEdit'
+  get:
+    demander:
+      type: object
+      allOf:
+        - $ref: '#/components/scheme/common'
+        - $ref: '#/components/scheme/demanderEdit'
+        - $ref: '#/components/scheme/demanderNotEdit'
+    supplier:
+      type: object
+      allOf:
+        - $ref: '#/components/scheme/common'
+        - $ref: '#/components/scheme/supplierEdit'
+        - $ref: '#/components/scheme/supplierNotEdit'
+  patch:
+    demander:
+      type: object
+      allOf:
+        - $ref: '#/components/scheme/common'
+        - $ref: '#/components/scheme/demanderEdit'
+    supplier:
+      type: object
+      allOf:
+        - $ref: '#/components/scheme/common'
+        - $ref: '#/components/scheme/supplierEdit'
   scheme:
-
     common:
       type: object
       properties:
@@ -23,16 +34,11 @@ components:
           type: string
           description: 자기소개
           maxLength: 100
-        styles:
-          type: array
-          description: 사용자가 선택한 Style ID
-          items:
-            type: number
 
     demanderEdit:
       type: object
       properties:
-        hopeTosupplier:
+        hopeToSupplier:
           type: string
           description: 스타일리스트에게 바라는 점
           maxLength: 500
@@ -54,6 +60,11 @@ components:
     demanderNotEdit:
       type: object
       properties:
+        styles:
+          type: array
+          description: 사용자가 선택한 Style Type
+          items:
+            type: string
         closet:
           type: array
           description: 옷장
@@ -70,7 +81,7 @@ components:
             required:
               - id
               - img
-        review:
+        reviewList:
           type: array
           description: 내 리뷰 목록
           maxItems: 3
@@ -112,6 +123,11 @@ components:
     supplierNotEdit:
       type: object
       properties:
+        styles:
+          type: array
+          description: 사용자가 선택한 Style Type
+          items:
+            type: string
         coord:
           type: array
           description: 대표 코디 목록, Image Url Array
@@ -144,7 +160,7 @@ path:
                             example: D
                         required:
                           - demanderType
-                      - $ref: '#/components/demander'
+                      - $ref: '#/components/get/demander'
                   - allOf:
                       - type: object
                         properties:
@@ -154,7 +170,7 @@ path:
                             example: S
                         required:
                           - demanderType
-                      - $ref: '#/components/supplier'
+                      - $ref: '#/components/get/supplier'
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     patch:
@@ -168,8 +184,8 @@ path:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/demander'
-                - $ref: '#/components/supplier'
+                - $ref: '#/components/patch/demander'
+                - $ref: '#/components/patch/supplier'
       responses:
         '200':
           description: OK
