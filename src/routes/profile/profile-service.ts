@@ -21,7 +21,7 @@ export default class ProfileService {
     )
 
     const price = await this.model.getPrice(userId)
-    const coord = await this.model.getCoordList(userId, true)
+    const coord = await this.model.getCoordList(userId)
 
     return {
       userType: 'S',
@@ -100,6 +100,12 @@ export default class ProfileService {
 
     if (price != null) {
       await this.model.updateStylistData(userId, price)
+    }
+  }
+
+  getLookbook = async (userId: number, page: number): Promise<{ list }> => {
+    return {
+      list: await this.model.getLookbookList(userId, page),
     }
   }
 

@@ -95,18 +95,41 @@ export default class ProfileModel {
   //   return rows as Img[]
   // }
 
-  getCoordList = async (userId: number, represent: boolean): Promise<Img[]> => {
+  getCoordList = async (userId: number): Promise<Img[]> => {
     const connection = await db.getConnection()
     const sql =
-      'SELECT lookbook_id AS id, img_path AS img FROM lookbooks WHERE user_id = :userId AND represent = :represent;'
+      'SELECT lookbook_id AS id, img_path AS img FROM lookbooks WHERE user_id = :userId AND represent = 1;'
 
-    const value = { userId, represent: represent ? 1 : 0 }
+    const value = { userId }
 
     const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
     connection.release()
 
     return rows as Img[]
+  }
+
+  getLookbookList = async (userId: number, page: number): Promise<Img[]> => {
+    const pageAmount = 20
+
+    const connection = await db.getConnection()
+    const sql =
+      'SELECT lookbook_id AS id, img_path AS img FROM lookbooks WHERE user_id = :userId AND represent = 0 LIMIT :pageOffset, :pageAmount;'
+
+    const value = { userId, pageAmount, pageOffset: page * pageAmount }
+
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    return rows.map((row) => {
+      const { id, img } = row
+
+      return {
+        id,
+        img: `${process.env.DOMAIN}v1/resource/${img}`,
+      }
+    })
   }
 
   updateStylistData = async (userId: number, price: number): Promise<void> => {

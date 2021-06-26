@@ -42,6 +42,14 @@ export default class ProfileController {
     }
   }
 
+  getLookbook = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params as any
+    const { page } = req.query as any
+
+    const result = await this.service.getLookbook(id, page == null ? 0 : page)
+    res.status(200).send(result)
+  }
+
   postProfileImg = async (req: Request, res: Response): Promise<void> => {
     const { key } = req['file']
     const { userId } = req['auth']
