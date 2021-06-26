@@ -4,6 +4,7 @@ import {
   ProfileSupplierPatch,
   ProfileUser,
 } from './profile-type'
+import { Request, Response } from 'express'
 
 export default class ProfileService {
   model = new ProfileModel()
@@ -62,5 +63,16 @@ export default class ProfileService {
     if (price != null) {
       await this.model.updateStylistData(userId, price)
     }
+  }
+
+  postLookbook = async (
+    userId: number,
+    path: string,
+    represent: boolean,
+  ): Promise<number> => {
+    return await this.model.postLookbook(userId, path, represent)
+  }
+  postCloset = async (userId: number, path: string): Promise<number> => {
+    return await this.model.postCloset(userId, path)
   }
 }

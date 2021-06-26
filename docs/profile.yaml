@@ -235,22 +235,19 @@ path:
       tags: [ Profile ]
       security:
         - bearerAuth: [ ]
-      parameters:
-        - name: R
-          in: 'query'
-          description: 대표 코디 여부
-          schema:
-            type: boolean
       requestBody:
         content:
-          image/png:
+          multipart/form-data:
             schema:
-              type: string
-              format: binary
-          image/jpeg:
-            schema:
-              type: string
-              format: binary
+              type: object
+              properties:
+                img:
+                  type: binary
+                represent:
+                  type: boolean
+              required:
+                - img
+                - represent
       responses:
         '200':
           description: OK
@@ -266,14 +263,17 @@ path:
         - bearerAuth: [ ]
       requestBody:
         content:
-          image/png:
+          multipart/form-data:
             schema:
-              type: string
-              format: binary
-          image/jpeg:
-            schema:
-              type: string
-              format: binary
+              type: object
+              properties:
+                img:
+                  type: binary
+                represent:
+                  type: boolean
+              required:
+                - img
+                - represent
       responses:
         '200':
           description: OK

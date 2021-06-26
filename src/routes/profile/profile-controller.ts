@@ -40,4 +40,21 @@ export default class ProfileController {
       res.sendStatus(500)
     }
   }
+
+  postLookbook = async (req: Request, res: Response): Promise<void> => {
+    const { key } = req['file']
+    const { userId } = req['auth']
+    const { represent } = req.body
+
+    await this.service.postLookbook(userId, key, represent)
+    res.sendStatus(200)
+  }
+
+  postCloset = async (req: Request, res: Response): Promise<void> => {
+    const { key } = req['file']
+    const { userId } = req['auth']
+
+    await this.service.postCloset(userId, key)
+    res.sendStatus(200)
+  }
 }

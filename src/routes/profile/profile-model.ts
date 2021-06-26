@@ -4,6 +4,7 @@ import db from '../../config/db'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
 import { ProfileDemanderPatch, ProfileSupplierPatch } from './profile-type'
+import { Request, Response } from 'express'
 
 export default class ProfileModel {
   saveProfile = async (
@@ -62,5 +63,33 @@ export default class ProfileModel {
     await connection.query(sql, value)
 
     connection.release()
+  }
+
+  postLookbook = async (
+    userId: number,
+    path: string,
+    represent: boolean,
+  ): Promise<number> => {
+    const connection = await db.getConnection()
+    const sql = `INSERT INTO lookbooks(img_path, user_id, represent) VALUES(:path, :userId, :represent)`
+
+    const value = { userId, path, represent: represent ? 1 : 0 }
+
+    const [result] = await connection.query(sql, value)
+
+    connection.release()
+    return result['insertId']
+  }
+
+  postCloset = async (userId: number, path: string): Promise<number> => {
+    const connection = await db.getConnection()
+    const sql = `INSERT INTO closet(img_path, user_id) VALUES(:path, :userId)`
+
+    const value = { userId, path }
+
+    const [result] = await connection.query(sql, value)
+
+    connection.release()
+    return result['insertId']
   }
 }
