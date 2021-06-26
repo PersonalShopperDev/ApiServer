@@ -35,16 +35,20 @@ export const isOnboardData = (
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const checkProperty = (key: string, object): boolean => {
-  if (!(key in object)) {
-    return false
-  }
-  if (key.includes('Price')) {
-    const item = object[key]
-    if (!('max' in item && 'min' in item)) {
+  try {
+    if (!(key in object)) {
       return false
     }
+    if (key.includes('Price')) {
+      const item = object[key]
+      if (!('max' in item && 'min' in item)) {
+        return false
+      }
+    }
+    return true
+  } catch (e) {
+    return false
   }
-  return true
 }
 
 export interface OnboardDemander {

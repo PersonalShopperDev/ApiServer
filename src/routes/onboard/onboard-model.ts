@@ -47,9 +47,9 @@ export default class OnboardModel {
     data: OnboardDemander | OnboardSupplier,
   ): Promise<void> => {
     const connection = await db.getConnection()
-    const sql = 'UPDATE users SET Style=:Style WHERE user_id=:userId'
+    const sql = 'UPDATE users SET onboard=:onboard WHERE user_id=:userId'
 
-    const value = { userId, data: JSON.stringify(data) }
+    const value = { userId, onboard: JSON.stringify(data) }
 
     await connection.query(sql, value)
     connection.release()
