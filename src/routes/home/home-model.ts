@@ -48,9 +48,7 @@ LIMIT 6;`
     return rows.map((row) => {
       return {
         id: row.user_id,
-        img: row.img
-          ? `${process.env.DOMAIN}v1/resource/user/profile/${row.img}`
-          : null,
+        img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
         name: row.name,
         hireCount: row.hireCount ? row.hireCount : 0,
         reviewCount: row.reviewCount ? row.reviewCount : 0,
@@ -74,9 +72,7 @@ LIMIT 6;`
     return rows.map((row) => {
       return {
         id: row.user_id,
-        img: row.img
-          ? `${process.env.DOMAIN}v1/resource/user/profile/${row.img}`
-          : null,
+        img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
         name: row.name,
         hireCount: row.hireCount ? row.hireCount : 0,
         reviewCount: row.reviewCount ? row.reviewCount : 0,

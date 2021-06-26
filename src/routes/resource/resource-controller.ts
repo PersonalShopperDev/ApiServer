@@ -1,53 +1,14 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import DIContainer from '../../config/inversify.config'
-import ResourceService from './resource-service'
+import ResourceModel from './resource-model'
 
 export default class ResourceController {
-  service = new ResourceService()
+  model = DIContainer.resolve(ResourceModel)
 
-  getProfileImg = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params
+  get = async (req: Request, res: Response): Promise<void> => {
+    const { path, id } = req.params
 
-    const result = await this.service.getProfileImg(id)
-
-    if (result == null) {
-      res.sendStatus(404)
-    } else {
-      res.contentType(result.contentType)
-      res.end(result.data)
-    }
-  }
-
-  getBannerImg = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params
-
-    const result = await this.service.getBannerImg(id)
-
-    if (result == null) {
-      res.sendStatus(404)
-    } else {
-      res.contentType(result.contentType)
-      res.end(result.data)
-    }
-  }
-
-  getStyleImg = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params
-
-    const result = await this.service.getStyle(id)
-
-    if (result == null) {
-      res.sendStatus(404)
-    } else {
-      res.contentType(result.contentType)
-      res.end(result.data)
-    }
-  }
-
-  getLookbookImg = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params
-
-    const result = await this.service.getStyle(id)
+    const result = await this.model.getResourceFromS3(`${path}/${id}`)
 
     if (result == null) {
       res.sendStatus(404)

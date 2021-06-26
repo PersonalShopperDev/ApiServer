@@ -83,9 +83,7 @@ LIMIT :pageOffset, :pageAmount;
       return rows.map((row) => {
         return {
           id: row.user_id,
-          img: row.img
-            ? `${process.env.DOMAIN}v1/resource/user/profile/${row.img}`
-            : null,
+          img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
           name: row.name,
           price: row.price,
           rating: 3.0,
