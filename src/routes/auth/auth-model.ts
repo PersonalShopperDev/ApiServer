@@ -146,7 +146,7 @@ export class TokenManager {
 
     const [rows] = await connection.query(sql, value)
 
-    const { data: onboard, gender, status } = rows[0]
+    const { onboard, gender, status } = rows[0]
     const userType =
       onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
 

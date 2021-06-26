@@ -18,10 +18,6 @@ export default class AuthService {
     )
     const model = factory(resource)
 
-    if (token === 'test') {
-      return await this.newToken(18)
-    }
-
     if (!model) return null
 
     const userData = await model.login(token)
