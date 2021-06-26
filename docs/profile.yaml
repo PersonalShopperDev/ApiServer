@@ -232,7 +232,6 @@ path:
                         img:
                           type: string
                           description: Img URL
-
   /profile/img:
     post:
       summary: 프로필 이미지 변경하기
