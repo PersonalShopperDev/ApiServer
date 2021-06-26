@@ -1,10 +1,6 @@
-import { id, injectable } from 'inversify'
-import axios from 'axios'
 import db from '../../config/db'
-import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
 import { Img, ProfileDemanderPatch, ProfileSupplierPatch } from './profile-type'
-import { Request, Response } from 'express'
 
 export default class ProfileModel {
   saveProfile = async (
@@ -51,7 +47,7 @@ export default class ProfileModel {
     const { name, introduction, profile, img } = rows[0]
     profile['name'] = name
     profile['introduction'] = introduction
-    profile['img'] = img
+    profile['img'] = `${process.env.DOMAIN}v1/resource/${img}`
     return profile
   }
 
@@ -66,7 +62,7 @@ export default class ProfileModel {
 
     connection.release()
 
-    return rows as Img[]
+    return rows.map(this.convertImg)
   }
 
   getPrice = async (userId: number): Promise<number> => {
@@ -106,7 +102,7 @@ export default class ProfileModel {
 
     connection.release()
 
-    return rows as Img[]
+    return rows.map(this.convertImg)
   }
 
   getLookbookList = async (userId: number, page: number): Promise<Img[]> => {
@@ -122,14 +118,7 @@ export default class ProfileModel {
 
     connection.release()
 
-    return rows.map((row) => {
-      const { id, img } = row
-
-      return {
-        id,
-        img: `${process.env.DOMAIN}v1/resource/${img}`,
-      }
-    })
+    return rows.map(this.convertImg)
   }
 
   updateStylistData = async (userId: number, price: number): Promise<void> => {
@@ -181,5 +170,14 @@ export default class ProfileModel {
 
     connection.release()
     return result['insertId']
+  }
+
+  private convertImg = (row) => {
+    const { id, img } = row
+
+    return {
+      id,
+      img: `${process.env.DOMAIN}v1/resource/${img}`,
+    }
   }
 }
