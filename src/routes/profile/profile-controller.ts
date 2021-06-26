@@ -41,6 +41,13 @@ export default class ProfileController {
     }
   }
 
+  postProfileImg = async (req: Request, res: Response): Promise<void> => {
+    const { key } = req['file']
+    const { userId } = req['auth']
+
+    await this.service.postProfileImg(userId, key)
+    res.sendStatus(200)
+  }
   postLookbook = async (req: Request, res: Response): Promise<void> => {
     const { key } = req['file']
     const { userId } = req['auth']

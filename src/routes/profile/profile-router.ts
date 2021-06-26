@@ -13,6 +13,12 @@ router.patch('/', AuthRequire, controller.patchMyProfile)
 const s3 = new S3()
 
 router.post(
+  '/img',
+  AuthRequire,
+  s3.uploadProfile.single('img'),
+  controller.postProfileImg,
+)
+router.post(
   '/lookbook',
   AuthRequire,
   s3.uploadLookbook.single('img'),

@@ -31,32 +31,39 @@ export default class S3 {
     await this.s3.copyObject(params).promise()
   }
 
-  private storageCloset = multerS3({
-    s3: this.s3,
-    bucket: 'personal-shopper-resource',
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    acl: 'private',
-    // metadata: function (req, file, cb) {
-    //   cb(null, { fieldName: file.fieldname })
-    // },
-    key: function (req, file, cb) {
-      cb(null, `closet/${Date.now()}${req['auth'].userId}`)
-    },
+  uploadProfile = multer({
+    storage: multerS3({
+      s3: this.s3,
+      bucket: 'personal-shopper-resource',
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      acl: 'private',
+      key: function (req, file, cb) {
+        cb(null, `profile/${Date.now()}${req['auth'].userId}`)
+      },
+    }),
   })
 
-  private storageLookbook = multerS3({
-    s3: this.s3,
-    bucket: 'personal-shopper-resource',
-    contentType: multerS3.AUTO_CONTENT_TYPE,
-    acl: 'private',
-    // metadata: function (req, file, cb) {
-    //   cb(null, { fieldName: file.fieldname })
-    // },
-    key: function (req, file, cb) {
-      cb(null, `lookbook/${Date.now()}${req['auth'].userId}`)
-    },
+  uploadCloset = multer({
+    storage: multerS3({
+      s3: this.s3,
+      bucket: 'personal-shopper-resource',
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      acl: 'private',
+      key: function (req, file, cb) {
+        cb(null, `closet/${Date.now()}${req['auth'].userId}`)
+      },
+    }),
   })
 
-  uploadCloset = multer({ storage: this.storageCloset })
-  uploadLookbook = multer({ storage: this.storageLookbook })
+  uploadLookbook = multer({
+    storage: multerS3({
+      s3: this.s3,
+      bucket: 'personal-shopper-resource',
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      acl: 'private',
+      key: function (req, file, cb) {
+        cb(null, `lookbook/${Date.now()}${req['auth'].userId}`)
+      },
+    }),
+  })
 }

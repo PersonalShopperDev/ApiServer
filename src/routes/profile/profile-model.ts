@@ -65,6 +65,18 @@ export default class ProfileModel {
     connection.release()
   }
 
+  postProfileImg = async (userId: number, path: string): Promise<number> => {
+    const connection = await db.getConnection()
+    const sql = `UPDATE users INTO img=:path WHERE user_id=:userId`
+
+    const value = { userId, path }
+
+    const [result] = await connection.query(sql, value)
+
+    connection.release()
+    return result['insertId']
+  }
+
   postLookbook = async (
     userId: number,
     path: string,

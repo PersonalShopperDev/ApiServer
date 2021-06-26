@@ -65,6 +65,9 @@ export default class ProfileService {
     }
   }
 
+  postProfileImg = async (userId: number, path: string): Promise<number> => {
+    return await this.model.postProfileImg(userId, path)
+  }
   postLookbook = async (
     userId: number,
     path: string,

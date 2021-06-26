@@ -228,6 +228,30 @@ path:
                         img:
                           type: string
                           description: Img URL
+
+  /profile/img:
+    post:
+      summary: 프로필 이미지 변경하기
+      description: 프로필 이미지를 변경합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                img:
+                  type: binary
+              required:
+                - img
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+
   /profile/lookbook:
     post:
       summary: 코디 기록 추가하기
@@ -273,7 +297,6 @@ path:
                   type: boolean
               required:
                 - img
-                - represent
       responses:
         '200':
           description: OK
