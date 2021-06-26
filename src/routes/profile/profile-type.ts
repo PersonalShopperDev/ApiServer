@@ -1,5 +1,9 @@
-export type DemanderGet = ProfileDemanderPatch & DemanderNotPatch
-export type SupplierGet = ProfileSupplierPatch & SupplierNotPatch
+export type ProfileDemanderGet = UserProfileGet &
+  ProfileDemanderPatch &
+  DemanderNotPatch
+export type ProfileSupplierGet = UserProfileGet &
+  ProfileSupplierPatch &
+  SupplierNotPatch
 
 export interface ProfileUser {
   name: string | undefined
@@ -7,6 +11,8 @@ export interface ProfileUser {
 }
 
 export interface UserProfileGet extends ProfileUser {
+  userType: string
+  profileImg: string
   styles: string[] | undefined
 }
 
@@ -46,7 +52,7 @@ interface Review {
   status: number
 }
 
-interface Img {
+export interface Img {
   id: number
   img: string
 }

@@ -1,6 +1,9 @@
 import ProfileModel from './profile-model'
+import StyleModel from '../style/style-model'
 import {
+  ProfileDemanderGet,
   ProfileDemanderPatch,
+  ProfileSupplierGet,
   ProfileSupplierPatch,
   ProfileUser,
 } from './profile-type'
@@ -9,8 +12,43 @@ import { Request, Response } from 'express'
 export default class ProfileService {
   model = new ProfileModel()
 
-  getMyProfileStylist = async () => {}
-  getMyProfileUser = async () => {}
+  getMyProfileSupplier = async (
+    userId: number,
+  ): Promise<ProfileSupplierGet> => {
+    const basic = await this.model.getBasicProfile(userId)
+    const styles = (await StyleModel.getUserStyle(userId)).map(
+      (item) => item.value,
+    )
+
+    const price = await this.model.getPrice(userId)
+    const coord = await this.model.getCoordList(userId, true)
+
+    return {
+      userType: 'S',
+      ...basic,
+      styles,
+      price,
+      coord,
+    } as ProfileSupplierGet
+  }
+
+  getMyProfileDemander = async (
+    userId: number,
+  ): Promise<ProfileDemanderGet> => {
+    const basic = await this.model.getBasicProfile(userId)
+    const styles = (await StyleModel.getUserStyle(userId)).map(
+      (item) => item.value,
+    )
+
+    const closetList = await this.model.getClosetList(userId)
+
+    return {
+      userType: 'D',
+      ...basic,
+      styles,
+      closet: closetList,
+    } as ProfileDemanderGet
+  }
 
   patchDemander = async (
     userId: number,

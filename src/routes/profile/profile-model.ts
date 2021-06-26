@@ -3,7 +3,7 @@ import axios from 'axios'
 import db from '../../config/db'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
-import { ProfileDemanderPatch, ProfileSupplierPatch } from './profile-type'
+import { Img, ProfileDemanderPatch, ProfileSupplierPatch } from './profile-type'
 import { Request, Response } from 'express'
 
 export default class ProfileModel {
@@ -39,7 +39,7 @@ export default class ProfileModel {
   ): Promise<ProfileDemanderPatch | ProfileSupplierPatch | null> => {
     const connection = await db.getConnection()
     const sql =
-      'SELECT name, introduction, profile FROM users WHERE user_id=:userId'
+      'SELECT name, introduction, profile, img FROM users WHERE user_id=:userId'
 
     const value = { userId }
 
@@ -48,10 +48,65 @@ export default class ProfileModel {
     connection.release()
 
     if (rows[0] == null) return null
-    const { name, introduction, profile } = rows[0]
+    const { name, introduction, profile, img } = rows[0]
     profile['name'] = name
     profile['introduction'] = introduction
+    profile['img'] = img
     return profile
+  }
+
+  getClosetList = async (userId: number): Promise<Img[]> => {
+    const connection = await db.getConnection()
+    const sql =
+      'SELECT closet_id as id, img_path as img FROM closets WHERE user_id = :userId;'
+
+    const value = { userId }
+
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    return rows as Img[]
+  }
+
+  getPrice = async (userId: number): Promise<number> => {
+    const connection = await db.getConnection()
+    const sql = 'SELECT price FROM stylists WHERE user_id = :userId;'
+
+    const value = { userId }
+
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    return rows[0].price
+  }
+  // getReviewList = async (userId: number): Promise<Img[]> => {
+  //   const connection = await db.getConnection()
+  //   const sql =
+  //     'SELECT closet_id as id, img_path as img FROM closets WHERE user_id = :userId;'
+  //
+  //   const value = { userId }
+  //
+  //   const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+  //
+  //   connection.release()
+  //
+  //   return rows as Img[]
+  // }
+
+  getCoordList = async (userId: number, represent: boolean): Promise<Img[]> => {
+    const connection = await db.getConnection()
+    const sql =
+      'SELECT lookbook_id AS id, img_path AS img FROM lookbooks WHERE user_id = :userId AND represent = :represent;'
+
+    const value = { userId, represent: represent ? 1 : 0 }
+
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    return rows as Img[]
   }
 
   updateStylistData = async (userId: number, price: number): Promise<void> => {

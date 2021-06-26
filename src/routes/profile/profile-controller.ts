@@ -4,20 +4,21 @@ import ProfileService from './profile-service'
 export default class ProfileController {
   service = new ProfileService()
 
-  // getMyProfile = async (req: Request, res: Response): Promise<void> => {
-  //   const { userId, userType } = req['auth']
-  //
-  //   switch (userType) {
-  //     case 'S':
-  //       await this.service.updateOnBoardData(userId)
-  //       break
-  //     case 'D':
-  //       break
-  //     default:
-  //       res.sendStatus(200)
-  //       return
-  //   }
-  // }
+  getMyProfile = async (req: Request, res: Response): Promise<void> => {
+    const { userId, userType } = req['auth']
+
+    switch (userType) {
+      case 'S':
+        res.status(200).send(await this.service.getMyProfileSupplier(userId))
+        break
+      case 'D':
+        res.status(200).send(await this.service.getMyProfileDemander(userId))
+        break
+      default:
+        res.sendStatus(200)
+        return
+    }
+  }
 
   patchMyProfile = async (req: Request, res: Response): Promise<void> => {
     const { userId, userType } = req['auth']

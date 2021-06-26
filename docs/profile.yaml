@@ -4,12 +4,14 @@ components:
       type: object
       allOf:
         - $ref: '#/components/scheme/common'
+        - $ref: '#/components/scheme/commonNotEdit'
         - $ref: '#/components/scheme/demanderEdit'
         - $ref: '#/components/scheme/demanderNotEdit'
     supplier:
       type: object
       allOf:
         - $ref: '#/components/scheme/common'
+        - $ref: '#/components/scheme/commonNotEdit'
         - $ref: '#/components/scheme/supplierEdit'
         - $ref: '#/components/scheme/supplierNotEdit'
   patch:
@@ -34,6 +36,18 @@ components:
           type: string
           description: 자기소개
           maxLength: 100
+
+    commonNotEdit:
+      type: object
+      properties:
+        styles:
+          type: array
+          description: 사용자가 선택한 Style Type
+          items:
+            type: string
+        profileImg:
+          type: string
+          description: 프로필 이미지 URL
 
     demanderEdit:
       type: object
@@ -60,11 +74,6 @@ components:
     demanderNotEdit:
       type: object
       properties:
-        styles:
-          type: array
-          description: 사용자가 선택한 Style Type
-          items:
-            type: string
         closet:
           type: array
           description: 옷장
@@ -123,11 +132,6 @@ components:
     supplierNotEdit:
       type: object
       properties:
-        styles:
-          type: array
-          description: 사용자가 선택한 Style Type
-          items:
-            type: string
         coord:
           type: array
           description: 대표 코디 목록, Image Url Array
@@ -154,7 +158,7 @@ path:
                   - allOf:
                       - type: object
                         properties:
-                          demanderType:
+                          userType:
                             type: string
                             description: 유저 타입 "D"
                             example: D
@@ -164,7 +168,7 @@ path:
                   - allOf:
                       - type: object
                         properties:
-                          demanderType:
+                          userType:
                             type: string
                             description: 유저 타입 "S"
                             example: S

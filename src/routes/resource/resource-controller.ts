@@ -43,4 +43,17 @@ export default class ResourceController {
       res.end(result.data)
     }
   }
+
+  getLookbookImg = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params
+
+    const result = await this.service.getStyle(id)
+
+    if (result == null) {
+      res.sendStatus(404)
+    } else {
+      res.contentType(result.contentType)
+      res.end(result.data)
+    }
+  }
 }

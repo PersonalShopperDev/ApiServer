@@ -7,7 +7,7 @@ import S3 from '../../config/s3'
 const router = express.Router()
 const controller = new ProfileController()
 
-// router.get('/', AuthRequire, controller.getMyProfile)
+router.get('/', AuthRequire, controller.getMyProfile)
 router.patch('/', AuthRequire, controller.patchMyProfile)
 
 const s3 = new S3()
