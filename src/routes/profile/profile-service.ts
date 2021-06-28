@@ -15,17 +15,23 @@ export default class ProfileService {
   getMyProfileSupplier = async (
     userId: number,
   ): Promise<ProfileSupplierGet> => {
-    const basic = await this.model.getBasicProfile(userId)
-    const styles = (await StyleModel.getUserStyle(userId)).map(
-      (item) => item.value,
-    )
+    const {
+      name,
+      introduction,
+      img,
+      profile,
+    } = await this.model.getBasicProfile(userId)
+    const styles = await StyleModel.getUserStyleOnlyValue(userId)
 
     const price = await this.model.getPrice(userId)
     const coord = await this.model.getCoordList(userId)
 
     return {
       userType: 'S',
-      ...basic,
+      name,
+      introduction,
+      img,
+      ...profile,
       styles,
       price,
       coord,
@@ -35,16 +41,22 @@ export default class ProfileService {
   getMyProfileDemander = async (
     userId: number,
   ): Promise<ProfileDemanderGet> => {
-    const basic = await this.model.getBasicProfile(userId)
-    const styles = (await StyleModel.getUserStyle(userId)).map(
-      (item) => item.value,
-    )
+    const {
+      name,
+      introduction,
+      img,
+      profile,
+    } = await this.model.getBasicProfile(userId)
+    const styles = await StyleModel.getUserStyleOnlyValue(userId)
 
     const closetList = await this.model.getClosetList(userId)
 
     return {
       userType: 'D',
-      ...basic,
+      name,
+      introduction,
+      img,
+      ...profile,
       styles,
       closet: closetList,
     } as ProfileDemanderGet
@@ -54,25 +66,36 @@ export default class ProfileService {
     userId: number,
     data: ProfileUser & ProfileDemanderPatch,
   ) => {
-    const baseData = this.model.getBasicProfile(userId)
+    const baseData = await this.model.getBasicProfile(userId)
+    let { name, introduction } = baseData
+    const { profile } = baseData
     const { hopeToSupplier, bodyStat } = data
-    let patchData = {} as ProfileDemanderPatch
 
-    if (baseData == null) {
-      patchData = { hopeToSupplier, bodyStat }
-    } else {
-      if (hopeToSupplier != null) {
-        patchData['hopeToStylist'] = hopeToSupplier
-      }
-      if (bodyStat == null) {
-        patchData['bodyStat'] = bodyStat
-      }
+    // DB에 있는 정보로 일단 생성
+    const patchData = {
+      ...profile,
+      hopeToSupplier,
+      bodyStat,
+    } as ProfileDemanderPatch
+
+    if (data.name != null) {
+      name = data.name
+    }
+
+    if (data.introduction != null) {
+      introduction = data.introduction
+    }
+    if (hopeToSupplier != null) {
+      patchData.hopeToSupplier = hopeToSupplier
+    }
+    if (bodyStat == null) {
+      patchData.bodyStat = bodyStat
     }
 
     await this.model.saveProfile(
       userId,
-      data['name'],
-      data['introduction'],
+      name,
+      introduction,
       JSON.stringify(patchData),
     )
   }
@@ -81,21 +104,39 @@ export default class ProfileService {
     userId: number,
     data: ProfileUser & ProfileSupplierPatch,
   ) => {
-    let { profile }: any = this.model.getBasicProfile(userId)
+    const baseData = await this.model.getBasicProfile(userId)
+    let { name, introduction } = baseData
+    const { profile } = baseData
     const { careerList, price } = data
 
-    if (profile == null) {
-      profile = { careerList }
-    } else {
-      if (careerList != null) {
-        profile['careerList'] = careerList
-      }
+    // DB에 있는 정보로 일단 생성
+    const patchData = {
+      ...profile,
+      careerList,
+      price,
+    } as ProfileSupplierPatch
+
+    if (data.name != null) {
+      name = data.name
     }
+
+    if (data.introduction != null) {
+      introduction = data.introduction
+    }
+
+    if (careerList != null) {
+      patchData.careerList = careerList
+    }
+
+    if (price != null) {
+      patchData.price = price
+    }
+
     await this.model.saveProfile(
       userId,
-      data['name'],
-      data['introduction'],
-      JSON.stringify(profile),
+      name,
+      introduction,
+      JSON.stringify(patchData),
     )
 
     if (price != null) {

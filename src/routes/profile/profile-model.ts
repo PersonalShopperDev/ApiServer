@@ -32,10 +32,16 @@ export default class ProfileModel {
 
   getBasicProfile = async (
     userId: number,
-  ): Promise<ProfileDemanderPatch | ProfileSupplierPatch | null> => {
+  ): Promise<{
+    name: string | undefined
+    introduction: string | undefined
+    img: string | undefined
+    profile: any
+    onboard: any
+  }> => {
     const connection = await db.getConnection()
     const sql =
-      'SELECT name, introduction, profile, img FROM users WHERE user_id=:userId'
+      'SELECT name, introduction, profile, img, onboard FROM users WHERE user_id=:userId'
 
     const value = { userId }
 
@@ -43,12 +49,14 @@ export default class ProfileModel {
 
     connection.release()
 
-    if (rows[0] == null) return null
-    const { name, introduction, profile, img } = rows[0]
-    profile['name'] = name
-    profile['introduction'] = introduction
-    profile['img'] = `${process.env.DOMAIN}v1/resource/${img}`
-    return profile
+    const { name, introduction, profile, img, onboard } = rows[0]
+    return {
+      name,
+      introduction,
+      profile,
+      img: `${process.env.DOMAIN}v1/resource/${img}`,
+      onboard,
+    }
   }
 
   getClosetList = async (userId: number): Promise<Img[]> => {

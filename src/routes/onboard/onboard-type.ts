@@ -13,6 +13,7 @@ export const OnBoardingDataFields = [
   'bottomPrice',
   'dressPrice',
   'shoesPrice',
+  'hatPrice',
   'bagPrice',
   'accessoryPrice',
   'supplyMale',
