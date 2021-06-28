@@ -141,7 +141,7 @@ export class TokenManager {
   static generateAccessToken = async (userId: number): Promise<string> => {
     const connection = await db.getConnection()
     const sql =
-      'SELECT gender, onboard, s.status FROM users u JOIN stylists s on u.user_id = s.user_id WHERE u.user_id=:userId '
+      'SELECT gender, onboard, s.status FROM users u LEFT JOIN stylists s on u.user_id = s.user_id WHERE u.user_id=:userId '
     const value = { userId }
 
     const [rows] = await connection.query(sql, value)
