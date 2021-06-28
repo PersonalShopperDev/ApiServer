@@ -9,15 +9,16 @@ export default class StyleController {
     const { userId, userType } = req['auth']
 
     try {
+      const { male, female } = req.query as any
       let { supplyMale, supplyFemale } = await this.service.getSupplyGender(
         userId,
       )
 
-      if (supplyMale == null) {
-        supplyMale = req.query['male'] as any
+      if (male != null) {
+        supplyMale = male
       }
-      if (supplyFemale == null) {
-        supplyFemale = req.query['female'] as any
+      if (female != null) {
+        supplyFemale = female
       }
 
       if (supplyMale == null || supplyFemale == null) {
