@@ -182,6 +182,22 @@ export class TokenManager {
 }
 
 export class UserManager {
+  static getUserType = async (userId: number): Promise<string> => {
+    const connection = await db.getConnection()
+    const sql =
+      'SELECT onboard, s.status FROM users u LEFT JOIN stylists s on u.user_id = s.user_id WHERE u.user_id=:userId '
+    const value = { userId }
+
+    const [rows] = await connection.query(sql, value)
+
+    const { onboard, status } = rows[0]
+    const userType =
+      onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
+
+    connection.release()
+
+    return userType
+  }
   static getUserIdWithThirdPartyID = async (resource: string, id: string) => {
     const connection = await db.getConnection()
     try {

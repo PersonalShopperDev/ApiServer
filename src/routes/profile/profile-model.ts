@@ -59,6 +59,35 @@ export default class ProfileModel {
     }
   }
 
+  getStylistPoint = async (
+    userId: number,
+  ): Promise<{
+    hireCount: number
+    reviewCount: number
+    rating: number | undefined
+  }> => {
+    const connection = await db.getConnection()
+    const sql = `SELECT COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, AVG(rating) AS rating FROM coordinations c
+      LEFT JOIN coordination_reviews cr ON cr.coordination_id = c.coordination_id
+      WHERE stylist_id = :userId GROUP BY stylist_id;`
+
+    const value = { userId }
+
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    if (rows[0] == null) {
+      return {
+        hireCount: 0,
+        reviewCount: 0,
+        rating: undefined,
+      }
+    }
+
+    return rows[0]
+  }
+
   getClosetList = async (userId: number): Promise<Img[]> => {
     const connection = await db.getConnection()
     const sql =

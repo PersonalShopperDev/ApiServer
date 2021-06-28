@@ -7,10 +7,66 @@ import {
   ProfileSupplierPatch,
   ProfileUser,
 } from './profile-type'
-import { Request, Response } from 'express'
 
 export default class ProfileService {
   model = new ProfileModel()
+
+  getProfileSupplier = async (userId: number): Promise<ProfileSupplierGet> => {
+    const {
+      name,
+      introduction,
+      img,
+      profile,
+    } = await this.model.getBasicProfile(userId)
+    const styles = await StyleModel.getUserStyleOnlyValue(userId)
+
+    const price = await this.model.getPrice(userId)
+    const coord = await this.model.getCoordList(userId)
+    const { rating, reviewCount, hireCount } = await this.model.getStylistPoint(
+      userId,
+    )
+
+    return {
+      userType: 'S',
+      name,
+      introduction,
+      img,
+      ...profile,
+      styles,
+      price,
+      coord,
+      reviewCount,
+      hireCount,
+      rating,
+    } as ProfileSupplierGet
+  }
+
+  getProfileDemander = async (userId: number): Promise<ProfileDemanderGet> => {
+    const baseData = await this.model.getBasicProfile(userId)
+    const { name, introduction, img, onboard } = baseData
+    let { profile } = baseData
+    const styles = await StyleModel.getUserStyleOnlyValue(userId)
+    const closetList = await this.model.getClosetList(userId)
+
+    const additionalBodyStat = { body: onboard['body'] }
+    if (profile == null) {
+      profile = { bodyStat: additionalBodyStat }
+    } else if (profile['bodyStat'] == null) {
+      profile['bodyStat'] = additionalBodyStat
+    } else {
+      profile['bodyStat'].push(additionalBodyStat)
+    }
+
+    return {
+      userType: 'D',
+      name,
+      introduction,
+      img,
+      ...profile,
+      styles,
+      closet: closetList,
+    } as ProfileDemanderGet
+  }
 
   getMyProfileSupplier = async (
     userId: number,

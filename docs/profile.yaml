@@ -114,6 +114,8 @@ components:
               $ref: '#/components/scheme/supplier/coord'
       required:
         - userType
+        - hireCOunt
+        - reviewCount
   patch:
     common:
       type: object
@@ -186,8 +188,8 @@ components:
           - type: object
             properties:
               body:
-                type: string
-                description: 사용자의 체형
+                type: number
+                description: 사용자의 체형 ID
       closet:
         type: array
         description: 옷장

@@ -43,6 +43,10 @@ export default class StyleModel {
     })
   }
 
+  static getUserStyleOnlyValue = async (userId: number): Promise<string[]> => {
+    return (await StyleModel.getUserStyle(userId)).map((item) => item.value)
+  }
+
   static convertStyleIdToValue = (styleId: number): string | undefined => {
     const list = styleId % 10 == 2 ? femaleStyleList : maleStyleList
 
