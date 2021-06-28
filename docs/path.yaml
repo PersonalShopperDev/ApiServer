@@ -29,6 +29,8 @@
 
 /profile:
   $ref: 'profile.yaml#/path/~1profile'
+/profile/{id}:
+  $ref: 'profile.yaml#/path/~1profile~1{id}'
 /profile/{id}/lookbook:
   $ref: 'profile.yaml#/path/~1profile~1{id}~1lookbook'
 /profile/img:

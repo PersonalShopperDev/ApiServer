@@ -31,7 +31,8 @@ components:
               $ref: '#/components/scheme/demander/closet'
             reviewList:
               $ref: '#/components/scheme/demander/reviewList'
-
+      required:
+        - userType
     supplier:
       type: object
       allOf:
@@ -50,7 +51,69 @@ components:
               $ref: '#/components/scheme/supplier/price'
             coord:
               $ref: '#/components/scheme/supplier/coord'
-
+      required:
+        - userType
+  getOther:
+    common:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/scheme/common/name'
+        introduction:
+          $ref: '#/components/scheme/common/introduction'
+        styles:
+          $ref: '#/components/scheme/common/styles'
+        profileImg:
+          $ref: '#/components/scheme/common/profileImg'
+    demander:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            userType:
+              type: string
+              description: 유저 타입 "D"
+              example: D
+        - $ref: '#/components/get/common'
+        - type: object
+          properties:
+            hopeToSupplier:
+              $ref: '#/components/scheme/demander/hopeToSupplier'
+            bodyStat:
+              $ref: '#/components/scheme/demander/bodyStat+'
+            closet:
+              $ref: '#/components/scheme/demander/closet'
+      required:
+        - userType
+    supplier:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            userType:
+              type: string
+              description: 유저 타입 "S"
+              example: S
+        - $ref: '#/components/get/common'
+        - type: object
+          properties:
+            rating:
+              type: number
+              description: 리뷰 평점
+            hireCount:
+              type: number
+              description: 고용된 횟수
+            reviewCount:
+              type: number
+              description: 리뷰 개수
+            careerList:
+              $ref: '#/components/scheme/supplier/careerList'
+            price:
+              $ref: '#/components/scheme/supplier/price'
+            coord:
+              $ref: '#/components/scheme/supplier/coord'
+      required:
+        - userType
   patch:
     common:
       type: object
@@ -115,6 +178,16 @@ components:
           weight:
             type: number
             description: 몸무게
+      bodyStat+:
+        type: object
+        description: 신체 정보
+        allOf:
+          - $ref: '#/components/scheme/demander/bodyStat'
+          - type: object
+            properties:
+              body:
+                type: string
+                description: 사용자의 체형
       closet:
         type: array
         description: 옷장
@@ -178,8 +251,8 @@ components:
 path:
   /profile:
     get:
-      summary: 프로필 정보 가져오기
-      description: 프로필 정보를 가져옵니다. 스타일 리스트와 일반 사용자의 Response가 다릅니다.
+      summary: 내 프로필 정보 가져오기
+      description: 내 프로필 정보를 가져옵니다. 스타일 리스트와 일반 사용자의 Response가 다릅니다.
       tags: [ Profile ]
       security:
         - bearerAuth: [ ]
@@ -198,8 +271,8 @@ path:
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     patch:
-      summary: 프로필 정보 수정
-      description: 프로필 정보를 수정합니다.
+      summary: 내 프로필 정보 수정
+      description: 내 프로필 정보를 수정합니다.
       tags: [ Profile ]
       security:
         - bearerAuth: [ ]
@@ -219,11 +292,12 @@ path:
           description: 권한이 없음. 온보딩 처리를 하지 않은 userType='N' 인 사용자의 경우에 발생합니다.
   /profile/{id}:
     get:
-      summary: 프로필 정보 가져오기
-      description: 프로필 정보를 가져옵니다. 스타일 리스트와 일반 사용자의 Response가 다릅니다.
+      summary: 프로필 정보 가져오기 (타인)
+      description: |
+        프로필 정보를 가져옵니다. 스타일 리스트와 일반 사용자의 Response가 다릅니다.
+
+        미리보기나 남의 프로필 정보를 볼 때 사용할 수 있습니다.
       tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
       parameters:
         - name: id
           in: 'path'
@@ -236,28 +310,8 @@ path:
               schema:
                 type: object
                 oneOf:
-                  - allOf:
-                      - type: object
-                        properties:
-                          userType:
-                            type: string
-                            description: 유저 타입 "D"
-                            example: D
-                        required:
-                          - demanderType
-                      - $ref: '#/components/get/demander'
-                  - allOf:
-                      - type: object
-                        properties:
-                          userType:
-                            type: string
-                            description: 유저 타입 "S"
-                            example: S
-                        required:
-                          - demanderType
-                      - $ref: '#/components/get/supplier'
-        '401':
-          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+                  - $ref: '#/components/getOther/demander'
+                  - $ref: '#/components/getOther/supplier'
 
   /profile/{id}/lookbook:
     get:
