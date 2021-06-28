@@ -1,143 +1,179 @@
 components:
   get:
-    demander:
-      type: object
-      allOf:
-        - $ref: '#/components/scheme/common'
-        - $ref: '#/components/scheme/commonNotEdit'
-        - $ref: '#/components/scheme/demanderEdit'
-        - $ref: '#/components/scheme/demanderNotEdit'
-    supplier:
-      type: object
-      allOf:
-        - $ref: '#/components/scheme/common'
-        - $ref: '#/components/scheme/commonNotEdit'
-        - $ref: '#/components/scheme/supplierEdit'
-        - $ref: '#/components/scheme/supplierNotEdit'
-  patch:
-    demander:
-      type: object
-      allOf:
-        - $ref: '#/components/scheme/common'
-        - $ref: '#/components/scheme/demanderEdit'
-    supplier:
-      type: object
-      allOf:
-        - $ref: '#/components/scheme/common'
-        - $ref: '#/components/scheme/supplierEdit'
-  scheme:
     common:
       type: object
       properties:
         name:
-          type: string
-          description: 이름
+          $ref: '#/components/scheme/common/name'
         introduction:
-          type: string
-          description: 자기소개
-          maxLength: 100
-
-    commonNotEdit:
-      type: object
-      properties:
+          $ref: '#/components/scheme/common/introduction'
         styles:
-          type: array
-          description: 사용자가 선택한 Style Type
-          items:
-            type: string
+          $ref: '#/components/scheme/common/styles'
         profileImg:
-          type: string
-          description: 프로필 이미지 URL
-
-    demanderEdit:
+          $ref: '#/components/scheme/common/profileImg'
+    demander:
       type: object
-      properties:
-        hopeToSupplier:
-          type: string
-          description: 스타일리스트에게 바라는 점
-          maxLength: 500
-        bodyStat:
-          type: object
-          description: 신체 정보
+      allOf:
+        - type: object
           properties:
-            isPublic:
-              type: boolean
-              description: 공개 여부
-              default: false
-            height:
+            userType:
+              type: string
+              description: 유저 타입 "D"
+              example: D
+        - $ref: '#/components/get/common'
+        - type: object
+          properties:
+            hopeToSupplier:
+              $ref: '#/components/scheme/demander/hopeToSupplier'
+            bodyStat:
+              $ref: '#/components/scheme/demander/bodyStat'
+            closet:
+              $ref: '#/components/scheme/demander/closet'
+            reviewList:
+              $ref: '#/components/scheme/demander/reviewList'
+
+    supplier:
+      type: object
+      allOf:
+        - type: object
+          properties:
+            userType:
+              type: string
+              description: 유저 타입 "S"
+              example: S
+        - $ref: '#/components/get/common'
+        - type: object
+          properties:
+            careerList:
+              $ref: '#/components/scheme/supplier/careerList'
+            price:
+              $ref: '#/components/scheme/supplier/price'
+            coord:
+              $ref: '#/components/scheme/supplier/coord'
+
+  patch:
+    common:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/scheme/common/name'
+        introduction:
+          $ref: '#/components/scheme/common/introduction'
+    demander:
+      type: object
+      allOf:
+        - $ref: '#/components/patch/common'
+        - type: object
+          properties:
+            hopeToSupplier:
+              $ref: '#/components/scheme/demander/hopeToSupplier'
+            bodyStat:
+              $ref: '#/components/scheme/demander/bodyStat'
+    supplier:
+      type: object
+      allOf:
+        - $ref: '#/components/patch/common'
+        - type: object
+          properties:
+            careerList:
+              $ref: '#/components/scheme/supplier/careerList'
+            price:
+              $ref: '#/components/scheme/supplier/price'
+  scheme:
+    common:
+      name:
+        type: string
+        description: 이름
+      introduction:
+        type: string
+        description: 자기소개
+        maxLength: 100
+      styles:
+        type: array
+        description: 사용자가 선택한 Style Type
+        items:
+          type: string
+      profileImg:
+        type: string
+        description: 프로필 이미지 URL
+    demander:
+      hopeToSupplier:
+        type: string
+        description: 스타일리스트에게 바라는 점
+        maxLength: 500
+      bodyStat:
+        type: object
+        description: 신체 정보
+        properties:
+          isPublic:
+            type: boolean
+            description: 공개 여부
+            default: false
+          height:
+            type: number
+            description: 키
+          weight:
+            type: number
+            description: 몸무게
+      closet:
+        type: array
+        description: 옷장
+        maxItems: 20
+        items:
+          type: object
+          properties:
+            id:
               type: number
-              description: 키
-            weight:
+              description: 옷장 ID
+            img:
+              type: string
+              description: 옷 이미지 URL
+          required:
+            - id
+            - img
+      reviewList:
+        type: array
+        description: 내 리뷰 목록
+        maxItems: 3
+        items:
+          type: object
+          properties:
+            id:
               type: number
-              description: 몸무게
+              description: 리뷰 ID
+            status:
+              type: number
+              description: |
+                리뷰의 작성 상태
 
-    demanderNotEdit:
-      type: object
-      properties:
-        closet:
-          type: array
-          description: 옷장
-          maxItems: 20
-          items:
-            type: object
-            properties:
-              id:
-                type: number
-                description: 옷장 ID
-              img:
-                type: string
-                description: 옷 이미지 URL
-            required:
-              - id
-              - img
-        reviewList:
-          type: array
-          description: 내 리뷰 목록
-          maxItems: 3
-          items:
-            type: object
-            properties:
-              id:
-                type: number
-                description: 리뷰 ID
-              status:
-                type: number
-                description: |
-                  리뷰의 작성 상태
+                0: 미작성
+                1: 완료
+            img:
+              type: string
+              description: 리뷰 썸네일 Image URL
+    supplier:
+      careerList:
+        type: array
+        description: 경력 목록
+        items:
+          type: object
+          properties:
+            value:
+              type: string
+              description: 경력 내용
+            type:
+              type: number
+              description: 경력 종류 (아이콘이 다르기에 추가)
+      price:
+        type: number
+        description: 코디 가격
 
-                  0: 미작성
-                  1: 완료
-              img:
-                type: string
-                description: 리뷰 썸네일 Image URL
-
-    supplierEdit:
-      type: object
-      properties:
-        careerList:
-          type: array
-          description: 경력 목록
-          items:
-            type: object
-            properties:
-              value:
-                type: string
-                description: 경력 내용
-              type:
-                type: number
-                description: 경력 종류 (아이콘이 다르기에 추가)
-        price:
-          type: number
-          description: 코디 가격
-    supplierNotEdit:
-      type: object
-      properties:
-        coord:
-          type: array
-          description: 대표 코디 목록, Image Url Array
-          maxItems: 4
-          items:
-            type: string
+      coord:
+        type: array
+        description: 대표 코디 목록, Image Url Array
+        maxItems: 4
+        items:
+          type: string
 
 path:
   /profile:
@@ -147,6 +183,51 @@ path:
       tags: [ Profile ]
       security:
         - bearerAuth: [ ]
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                oneOf:
+                  - $ref: '#/components/get/demander'
+                  - $ref: '#/components/get/supplier'
+        '204':
+          description: 반환 할 데이터가 없음. 온보딩 처리를 하지 않은 userType='N' 인 사용자의 경우에 발생합니다.
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+    patch:
+      summary: 프로필 정보 수정
+      description: 프로필 정보를 수정합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/patch/demander'
+                - $ref: '#/components/patch/supplier'
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '403':
+          description: 권한이 없음. 온보딩 처리를 하지 않은 userType='N' 인 사용자의 경우에 발생합니다.
+  /profile/{id}:
+    get:
+      summary: 프로필 정보 가져오기
+      description: 프로필 정보를 가져옵니다. 스타일 리스트와 일반 사용자의 Response가 다릅니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: 'path'
+          description: 열람하고자 하는 Id
       responses:
         200:
           description: OK
@@ -175,30 +256,8 @@ path:
                         required:
                           - demanderType
                       - $ref: '#/components/get/supplier'
-        '204':
-          description: 반환 할 데이터가 없음. 온보딩 처리를 하지 않은 userType='N' 의 사용자의 경우에 발생합니다.
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-    patch:
-      summary: 프로필 정보 수정
-      description: 프로필 정보를 수정합니다.
-      tags: [ Profile ]
-      security:
-        - bearerAuth: [ ]
-      requestBody:
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/patch/demander'
-                - $ref: '#/components/patch/supplier'
-      responses:
-        '200':
-          description: OK
-        '401':
-          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-        '403':
-          description: 권한이 없음. 온보딩 처리를 하지 않은 userType='N' 의 사용자의 경우에 발생합니다.
 
   /profile/{id}/lookbook:
     get:
