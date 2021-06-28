@@ -175,6 +175,8 @@ path:
                         required:
                           - demanderType
                       - $ref: '#/components/get/supplier'
+        '204':
+          description: 반환 할 데이터가 없음. 온보딩 처리를 하지 않은 userType='N' 의 사용자의 경우에 발생합니다.
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     patch:
@@ -195,6 +197,8 @@ path:
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '403':
+          description: 권한이 없음. 온보딩 처리를 하지 않은 userType='N' 의 사용자의 경우에 발생합니다.
 
   /profile/{id}/lookbook:
     get:
@@ -296,8 +300,6 @@ path:
               properties:
                 img:
                   type: binary
-                represent:
-                  type: boolean
               required:
                 - img
       responses:

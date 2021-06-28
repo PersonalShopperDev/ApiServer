@@ -9,13 +9,14 @@ export default class ProfileController {
 
     switch (userType) {
       case 'S':
+      case 'W':
         res.status(200).send(await this.service.getMyProfileSupplier(userId))
         break
       case 'D':
         res.status(200).send(await this.service.getMyProfileDemander(userId))
         break
       default:
-        res.sendStatus(200)
+        res.sendStatus(204)
         return
     }
   }
@@ -29,10 +30,11 @@ export default class ProfileController {
           await this.service.patchDemander(userId, req.body)
           break
         case 'S':
+        case 'W':
           await this.service.patchSupplier(userId, req.body)
           break
         default:
-          res.sendStatus(400)
+          res.sendStatus(403)
           return
       }
 
