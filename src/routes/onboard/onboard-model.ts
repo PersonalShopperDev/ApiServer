@@ -8,9 +8,12 @@ import { OnboardDemander, OnboardSupplier } from './onboard-type'
 export default class OnboardModel {
   getOnboardData = async (
     userId: number,
-  ): Promise<OnboardDemander | OnboardSupplier | null> => {
+  ): Promise<{
+    gender: string | undefined
+    onboard: OnboardDemander | OnboardSupplier | undefined
+  }> => {
     const connection = await db.getConnection()
-    const sql = 'SELECT onboard FROM users WHERE user_id=:userId'
+    const sql = 'SELECT gender, onboard FROM users WHERE user_id=:userId'
 
     const value = { userId }
 
@@ -18,8 +21,13 @@ export default class OnboardModel {
 
     connection.release()
 
-    if (rows[0] == null) return null
-    return rows[0]['onboard']
+    if (rows[0] == null)
+      return {
+        gender: undefined,
+        onboard: undefined,
+      }
+
+    return rows[0]
   }
 
   saveBasicUserData = async (

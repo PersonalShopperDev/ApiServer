@@ -36,11 +36,11 @@ export default class StyleService {
   }
 
   getSupplyGender = async (userId: number): Promise<OnboardSupplier> => {
-    const result = await this.profileModel.getOnboardData(userId)
-    if (result == null) {
+    const { onboard } = await this.profileModel.getOnboardData(userId)
+    if (onboard == null) {
       return {} as OnboardSupplier
     }
-    return result as OnboardSupplier
+    return onboard as OnboardSupplier
   }
 
   saveStyle = async (userId: number, styles: number[]): Promise<void> => {

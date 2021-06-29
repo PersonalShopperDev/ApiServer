@@ -17,12 +17,12 @@ export default class OnboardService {
   getOnboardData = async (
     targetId: number,
   ): Promise<OnboardDemanderGet | OnboardSupplierGet | null> => {
-    const onboard = await this.model.getOnboardData(targetId)
+    const { gender, onboard } = await this.model.getOnboardData(targetId)
     if (onboard == null) return null
 
     const styles = await StyleModel.getUserStyle(targetId)
 
-    const result = { styles: styles, ...onboard }
+    const result = { styles: styles, gender, ...onboard }
 
     return result as any
   }
@@ -49,16 +49,16 @@ export default class OnboardService {
     userId: number,
     data: OnboardDemander | OnboardSupplier,
   ): Promise<void> => {
-    const baseData = await this.model.getOnboardData(userId)
+    const { onboard } = await this.model.getOnboardData(userId)
 
-    if (baseData == null) throw Error
+    if (onboard == null) throw Error
 
     for (const k of OnBoardingDataFields) {
       if (checkProperty(k, data)) {
-        baseData[k] = data[k]
+        onboard[k] = data[k]
       }
     }
 
-    await this.model.saveOnboardData(userId, baseData)
+    await this.model.saveOnboardData(userId, onboard)
   }
 }

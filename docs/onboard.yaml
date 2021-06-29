@@ -2,9 +2,21 @@ components:
   get:
     demander:
       allOf:
+        - type: object
+          properties:
+            gender:
+              type: string
+              description: 사용자의 성별
+              enum: [ M,F ]
         - $ref: '#/components/scheme/demander'
     supplier:
       allOf:
+        - type: object
+          properties:
+            gender:
+              type: string
+              description: 사용자의 성별
+              enum: [ M,F ]
         - $ref: '#/components/scheme/supplier'
 
   put:
