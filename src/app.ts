@@ -11,6 +11,7 @@ import styleRouter from './routes/style/style-router'
 import profileRouter from './routes/profile/profile-router'
 
 import cors from 'cors'
+import { updateSupplierPopular } from './config/cron'
 
 const app = express()
 
@@ -38,3 +39,5 @@ app.use(function (req: express.Request, res: express.Response) {
 })
 
 export default app
+
+updateSupplierPopular.start()
