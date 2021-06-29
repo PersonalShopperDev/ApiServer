@@ -1,5 +1,5 @@
 components:
-  stylistData:
+  supplierData:
     application/json:
       schema:
         type: object

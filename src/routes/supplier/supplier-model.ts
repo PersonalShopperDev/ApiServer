@@ -60,7 +60,7 @@ export default class SupplierModel {
       const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount, price, type FROM
 (
     SELECT a.user_id, price, COUNT(*) as typeCount FROM user_style a
-    INNER JOIN (SELECT user_id, price FROM stylists) c ON a.user_id = c.user_id
+    INNER JOIN (SELECT user_id, price FROM suppliers) c ON a.user_id = c.user_id
     WHERE style_id in (:type)
     GROUP BY a.user_id
 ) a
@@ -71,8 +71,8 @@ LEFT JOIN (
     ) b
     GROUP BY user_id
 ) st ON st.user_id = a.user_id
-LEFT JOIN ( SELECT stylist_id, COUNT(*) AS hireCount FROM coordinations GROUP BY stylist_id) h ON h.stylist_id = a.user_id
-LEFT JOIN ( SELECT stylist_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY stylist_id) r ON r.stylist_id = a.user_id
+LEFT JOIN ( SELECT supplier_id, COUNT(*) AS hireCount FROM coordinations GROUP BY supplier_id) h ON h.supplier_id = a.user_id
+LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY supplier_id) r ON r.supplier_id = a.user_id
 ORDER BY ${sortOption}
 LIMIT :pageOffset, :pageAmount;
 `
@@ -105,7 +105,7 @@ LIMIT :pageOffset, :pageAmount;
       const sql = `SELECT COUNT(*) as count FROM
 (
     SELECT us.user_id, COUNT(*) as typeCount FROM user_style us
-    INNER JOIN (SELECT user_id FROM stylists) s ON us.user_id = s.user_id
+    INNER JOIN (SELECT user_id FROM suppliers) s ON us.user_id = s.user_id
     WHERE style_id IN (:type)
     GROUP BY us.user_id
 ) a; `

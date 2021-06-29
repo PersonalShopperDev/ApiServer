@@ -69,7 +69,7 @@ export default class ProfileModel {
     const connection = await db.getConnection()
     const sql = `SELECT COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, AVG(rating) AS rating FROM coordinations c
       LEFT JOIN coordination_reviews cr ON cr.coordination_id = c.coordination_id
-      WHERE stylist_id = :userId GROUP BY stylist_id;`
+      WHERE supplier_id = :userId GROUP BY supplier_id;`
 
     const value = { userId }
 
@@ -104,7 +104,7 @@ export default class ProfileModel {
 
   getPrice = async (userId: number): Promise<number> => {
     const connection = await db.getConnection()
-    const sql = 'SELECT price FROM stylists WHERE user_id = :userId;'
+    const sql = 'SELECT price FROM suppliers WHERE user_id = :userId;'
 
     const value = { userId }
 
@@ -160,7 +160,7 @@ export default class ProfileModel {
 
   updateSupplierData = async (userId: number, price: number): Promise<void> => {
     const connection = await db.getConnection()
-    const sql = `UPDATE stylists SET price=:price WHERE user_id=:userId`
+    const sql = `UPDATE suppliers SET price=:price WHERE user_id=:userId`
 
     const value = { userId, price }
 

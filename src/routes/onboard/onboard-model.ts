@@ -43,7 +43,7 @@ export default class OnboardModel {
 
     if (userType == 'S') {
       const sql2 =
-        'INSERT IGNORE INTO stylists(user_id, status) VALUES(:userId, 0);'
+        'INSERT IGNORE INTO suppliers(user_id, status) VALUES(:userId, 0);'
       await connection.query(sql2, value)
     }
 

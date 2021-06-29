@@ -22,7 +22,7 @@ path:
                         img:
                           type: string
                           description: 배너 이미지 URL
-                  stylists:
+                  suppliers:
                     type: array
                     items:
                       type: object
@@ -50,7 +50,7 @@ path:
                         id:
                           type: number
                           description: 리뷰 ID
-                        stylistId:
+                        supplierId:
                           type: number
                           description: 해당 리뷰의 스타일리스트 ID
                         beforeImg:

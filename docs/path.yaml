@@ -11,11 +11,11 @@
   $ref: 'home.yaml#/path/~1home'
 
 /supplier:
-  $ref: 'supplier.yaml#/path/~1stylist'
+  $ref: 'supplier.yaml#/path/~1supplier'
 #/supplier/{id}:
-#  $ref: 'supplier.yaml#/path/~1stylist~1{id}'
+#  $ref: 'supplier.yaml#/path/~1supplier~1{id}'
 /supplier/search:
-  $ref: 'supplier.yaml#/path/~1stylist~1search'
+  $ref: 'supplier.yaml#/path/~1supplier~1search'
 
 /onboard:
   $ref: 'onboard.yaml#/path/~1onboard'
