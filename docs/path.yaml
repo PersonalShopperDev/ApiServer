@@ -10,12 +10,12 @@
 /home:
   $ref: 'home.yaml#/path/~1home'
 
-/stylist:
-  $ref: 'stylist.yaml#/path/~1stylist'
-#/stylist/{id}:
-#  $ref: 'stylist.yaml#/path/~1stylist~1{id}'
-/stylist/search:
-  $ref: 'stylist.yaml#/path/~1stylist~1search'
+/supplier:
+  $ref: 'supplier.yaml#/path/~1stylist'
+#/supplier/{id}:
+#  $ref: 'supplier.yaml#/path/~1stylist~1{id}'
+/supplier/search:
+  $ref: 'supplier.yaml#/path/~1stylist~1search'
 
 /onboard:
   $ref: 'onboard.yaml#/path/~1onboard'

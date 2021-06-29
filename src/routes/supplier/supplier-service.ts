@@ -1,8 +1,8 @@
-import { Stylist, StylistList } from './style-type'
-import StyleModel from './style-model'
+import { Stylist, StylistList } from './supplier-type'
+import SupplierModel from './supplier-model'
 
-export default class StylistService {
-  model = new StyleModel()
+export default class SupplierService {
+  model = new SupplierModel()
 
   getList = async (
     userId: number,
@@ -15,7 +15,7 @@ export default class StylistService {
       return null
     }
 
-    return await this.getStylistList(page, sort, typeList)
+    return await this.getSupplierList(page, sort, typeList)
   }
 
   getSearchList = async (
@@ -31,16 +31,16 @@ export default class StylistService {
       return null
     }
 
-    return await this.getStylistList(page, sort, typeList)
+    return await this.getSupplierList(page, sort, typeList)
   }
 
-  private getStylistList = async (
+  private getSupplierList = async (
     page: number,
     sort: string,
     typeList: number[],
   ): Promise<StylistList | null> => {
-    const result = await this.model.getStylists(typeList, page, sort)
-    const totalCount = await this.model.getStylistCount(typeList)
+    const result = await this.model.getSupplierList(typeList, page, sort)
+    const totalCount = await this.model.getSupplierCount(typeList)
 
     if (result == null) return null
 

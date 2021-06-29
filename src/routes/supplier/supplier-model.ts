@@ -1,11 +1,11 @@
 import { id, injectable } from 'inversify'
 import axios from 'axios'
 import db from '../../config/db'
-import { Stylist } from './style-type'
+import { Stylist } from './supplier-type'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
 
-export default class StyleModel {
+export default class SupplierModel {
   getStyleTypeId = async (userId: number): Promise<number[] | null> => {
     const connection = await db.getConnection()
     try {
@@ -38,7 +38,7 @@ export default class StyleModel {
     }
   }
 
-  getStylists = async (
+  getSupplierList = async (
     type: number[],
     page: number,
     sort: string,
@@ -99,7 +99,7 @@ LIMIT :pageOffset, :pageAmount;
     }
   }
 
-  getStylistCount = async (type) => {
+  getSupplierCount = async (type) => {
     const connection = await db.getConnection()
     try {
       const sql = `SELECT COUNT(*) as count FROM

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import StylistService from './stylist-service'
+import SupplierService from './supplier-service'
 import { validationResult } from 'express-validator'
 
 interface Query {
@@ -8,8 +8,8 @@ interface Query {
   type: string | undefined
 }
 
-export default class StylistController {
-  service = new StylistService()
+export default class SupplierController {
+  service = new SupplierService()
 
   getList = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']

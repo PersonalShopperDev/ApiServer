@@ -14,13 +14,13 @@ components:
               properties:
                 id:
                   type: number
-                  description: Stylist Id
+                  description: Supplier Id
                 img:
                   type: string
-                  description: Stylist 프로필 사진 URL
+                  description: Supplier 프로필 사진 URL
                 name:
                   type: string
-                  description: Stylist 이름
+                  description: Supplier 이름
                 price:
                   type: number
                   description: 코디 가격
@@ -48,11 +48,11 @@ components:
       default: popular
 
 path:
-  /stylist:
+  /supplier:
     get:
-      summary: Stylist 전체 목록
-      description: User 맞춤 추천 Stylist 목록을 반환 합니다. Paging 처리가 되어 있습니다.
-      tags: [ Stylist ]
+      summary: Supplier 전체 목록
+      description: 사용자 맞춤 추천 Supplier 목록을 반환 합니다. Paging 처리가 되어 있습니다.
+      tags: [ Supplier ]
       security:
         - bearerAuth: [ ]
       parameters:
@@ -62,12 +62,12 @@ path:
         '200':
           description: OK
           content:
-            $ref: '#/components/stylistData'
-#  /stylist/{id}:
+            $ref: '#/components/supplierData'
+#  /supplier/{id}:
 #    get:
 #      summary: Home 화면 기본 정보
 #      description: Home 화면에 보여줄 기본적인 정보
-#      tags: [ Stylist ]
+#      tags: [ Supplier ]
 #      security:
 #        - bearerAuth: [ ]
 #      responses:
@@ -78,11 +78,11 @@ path:
 #              schema:
 #                type: object
 #                properties:
-  /stylist/search:
+  /supplier/search:
     get:
-      summary: Search Stylist
-      description: Style 종류로 Stylist 검색
-      tags: [ Stylist ]
+      summary: Search Supplier
+      description: Style 종류로 Supplier 검색
+      tags: [ Supplier ]
       security:
         - bearerAuth: [ ]
       parameters:
@@ -100,4 +100,4 @@ path:
         '200':
           description: OK
           content:
-            $ref: '#/components/stylistData'
+            $ref: '#/components/supplierData'
