@@ -109,14 +109,4 @@ export const femaleStyleList = [
     value: '섹시글램',
     img: `${process.env.DOMAIN}v1/resource/style/b.png`,
   },
-  {
-    id: 132,
-    value: '히피',
-    img: `${process.env.DOMAIN}v1/resource/style/b.png`,
-  },
-  {
-    id: 142,
-    value: '보고',
-    img: `${process.env.DOMAIN}v1/resource/style/b.png`,
-  },
 ]
