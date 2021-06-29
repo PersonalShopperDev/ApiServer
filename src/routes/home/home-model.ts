@@ -1,7 +1,7 @@
 import { id, injectable } from 'inversify'
 import axios from 'axios'
 import db from '../../config/db'
-import { Banner, Review, Stylist } from './home-type'
+import { Banner, Review, Supplier } from './home-type'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
 
@@ -22,9 +22,9 @@ export default class HomeModel {
     })
   }
 
-  getStylistsWithStyle = async (
+  getSupplierWithStyle = async (
     userId: number,
-  ): Promise<Array<Stylist> | null> => {
+  ): Promise<Array<Supplier> | null> => {
     const connection = await db.getConnection()
 
     const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount FROM 
@@ -56,7 +56,7 @@ LIMIT 6;`
     })
   }
 
-  getStylists = async (): Promise<Array<Stylist> | null> => {
+  getSupplier = async (): Promise<Array<Supplier> | null> => {
     const connection = await db.getConnection()
 
     const sql = `SELECT a.user_id, name, img, price, hireCount, reviewCount FROM stylists a
@@ -90,7 +90,7 @@ LIMIT 6;`
       return rows.map((row) => {
         return {
           id: row.id,
-          stylistId: row.stylistId,
+          supplierId: row.stylistId,
           title: row.title,
           beforeImg: '',
           afterImg: '',

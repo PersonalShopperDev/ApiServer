@@ -1,7 +1,7 @@
 import { id, injectable } from 'inversify'
 import axios from 'axios'
 import db from '../../config/db'
-import { Stylist } from './supplier-type'
+import { Supplier } from './supplier-type'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
 
@@ -42,7 +42,7 @@ export default class SupplierModel {
     type: number[],
     page: number,
     sort: string,
-  ): Promise<Array<Stylist> | null> => {
+  ): Promise<Array<Supplier> | null> => {
     const pageAmount = 20
     let sortOption
     switch (sort) {

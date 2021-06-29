@@ -1,4 +1,4 @@
-import { Banner, HomeData, Review, Stylist } from './home-type'
+import { Banner, HomeData, Review, Supplier } from './home-type'
 import HomeModel from './home-model'
 
 export default class HomeService {
@@ -6,17 +6,17 @@ export default class HomeService {
 
   getHomeData = async (userId): Promise<HomeData | null> => {
     const banners = await this.model.getBanners()
-    const stylists =
+    const suppliers =
       userId == null
-        ? await this.model.getStylists()
-        : await this.model.getStylistsWithStyle(userId)
+        ? await this.model.getSupplier()
+        : await this.model.getSupplierWithStyle(userId)
     const reviews = await this.model.getReviews()
 
-    if (!banners || !stylists || !reviews) return null
+    if (!banners || !suppliers || !reviews) return null
 
     return {
       banners,
-      stylists,
+      suppliers,
       reviews,
     }
   }

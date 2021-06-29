@@ -22,9 +22,11 @@ export default class ProfileService {
 
     const price = await this.model.getPrice(userId)
     const coord = await this.model.getCoordList(userId)
-    const { rating, reviewCount, hireCount } = await this.model.getStylistPoint(
-      userId,
-    )
+    const {
+      rating,
+      reviewCount,
+      hireCount,
+    } = await this.model.getSupplierPoint(userId)
 
     return {
       userType: 'S',
@@ -196,7 +198,7 @@ export default class ProfileService {
     )
 
     if (price != null) {
-      await this.model.updateStylistData(userId, price)
+      await this.model.updateSupplierData(userId, price)
     }
   }
 

@@ -1,4 +1,4 @@
-export interface Stylist {
+export interface Supplier {
   id: number
   img: string
   name: string
@@ -7,7 +7,7 @@ export interface Stylist {
   type: Array<string>
 }
 
-export interface StylistList {
-  list: Array<Stylist>
+export interface SupplierList {
+  list: Array<Supplier>
   totalCount: number
 }

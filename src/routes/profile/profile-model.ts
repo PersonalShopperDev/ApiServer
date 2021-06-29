@@ -59,7 +59,7 @@ export default class ProfileModel {
     }
   }
 
-  getStylistPoint = async (
+  getSupplierPoint = async (
     userId: number,
   ): Promise<{
     hireCount: number
@@ -158,7 +158,7 @@ export default class ProfileModel {
     return rows.map(this.convertImg)
   }
 
-  updateStylistData = async (userId: number, price: number): Promise<void> => {
+  updateSupplierData = async (userId: number, price: number): Promise<void> => {
     const connection = await db.getConnection()
     const sql = `UPDATE stylists SET price=:price WHERE user_id=:userId`
 

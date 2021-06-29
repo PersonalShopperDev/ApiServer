@@ -1,6 +1,6 @@
 export interface HomeData {
   banners: Array<Banner>
-  stylists: Array<Stylist>
+  suppliers: Array<Supplier>
   reviews: Array<Review>
 }
 
@@ -8,7 +8,7 @@ export interface Banner {
   img: string
 }
 
-export interface Stylist {
+export interface Supplier {
   id: number
   img: string | null
   name: string
@@ -18,7 +18,7 @@ export interface Stylist {
 
 export interface Review {
   id: number
-  stylistId: number
+  supplierId: number
   beforeImg: string
   afterImg: string
   title: string

@@ -1,4 +1,4 @@
-import { Stylist, StylistList } from './supplier-type'
+import { Supplier, SupplierList } from './supplier-type'
 import SupplierModel from './supplier-model'
 
 export default class SupplierService {
@@ -8,7 +8,7 @@ export default class SupplierService {
     userId: number,
     page: number,
     sort: string,
-  ): Promise<StylistList | null> => {
+  ): Promise<SupplierList | null> => {
     const typeList = await this.model.getStyleTypeId(userId)
 
     if (typeList == null) {
@@ -22,7 +22,7 @@ export default class SupplierService {
     type: string,
     page: number,
     sort: string,
-  ): Promise<StylistList | null> => {
+  ): Promise<SupplierList | null> => {
     const typeList = await this.model.convertStyleTypeIdFromString(
       type.replace('|', ','),
     )
@@ -38,7 +38,7 @@ export default class SupplierService {
     page: number,
     sort: string,
     typeList: number[],
-  ): Promise<StylistList | null> => {
+  ): Promise<SupplierList | null> => {
     const result = await this.model.getSupplierList(typeList, page, sort)
     const totalCount = await this.model.getSupplierCount(typeList)
 
