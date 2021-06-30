@@ -7,11 +7,6 @@ export interface Supplier {
   styleTypeList: Array<type>
 }
 
-export interface SupplierList {
-  list: Array<Supplier>
-  totalCount: number
-}
-
 interface type {
   id: number
   value: string

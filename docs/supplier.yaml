@@ -4,9 +4,6 @@ components:
       schema:
         type: object
         properties:
-          totalCount:
-            type: number
-            description: 전체 데이터 개수
           list:
             type: array
             items:
@@ -60,21 +57,6 @@ path:
           description: OK
           content:
             $ref: '#/components/supplierData'
-#  /supplier/{id}:
-#    get:
-#      summary: Home 화면 기본 정보
-#      description: Home 화면에 보여줄 기본적인 정보
-#      tags: [ Supplier ]
-#      security:
-#        - bearerAuth: [ ]
-#      responses:
-#        '200':
-#          description: OK
-#          content:
-#            application/json:
-#              schema:
-#                type: object
-#                properties:
   /supplier/search:
     get:
       summary: Search Supplier
@@ -87,12 +69,12 @@ path:
         - $ref: '#/components/sort'
         - name: type
           in: 'query'
-          description: 검색하고자 하는 style 종류. 스타일을 '|' 로 구분
-          example: 스타일1|스타일2|스타일3
+          description: 검색하고자 하는 style Type ID. 스타일을 '|' 로 구분
+          example: 12|52|122
           schema:
             type: array
             items:
-              type: string
+              type: number
       responses:
         '200':
           description: OK

@@ -7,6 +7,10 @@ const router = express.Router()
 const controller = new SupplierController()
 
 router.get('/', AuthRequire, controller.getList)
-router.get('/search', query('type').isString, controller.getSearchList)
+router.get(
+  '/search',
+  query('type').matches(/^\d[\|\d]*$/),
+  controller.getSearchList,
+)
 
 export default router

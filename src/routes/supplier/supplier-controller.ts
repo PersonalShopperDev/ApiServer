@@ -51,7 +51,7 @@ export default class SupplierController {
       if (result == null) {
         res.sendStatus(400)
       } else {
-        res.status(200).json(result)
+        res.status(200).json({ list: result })
       }
     } catch (e) {
       res.sendStatus(500)

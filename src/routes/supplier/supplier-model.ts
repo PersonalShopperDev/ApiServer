@@ -19,28 +19,12 @@ export default class SupplierModel {
     }
   }
 
-  convertStyleTypeIdFromString = async (
-    type: string,
-  ): Promise<number[] | null> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = `SELECT style_id FROM style_type WHERE VALUE IN (type);`
-      const value = { type }
-      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-
-      return rows.map((row) => row.id)
-    } catch (e) {
-      return null
-    } finally {
-      connection.release()
-    }
-  }
-
   getSupplierList = async (
     type: number[],
     page: number,
     sort: string,
-  ): Promise<Array<Supplier> | null> => {
+    filter = false,
+  ): Promise<Array<Supplier>> => {
     const pageAmount = 20
     let sortOption
     switch (sort) {
@@ -69,6 +53,7 @@ LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
 ) t ON s.user_id = t.user_id
+${filter ? `WHERE typeCount >= 1` : ''}
 ORDER BY ${sortOption}
 LIMIT :pageOffset, :pageAmount;
 `
