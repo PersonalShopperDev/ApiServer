@@ -58,6 +58,8 @@ path:
                   description: Id 목록
                   items:
                     type: number
+              required:
+                -list
       responses:
         200:
           description: OK
@@ -141,6 +143,8 @@ path:
                   description: Id 목록
                   items:
                     type: number
+              required:
+                -list
       responses:
         200:
           description: OK

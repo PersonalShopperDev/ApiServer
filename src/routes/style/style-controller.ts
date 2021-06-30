@@ -65,6 +65,11 @@ export default class StyleController {
       gender = req['auth'].gender
     }
 
+    if (gender == null) {
+      res.sendStatus(400)
+      return
+    }
+
     try {
       const result = this.service.getStyleImgList(gender)
       res.status(200).json(result)
