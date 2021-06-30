@@ -19,8 +19,8 @@ tags:
     description: 온보딩 관련
   - name: Profile
     description: 프로필 관련
-  - name: Style
-    description: Style 종류 관련
+  - name: StyleType
+    description: Style Type 관련
   - name: Supplier
     description: Supplier 관련 정보
 
@@ -55,6 +55,21 @@ components:
       schema:
         type: number
         default: 0
+  scheme:
+    StyleTypeList:
+      type: array
+      description: Style Type 목록
+      items:
+        $ref: '#/components/scheme/StyleType'
+    StyleType:
+      type: object
+      properties:
+        id:
+          type: number
+          description: 스타일 ID
+        value:
+          type: string
+          description: 스타일 명
 
   Errors:
     UnauthorizedError:

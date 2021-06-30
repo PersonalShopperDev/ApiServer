@@ -24,6 +24,8 @@
 
 /style:
   $ref: 'style.yaml#/path/~1style'
+/style/supply:
+  $ref: 'style.yaml#/path/~1style~1supply'
 /style/img:
   $ref: 'style.yaml#/path/~1style~1img'
 

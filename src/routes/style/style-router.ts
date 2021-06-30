@@ -7,6 +7,7 @@ const router = express.Router()
 const controller = new StyleController()
 
 router.get('/', AuthCheck, controller.getStyle)
+router.get('/supply', AuthRequire, controller.getStyleSupply)
 router.get('/img', AuthCheck, controller.getStyleImg)
 
 router.put('/', AuthRequire, controller.putStyle)

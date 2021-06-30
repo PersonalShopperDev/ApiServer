@@ -1,3 +1,13 @@
+components:
+  scheme:
+    list:
+      type: object
+      properties:
+        male:
+          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+        female:
+          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+
 path:
   /style:
     get:
@@ -5,12 +15,12 @@ path:
       description: |
         Style Type 전체 목록을 불러옵니다.
 
-        Auth가 주어진다면, 사용자에게 필요한 (온보딩에서 입력한 서비스를 제공하는 성별) Style이 기본적으로 입력됩니다.
+        Auth가 주어진다면, 사용자 성별에 해당하는 목록을 응답합니다.
 
         Query를 주어진다면 해당 Query가 되어 해당되는 정보를 응답합니다.
 
         Auth와 Query가 동시에 주어진다면 Query를 우선 시 하게 됩니다.
-      tags: [ Style ]
+      tags: [ StyleType ]
       parameters:
         - name: male
           in: 'query'
@@ -27,37 +37,14 @@ path:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  male:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                          description: 스타일 ID
-                        value:
-                          type: string
-                          description: 스타일 명
-                  female:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                          description: 스타일 ID
-                        value:
-                          type: string
-                          description: 스타일 명
+                $ref: '#/components/scheme/list'
     put:
       summary: 선호 Style 변경하기
       description: |
         User의 선호 또는 스타일 가능한 Style Type 을 변경합니다.
 
         기존의 Style Type은 전부 지워지고 새롭게 작성됩니다.
-      tags: [ Style ]
+      tags: [ StyleType ]
       security:
         - bearerAuth: [ ]
       requestBody:
@@ -79,6 +66,24 @@ path:
         422:
           $ref: './swagger.yaml#/components/Errors/ParameterError'
 
+  /style/supply:
+    get:
+      summary: Style Text 불러오기 Supplier 전용
+      description: |
+        Style Type 전체 목록을 불러옵니다. Supplier을 위한 API입니다.
+
+        온보딩에서 입력하였던 서비스를 제공하는 성별에 맞춘 스타일 목록을 반환합니다.
+      tags: [ StyleType ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/scheme/list'
+
 
   /style/img:
     get:
@@ -87,8 +92,9 @@ path:
         Style Type을 선택하는 Image를 불러옵니다.
 
         로그인 시, 사용자가 제공하는 성별에 맞춰 데이터를 보냅니다.
-        관련 정보가 없을 때는 파라미터를 기준으로 합니다.
-      tags: [ Style ]
+
+        Auth와 Query가 동시에 주어진다면 Query를 우선 시 하게 됩니다.
+      tags: [ StyleType ]
       parameters:
         - name: gender
           in: 'query'
@@ -121,7 +127,7 @@ path:
         기존의 Style Type은 전부 지워지고 새롭게 작성됩니다.
 
         이미지에 알맞는 스타일이 자동으로 적용됩니다.
-      tags: [ Style ]
+      tags: [ StyleType ]
       security:
         - bearerAuth: [ ]
       requestBody:
