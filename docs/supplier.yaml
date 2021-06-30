@@ -33,11 +33,8 @@ components:
                 reviewCount:
                   type: number
                   description: 리뷰 개수
-                styleType:
-                  type: array
-                  description: 선호 스타일 목록
-                  items:
-                    type: string
+                styleTypeList:
+                  $ref: './swagger.yaml#/components/scheme/StyleTypeList'
   sort:
     name: sort
     in: 'query'

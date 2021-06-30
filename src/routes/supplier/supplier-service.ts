@@ -1,5 +1,6 @@
-import { Supplier, SupplierList } from './supplier-type'
+import { SupplierList } from './supplier-type'
 import SupplierModel from './supplier-model'
+import StyleModel from '../style/style-model'
 
 export default class SupplierService {
   model = new SupplierModel()
@@ -40,9 +41,9 @@ export default class SupplierService {
     typeList: number[],
   ): Promise<SupplierList | null> => {
     const result = await this.model.getSupplierList(typeList, page, sort)
-    const totalCount = await this.model.getSupplierCount(typeList)
-
     if (result == null) return null
+
+    const totalCount = await this.model.getSupplierCount(typeList)
 
     return {
       list: result,

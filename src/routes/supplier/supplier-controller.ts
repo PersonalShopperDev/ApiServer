@@ -15,16 +15,21 @@ export default class SupplierController {
     const { userId } = req['auth']
     const { page, sort }: Query = req.query as never
 
-    const result = await this.service.getList(
-      userId,
-      page == null ? 0 : page,
-      sort == null ? 'popular' : sort,
-    )
+    try {
+      const result = await this.service.getList(
+        userId,
+        page == null ? 0 : page,
+        sort == null ? 'popular' : sort,
+      )
 
-    if (result == null) {
-      res.sendStatus(400)
-    } else {
-      res.status(200).json(result)
+      if (result == null) {
+        res.sendStatus(400)
+      } else {
+        res.status(200).json(result)
+      }
+    } catch (e) {
+      console.log(e)
+      res.sendStatus(500)
     }
   }
 
@@ -36,16 +41,20 @@ export default class SupplierController {
       return
     }
 
-    const result = await this.service.getSearchList(
-      type,
-      page == null ? 0 : page,
-      sort == null ? 'popular' : sort,
-    )
+    try {
+      const result = await this.service.getSearchList(
+        type,
+        page == null ? 0 : page,
+        sort == null ? 'popular' : sort,
+      )
 
-    if (result == null) {
-      res.sendStatus(400)
-    } else {
-      res.status(200).json(result)
+      if (result == null) {
+        res.sendStatus(400)
+      } else {
+        res.status(200).json(result)
+      }
+    } catch (e) {
+      res.sendStatus(500)
     }
   }
 }

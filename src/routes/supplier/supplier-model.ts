@@ -1,9 +1,7 @@
-import { id, injectable } from 'inversify'
-import axios from 'axios'
 import db from '../../config/db'
 import { Supplier } from './supplier-type'
-import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
+import StyleModel from '../style/style-model'
 
 export default class SupplierModel {
   getStyleTypeId = async (userId: number): Promise<number[] | null> => {
@@ -47,56 +45,56 @@ export default class SupplierModel {
     let sortOption
     switch (sort) {
       case 'priceLow':
-        sortOption = 'price ASC, hireCount DESC'
+        sortOption = 'price ASC, typeCount DESC, popular DESC'
         break
       case 'popular':
       default:
-        sortOption = 'typeCount DESC, hireCount DESC'
+        sortOption = 'typeCount DESC, popular DESC'
         break
     }
 
     const connection = await db.getConnection()
-    try {
-      const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount, price, type FROM
-(
-    SELECT a.user_id, price, COUNT(*) as typeCount FROM user_style a
-    INNER JOIN (SELECT user_id, price FROM suppliers) c ON a.user_id = c.user_id
-    WHERE style_id in (:type)
-    GROUP BY a.user_id
-) a
-LEFT JOIN users u ON a.user_id = u.user_id
-LEFT JOIN ( 
-    SELECT user_id, json_arrayagg(VALUE) as type FROM (
-        SELECT user_id, st.value FROM user_style us JOIN style_type st ON us.style_id = st.style_id ORDER BY us.style_id ASC
-    ) b
+    const sql = `SELECT s.user_id, name, img, hireCount, reviewCount, typeCount, price, popular, type, rating FROM suppliers s
+LEFT JOIN users u ON s.user_id = u.user_id
+LEFT JOIN (
+    SELECT supplier_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, AVG(rating) AS rating FROM coordinations c
+    LEFT JOIN coordination_reviews cr ON cr.coordination_id = c.coordination_id
+) cnt ON s.user_id=cnt.supplier_id
+LEFT JOIN (
+    SELECT user_id, COUNT(*) as typeCount FROM user_style
+    WHERE style_id IN (:type)
     GROUP BY user_id
-) st ON st.user_id = a.user_id
-LEFT JOIN ( SELECT supplier_id, COUNT(*) AS hireCount FROM coordinations GROUP BY supplier_id) h ON h.supplier_id = a.user_id
-LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY supplier_id) r ON r.supplier_id = a.user_id
+) tf ON s.user_id = tf.user_id
+LEFT JOIN (
+    SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
+    GROUP BY user_id
+) t ON s.user_id = t.user_id
 ORDER BY ${sortOption}
 LIMIT :pageOffset, :pageAmount;
 `
 
-      const value = { type, pageAmount, pageOffset: page * pageAmount }
-      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+    const value = { type, pageAmount, pageOffset: page * pageAmount }
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-      return rows.map((row) => {
-        return {
-          id: row.user_id,
-          img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
-          name: row.name,
-          price: row.price,
-          rating: 3.0,
-          type: row.type,
-          hireCount: row.hireCount ? row.hireCount : 0,
-          reviewCount: row.reviewCount ? row.reviewCount : 0,
-        }
-      })
-    } catch (e) {
-      return null
-    } finally {
-      connection.release()
-    }
+    connection.release()
+
+    return rows.map((row) => {
+      return {
+        id: row.user_id,
+        img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
+        name: row.name,
+        price: row.price,
+        styleType:
+          row.type == null
+            ? []
+            : row.type.map((id) => {
+                return { id, value: StyleModel.convertStyleIdToValue(id) }
+              }),
+        hireCount: row.hireCount,
+        reviewCount: row.reviewCount,
+        rating: row.rating,
+      }
+    })
   }
 
   getSupplierCount = async (type) => {
