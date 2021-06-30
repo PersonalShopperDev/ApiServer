@@ -21,10 +21,11 @@ export default class StyleController {
         supplyFemale = female
       }
 
-      if (supplyMale == null || supplyFemale == null) {
+      if (supplyMale == null && supplyFemale == null) {
         res.sendStatus(400)
         return
       }
+
       const result = this.service.getStyleTypeList(supplyMale, supplyFemale)
       res.status(200).json(result)
     } catch (e) {

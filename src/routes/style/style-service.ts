@@ -7,7 +7,7 @@ export default class StyleService {
   profileModel = new ProfileModel()
   model = new StyleModel()
 
-  getStyleTypeList = (M: boolean, F: boolean) => {
+  getStyleTypeList = (M: boolean | undefined, F: boolean | undefined) => {
     const result = {}
 
     if (M) {
