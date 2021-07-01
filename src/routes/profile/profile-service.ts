@@ -127,12 +127,13 @@ export default class ProfileService {
     data: ProfileUser & ProfileDemanderPatch,
   ) => {
     const baseData = await this.model.getBasicProfile(userId)
+    const oldData = { ...baseData, ...baseData.profile }
     const {
       name,
       introduction,
       hopeToSupplier,
       bodyStat,
-    } = this.dataOverlap(baseData, data, ['hopeToSupplier', 'bodyStat'])
+    } = this.dataOverlap(oldData, data, ['hopeToSupplier', 'bodyStat'])
 
     const profile = { hopeToSupplier, bodyStat }
 
@@ -150,7 +151,7 @@ export default class ProfileService {
   ) => {
     const baseData = await this.model.getBasicProfile(userId)
     const { name, introduction, careerList, price } = this.dataOverlap(
-      baseData,
+      { ...baseData, ...baseData.profile },
       data,
       ['careerList', 'price'],
     )
