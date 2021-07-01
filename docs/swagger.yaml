@@ -19,10 +19,12 @@ tags:
     description: 온보딩 관련
   - name: Profile
     description: 프로필 관련
-  - name: StyleType
+  - name: Style Type
     description: Style Type 관련
   - name: Supplier
     description: Supplier 관련 정보
+  - name: Review
+    description: Review 관련 정보
 
 
 components:

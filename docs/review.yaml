@@ -1,0 +1,81 @@
+components:
+  scheme:
+    list:
+      type: object
+      properties:
+        male:
+          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+        female:
+          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+
+path:
+  /review/{id}:
+#    get:
+#      summary: 리뷰 내용 받아오기
+#      description: |
+#        작성된 리뷰 내용을 받아옵니다.
+#      tags: [ Review ]
+#      parameters:
+#        - name: id
+#          in: 'path'
+#          description: 보고자 하는 리뷰(코디) ID. 리뷰 ID = 코디 ID는 동일하다.
+#          schema:
+#            type: number
+#      responses:
+#        '200':
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/scheme/list'
+    put:
+      summary: 리뷰 작성하기
+      description: |
+        리뷰를 작성합니다.
+      tags: [ Review ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: 'path'
+          description: 리뷰하고자 하는 코디 ID
+          schema:
+            type: number
+
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                  description: 별점
+                content:
+                  type: sring
+                  description: 리뷰 내용
+                  maxLength: 700
+                publicBody:
+                  type: boolean
+                  description: 체형 공개 여부
+                beforeImg:
+                  type: array
+                  description: before Img
+                  items:
+                    type: binary
+                afterImg:
+                  type: array
+                  description: before Img
+                  items:
+                    type: binary
+              required:
+                - rating
+                - content
+                - publicBody
+      responses:
+        200:
+          description: OK
+        401:
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        422:
+          $ref: './swagger.yaml#/components/Errors/ParameterError'
