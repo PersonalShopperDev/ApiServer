@@ -87,7 +87,11 @@ export default class ProfileController {
     const { userId } = req['auth']
     const { represent } = req.body
 
-    await this.service.postLookbook(userId, key, represent)
+    await this.service.postLookbook(
+      userId,
+      key.substring(key.lastIndexOf('/') + 1),
+      represent,
+    )
     res.sendStatus(200)
   }
 
@@ -95,7 +99,10 @@ export default class ProfileController {
     const { key } = req['file']
     const { userId } = req['auth']
 
-    await this.service.postCloset(userId, key)
+    await this.service.postCloset(
+      userId,
+      key.substring(key.lastIndexOf('/') + 1),
+    )
     res.sendStatus(200)
   }
 }

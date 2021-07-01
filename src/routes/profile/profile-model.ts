@@ -99,7 +99,9 @@ export default class ProfileModel {
 
     connection.release()
 
-    return rows.map(this.convertImg)
+    return rows.map((row) => {
+      return this.convertImg(row, 'closet')
+    })
   }
 
   getPrice = async (userId: number): Promise<number> => {
@@ -139,7 +141,9 @@ export default class ProfileModel {
 
     connection.release()
 
-    return rows.map(this.convertImg)
+    return rows.map((row) => {
+      return this.convertImg(row, 'lookbook')
+    })
   }
 
   getLookbookList = async (userId: number, page: number): Promise<Img[]> => {
@@ -155,7 +159,9 @@ export default class ProfileModel {
 
     connection.release()
 
-    return rows.map(this.convertImg)
+    return rows.map((row) => {
+      return this.convertImg(row, 'lookbook')
+    })
   }
 
   updateSupplierData = async (userId: number, price: number): Promise<void> => {
@@ -209,12 +215,12 @@ export default class ProfileModel {
     return result['insertId']
   }
 
-  private convertImg = (row) => {
+  private convertImg = (row, path) => {
     const { id, img } = row
 
     return {
       id,
-      img: `${process.env.DOMAIN}v1/resource/${img}`,
+      img: `${process.env.DOMAIN}v1/resource/${path}/${img}`,
     }
   }
 }
