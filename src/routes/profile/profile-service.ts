@@ -55,6 +55,8 @@ export default class ProfileService {
       profile = { bodyStat: additionalBodyStat }
     } else if (profile['bodyStat'] == null) {
       profile['bodyStat'] = additionalBodyStat
+    } else if (profile.bodyStat.public != true) {
+      profile['bodyStat'] = additionalBodyStat
     } else {
       profile['bodyStat'].push(additionalBodyStat)
     }
