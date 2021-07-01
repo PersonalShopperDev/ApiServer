@@ -32,7 +32,7 @@ export default class ProfileService {
       userType: 'S',
       name,
       introduction,
-      img,
+      img: this.getImgUrl(img),
       ...profile,
       styles,
       price,
@@ -65,7 +65,7 @@ export default class ProfileService {
       userType: 'D',
       name,
       introduction,
-      img,
+      img: this.getImgUrl(img),
       ...profile,
       styles,
       closet: closetList,
@@ -90,7 +90,7 @@ export default class ProfileService {
       userType: 'S',
       name,
       introduction,
-      img,
+      img: this.getImgUrl(img),
       ...profile,
       styles,
       price,
@@ -115,7 +115,7 @@ export default class ProfileService {
       userType: 'D',
       name,
       introduction,
-      img,
+      img: this.getImgUrl(img),
       ...profile,
       styles,
       closet: closetList,
@@ -185,6 +185,13 @@ export default class ProfileService {
   }
   postCloset = async (userId: number, path: string): Promise<number> => {
     return await this.model.postCloset(userId, path)
+  }
+
+  private getImgUrl = (img: string | undefined): string => {
+    return (
+      `${process.env.DOMAIN}v1/resource/profile/` +
+      (img != null ? img : 'default')
+    )
   }
 
   private dataOverlap = (

@@ -54,7 +54,7 @@ export default class ProfileModel {
       name,
       introduction,
       profile,
-      img: `${process.env.DOMAIN}v1/resource/${img}`,
+      img,
       onboard,
     }
   }
