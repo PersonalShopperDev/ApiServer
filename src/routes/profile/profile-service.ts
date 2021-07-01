@@ -127,36 +127,20 @@ export default class ProfileService {
     data: ProfileUser & ProfileDemanderPatch,
   ) => {
     const baseData = await this.model.getBasicProfile(userId)
-    let { name, introduction } = baseData
-    const { profile } = baseData
-    const { hopeToSupplier, bodyStat } = data
-
-    // DB에 있는 정보로 일단 생성
-    const patchData = {
-      ...profile,
+    const {
+      name,
+      introduction,
       hopeToSupplier,
       bodyStat,
-    } as ProfileDemanderPatch
+    } = this.dataOverlap(baseData, data, ['hopeToSupplier', 'bodyStat'])
 
-    if (data.name != null) {
-      name = data.name
-    }
-
-    if (data.introduction != null) {
-      introduction = data.introduction
-    }
-    if (hopeToSupplier != null) {
-      patchData.hopeToSupplier = hopeToSupplier
-    }
-    if (bodyStat == null) {
-      patchData.bodyStat = bodyStat
-    }
+    const profile = { hopeToSupplier, bodyStat }
 
     await this.model.saveProfile(
       userId,
       name,
       introduction,
-      JSON.stringify(patchData),
+      JSON.stringify({ profile }),
     )
   }
 
@@ -165,38 +149,17 @@ export default class ProfileService {
     data: ProfileUser & ProfileSupplierPatch,
   ) => {
     const baseData = await this.model.getBasicProfile(userId)
-    let { name, introduction } = baseData
-    const { profile } = baseData
-    const { careerList, price } = data
-
-    // DB에 있는 정보로 일단 생성
-    const patchData = {
-      ...profile,
-      careerList,
-      price,
-    } as ProfileSupplierPatch
-
-    if (data.name != null) {
-      name = data.name
-    }
-
-    if (data.introduction != null) {
-      introduction = data.introduction
-    }
-
-    if (careerList != null) {
-      patchData.careerList = careerList
-    }
-
-    if (price != null) {
-      patchData.price = price
-    }
+    const { name, introduction, careerList, price } = this.dataOverlap(
+      baseData,
+      data,
+      ['careerList', 'price'],
+    )
 
     await this.model.saveProfile(
       userId,
       name,
       introduction,
-      JSON.stringify(patchData),
+      JSON.stringify({ careerList }),
     )
 
     if (price != null) {
@@ -222,5 +185,23 @@ export default class ProfileService {
   }
   postCloset = async (userId: number, path: string): Promise<number> => {
     return await this.model.postCloset(userId, path)
+  }
+
+  private dataOverlap = (
+    baseData: any,
+    newData: any,
+    keyList: string[],
+  ): any => {
+    const result = {}
+
+    keyList.push('name')
+    keyList.push('introduction')
+
+    for (const k of keyList) {
+      if (newData[k] != null) result[k] = newData[k]
+      else result[k] = baseData[k]
+    }
+
+    return result
   }
 }

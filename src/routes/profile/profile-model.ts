@@ -171,7 +171,7 @@ export default class ProfileModel {
 
   postProfileImg = async (userId: number, path: string): Promise<number> => {
     const connection = await db.getConnection()
-    const sql = `UPDATE users INTO img=:path WHERE user_id=:userId`
+    const sql = `UPDATE users SET img=:path WHERE user_id=:userId`
 
     const value = { userId, path }
 
@@ -199,7 +199,7 @@ export default class ProfileModel {
 
   postCloset = async (userId: number, path: string): Promise<number> => {
     const connection = await db.getConnection()
-    const sql = `INSERT INTO closet(img_path, user_id) VALUES(:path, :userId)`
+    const sql = `INSERT INTO closets(img_path, user_id) VALUES(:path, :userId)`
 
     const value = { userId, path }
 
