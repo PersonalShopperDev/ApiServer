@@ -29,13 +29,13 @@ path:
                       properties:
                         id:
                           type: number
-                          description: 스타일리스트 ID
+                          description: Supplier ID
                         img:
                           type: string
-                          description: 스타일리스트 프로필 이미지 URL
+                          description: Supplier 프로필 이미지 URL
                         name:
                           type: string
-                          description: 스타일리스트 프로필 이미지 URL
+                          description: 유저이름
                         hireCount:
                           type: number
                           description: 고용된 횟수
@@ -62,4 +62,23 @@ path:
                         title:
                           type: string
                           description: 제목
-
+                  demanders:
+                    type: array
+                    description: API 호출자가 Supplier 일 경우 이 값이 주어진다.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                          description: demander ID
+                        img:
+                          type: string
+                          description: 프로필 이미지 URL
+                        name:
+                          type: string
+                          description: User 이름
+                        styles:
+                          type: array
+                          description: Style Type 목록
+                          items:
+                            type: string
