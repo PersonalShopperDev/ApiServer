@@ -351,6 +351,69 @@ path:
                         img:
                           type: string
                           description: Img URL
+
+  /profile/{id}/review:
+    get:
+      summary: 코디 리뷰 리스트
+      description: |
+        코디 공급자가 받은 리뷰 목록을 보여줍니다.
+
+        paging 처리가 되어 있습니다.
+      tags: [ Profile ]
+      parameters:
+        - name: id
+          in: 'path'
+          description: 열람하고자 하는 supplier Id
+          schema:
+            type: number
+        - $ref: './swagger.yaml#/components/Request/page'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                          description: Review ID
+                        img:
+                          type: array
+                          description: Img URL List, 첫 인덱스는 무조건 코디 사진.
+                          items:
+                            type: string
+                        rating:
+                          $ref: 'review.yaml#/components/scheme/rating'
+                        content:
+                          $ref: 'review.yaml#/components/scheme/content'
+                        date:
+                          type: string
+                          example: 2021.01.01
+                          description: 리뷰 날짜
+                        height:
+                          type: number
+                          description: 리뷰 작성자의 키 (체형 비공개 시 생략)
+                        wieght:
+                          type: number
+                          description: 리뷰 작성자의 몸무게 (체형 비공개 시 생략)
+                        body:
+                          type: string
+                        styleTypeList:
+                          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+                      required:
+                        - id
+                        - img
+                        - rating
+                        - content
+                        - date
+                        - body
+                        - styleTypeList
   /profile/img:
     post:
       summary: 프로필 이미지 변경하기

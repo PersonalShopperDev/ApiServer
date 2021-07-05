@@ -35,6 +35,8 @@
   $ref: 'profile.yaml#/path/~1profile~1{id}'
 /profile/{id}/lookbook:
   $ref: 'profile.yaml#/path/~1profile~1{id}~1lookbook'
+/profile/{id}/review:
+  $ref: 'profile.yaml#/path/~1profile~1{id}~1review'
 /profile/img:
   $ref: 'profile.yaml#/path/~1profile~1img'
 /profile/lookbook:
