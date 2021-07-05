@@ -6,8 +6,10 @@ import {
   ProfileSupplierGet,
   ProfileSupplierPatch,
   ProfileUser,
+  ReviewData,
 } from './profile-type'
 import ResourcePath from '../resource/resource-path'
+import { body } from 'express-validator'
 
 export default class ProfileService {
   model = new ProfileModel()
@@ -173,6 +175,62 @@ export default class ProfileService {
     return {
       list: await this.model.getLookbookList(userId, page),
     }
+  }
+
+  getReview = async (
+    supplierId: number,
+    page: number,
+  ): Promise<{ list: ReviewData[] }> => {
+    const base = await this.model.getReviewList(supplierId, page)
+    const list: ReviewData[] = []
+
+    for (const index in base) {
+      const {
+        id,
+        coordImg,
+        content,
+        rating,
+        publicBody,
+        type,
+        profile,
+        onboard,
+        date,
+      } = base[index]
+
+      const reviewImg = await this.model.getReviewImg(id)
+
+      const img = [
+        ResourcePath.coordImg(coordImg),
+        ...reviewImg.map((row) => ResourcePath.reviewImg(row.img)),
+      ]
+
+      const item: ReviewData = {
+        id,
+        img,
+        rating,
+        content,
+        date,
+        body: onboard['body'],
+        styleTypeList: StyleModel.getStyleTypeList(type),
+        weight: undefined,
+        height: undefined,
+      }
+
+      if (publicBody && profile['BodyStat'] != null) {
+        const { weight, height } = profile['BodyStat']
+        if (weight != null) {
+          item['weight'] = weight
+        }
+
+        if (height != null) {
+          item['height'] = height
+        }
+      }
+
+      list.push(item)
+    }
+
+    return { list }
   }
 
   postProfileImg = async (userId: number, path: string): Promise<number> => {

@@ -1,6 +1,6 @@
 import db from '../../config/db'
 import { RowDataPacket } from 'mysql2'
-import { Img, ProfileDemanderPatch, ProfileSupplierPatch } from './profile-type'
+import { Img, ReviewModelData } from './profile-type'
 import ResourcePath from '../resource/resource-path'
 
 export default class ProfileModel {
@@ -175,6 +175,47 @@ export default class ProfileModel {
         img: ResourcePath.lookbookImg(img),
       }
     })
+  }
+
+  getReviewList = async (
+    supplierId: number,
+    page: number,
+  ): Promise<ReviewModelData[]> => {
+    const pageAmount = 20
+
+    const connection = await db.getConnection()
+    const sql = `SELECT r.coordination_id AS id, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_date AS date  FROM coordination_reviews r
+LEFT JOIN coordinations c ON c.coordination_id = r.coordination_id
+LEFT JOIN (
+    SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
+    GROUP BY user_id
+) t ON c.demander_id = t.user_id
+LEFT JOIN users u ON c.demander_id = u.user_id
+WHERE c.supplier_id=:supplierId
+LIMIT :pageOffset, :pageAmount;`
+
+    const value = { supplierId, pageAmount, pageOffset: page * pageAmount }
+
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    return rows as ReviewModelData[]
+  }
+
+  getReviewImg = async (
+    id: number,
+  ): Promise<Array<{ img: string; type: string }>> => {
+    const connection = await db.getConnection()
+    const sql = `SELECT img, type FROM coordination_review_imgs WHERE coordination_id = :id`
+
+    const value = { id }
+
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    return rows as Array<{ img: string; type: string }>
   }
 
   updateSupplierData = async (userId: number, price: number): Promise<void> => {

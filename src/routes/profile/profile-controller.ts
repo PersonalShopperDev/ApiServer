@@ -72,6 +72,19 @@ export default class ProfileController {
     res.status(200).send(result)
   }
 
+  getReview = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params as any
+    const { page } = req.query as any
+
+    try {
+      const result = await this.service.getReview(id, page == null ? 0 : page)
+      res.status(200).send(result)
+    } catch (e) {
+      console.log(e)
+      res.sendStatus(500)
+    }
+  }
+
   postProfileImg = async (req: Request, res: Response): Promise<void> => {
     const { key } = req['file']
     const { userId } = req['auth']

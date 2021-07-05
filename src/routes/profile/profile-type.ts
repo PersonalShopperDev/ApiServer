@@ -1,3 +1,6 @@
+import StyleModel from '../style/style-model'
+import { StyleType } from '../style/style-type'
+
 export type ProfileDemanderGet = UserProfileGet &
   ProfileDemanderPatch &
   DemanderNotPatch
@@ -55,4 +58,28 @@ interface Review {
 export interface Img {
   id: number
   img: string
+}
+
+export interface ReviewModelData {
+  id: number
+  coordImg: string
+  content: string
+  rating: number
+  publicBody: number
+  type: number[]
+  profile: any
+  onboard: any
+  date: Date
+}
+
+export interface ReviewData {
+  id: number
+  img: string[]
+  rating: number
+  content: string
+  date: Date
+  weight: number | undefined
+  height: number | undefined
+  body: string
+  styleTypeList: StyleType[]
 }

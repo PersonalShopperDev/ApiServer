@@ -12,6 +12,7 @@ router.patch('/', AuthRequire, controller.patchMyProfile)
 
 router.get('/:id', controller.getProfile)
 router.get('/:id/lookbook', controller.getLookbook)
+router.get('/:id/review', controller.getReview)
 
 const s3 = new S3()
 

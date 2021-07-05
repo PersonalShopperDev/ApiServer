@@ -24,4 +24,8 @@ export default class ResourcePath {
     if (path == null) return undefined
     return `${ResourcePath.baseURL}lookbook/${path}`
   }
+
+  static reviewImg = (path: string | undefined): string => {
+    return `${ResourcePath.baseURL}review/${path}`
+  }
 }
