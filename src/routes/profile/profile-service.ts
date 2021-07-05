@@ -180,8 +180,16 @@ export default class ProfileService {
   getReview = async (
     supplierId: number,
     page: number,
-  ): Promise<{ list: ReviewData[] }> => {
+  ): Promise<{
+    rating: number | undefined
+    totalCount: number
+    list: ReviewData[]
+  }> => {
     const base = await this.model.getReviewList(supplierId, page)
+    const { reviewCount, rating } = await this.model.getSupplierPoint(
+      supplierId,
+    )
+
     const list: ReviewData[] = []
 
     for (const index in base) {
@@ -230,7 +238,7 @@ export default class ProfileService {
       list.push(item)
     }
 
-    return { list }
+    return { list, rating, totalCount: reviewCount }
   }
 
   postProfileImg = async (userId: number, path: string): Promise<number> => {

@@ -375,6 +375,12 @@ path:
               schema:
                 type: object
                 properties:
+                  rating:
+                    type: number
+                    description: 평균 평점, 리뷰가 한개도 없을 경우 주어지지 않음
+                  totalCount:
+                    type: number
+                    description: 전체 리뷰 개수
                   list:
                     type: array
                     items:
@@ -414,6 +420,9 @@ path:
                         - date
                         - body
                         - styleTypeList
+                required:
+                  - list
+                  - totalCount
   /profile/img:
     post:
       summary: 프로필 이미지 변경하기
