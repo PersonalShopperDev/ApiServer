@@ -77,7 +77,7 @@ export interface ReviewData {
   img: string[]
   rating: number
   content: string
-  date: Date
+  date: string
   weight: number | undefined
   height: number | undefined
   body: string

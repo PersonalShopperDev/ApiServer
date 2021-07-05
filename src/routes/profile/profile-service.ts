@@ -212,12 +212,16 @@ export default class ProfileService {
         ...reviewImg.map((row) => ResourcePath.reviewImg(row.img)),
       ]
 
+      const year = date.getFullYear()
+      const month = ('0' + (1 + date.getMonth())).slice(-2)
+      const day = ('0' + date.getDate()).slice(-2)
+
       const item: ReviewData = {
         id,
         img,
         rating,
         content,
-        date,
+        date: `${year}-${month}-${day}`,
         body: onboard['body'],
         styleTypeList: StyleModel.getStyleTypeList(type),
         weight: undefined,
