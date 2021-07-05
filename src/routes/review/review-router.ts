@@ -19,4 +19,6 @@ router.put(
   controller.saveReview,
 )
 
+router.get('/:id/coord', AuthRequire, controller.getCoordInfo)
+
 export default router

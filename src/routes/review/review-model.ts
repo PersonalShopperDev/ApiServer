@@ -1,5 +1,5 @@
 import db from '../../config/db'
-import { ReviewContent } from './review-type'
+import { ReviewContent, ReviewCoord } from './review-type'
 
 export default class ReviewModel {
   getCoordinationUserId = async (coordId: number): Promise<number | null> => {
@@ -57,5 +57,30 @@ export default class ReviewModel {
 
     await connection.query(sql, { value })
     connection.release()
+  }
+
+  getCoordInfo = async (
+    coordId: number,
+  ): Promise<{
+    id: number
+    name: string
+    profile: string
+    img: string
+    type: number[]
+  }> => {
+    const connection = await db.getConnection()
+    const sql = `SELECT supplier_id as id, u.name, u.img as profile, c.img, type FROM coordinations c
+LEFT JOIN users u ON c.supplier_id = u.user_id
+LEFT JOIN (
+    SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
+    GROUP BY user_id
+) t ON c.supplier_id = t.user_id
+WHERE coordination_id=:coordId
+;`
+
+    const [rows] = await connection.query(sql, { coordId })
+    connection.release()
+
+    return rows[0]
   }
 }

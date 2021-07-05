@@ -56,4 +56,17 @@ export default class StyleModel {
       }
     }
   }
+
+  static getStyleTypeList = (styleIdList: number[]): StyleType[] => {
+    const list: StyleType[] = []
+
+    for (const id of styleIdList) {
+      const value = StyleModel.convertStyleIdToValue(id)
+      if (value == null) continue
+
+      list.push({ id, value })
+    }
+
+    return list
+  }
 }

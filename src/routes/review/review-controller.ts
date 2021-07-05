@@ -33,4 +33,25 @@ export default class ReviewController {
       else res.sendStatus(500)
     }
   }
+
+  getCoordInfo = async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req['auth']
+
+    const coordId = Number(req.params.id)
+
+    try {
+      const isOwner = await this.service.isOwnerReview(userId, coordId)
+
+      if (!isOwner) {
+        res.sendStatus(403)
+        return
+      }
+
+      const result = await this.service.getCoordInfo(coordId)
+
+      res.status(200).json(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
 }

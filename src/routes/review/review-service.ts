@@ -1,6 +1,10 @@
 import ReviewModel from './review-model'
-import { ReviewContent } from './review-type'
+import { ReviewContent, ReviewCoord } from './review-type'
 import S3 from '../../config/s3'
+import StyleModel from '../style/style-model'
+import { UserManager } from '../auth/auth-model'
+import ResourceModel from '../resource/resource-model'
+import ResourcePath from '../resource/resource-path'
 
 export default class ReviewService {
   model = new ReviewModel()
@@ -27,6 +31,7 @@ export default class ReviewService {
 
     await this.model.saveReviewImage(coordId, keyList, 'B')
   }
+
   saveAfterImage = async (userId, coordId, files) => {
     const keyList: Array<string> = []
 
@@ -38,5 +43,19 @@ export default class ReviewService {
     }
 
     await this.model.saveReviewImage(coordId, keyList, 'A')
+  }
+
+  getCoordInfo = async (coordId: number): Promise<ReviewCoord> => {
+    const { id, name, profile, img, type } = await this.model.getCoordInfo(
+      coordId,
+    )
+
+    return {
+      supplierId: id,
+      profile: ResourcePath.profileImg(profile),
+      img: ResourcePath.coordImg(img),
+      title: `${name} 스타일리스트의 코디`,
+      styleTypeList: StyleModel.getStyleTypeList(type),
+    }
   }
 }
