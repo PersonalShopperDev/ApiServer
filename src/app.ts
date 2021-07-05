@@ -9,6 +9,7 @@ import supplierRouter from './routes/supplier/supplier-router'
 import onboardRouter from './routes/onboard/onboard-router'
 import styleRouter from './routes/style/style-router'
 import profileRouter from './routes/profile/profile-router'
+import reviewRouter from './routes/review/review-router'
 
 import cors from 'cors'
 import { updateSupplierPopular } from './config/cron'
@@ -33,6 +34,7 @@ app.use('/v1/supplier', supplierRouter)
 app.use('/v1/onboard', onboardRouter)
 app.use('/v1/style', styleRouter)
 app.use('/v1/profile', profileRouter)
+app.use('/v1/review', reviewRouter)
 
 app.use(function (req: express.Request, res: express.Response) {
   res.sendStatus(404)

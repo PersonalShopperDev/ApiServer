@@ -51,6 +51,8 @@ path:
                 rating:
                   type: number
                   description: 별점
+                  minimum: 1
+                  maximum: 5
                 content:
                   type: sring
                   description: 리뷰 내용
@@ -77,5 +79,7 @@ path:
           description: OK
         401:
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        409:
+          description: 이미 다른 리뷰가 존재합니다.
         422:
           $ref: './swagger.yaml#/components/Errors/ParameterError'
