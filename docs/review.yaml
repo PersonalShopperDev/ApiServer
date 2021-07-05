@@ -1,19 +1,22 @@
 components:
   scheme:
-    list:
-      type: object
-      properties:
-        male:
-          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
-        female:
-          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+    rating:
+      type: number
+      description: 별점
+      minimum: 1
+      maximum: 5
+    content:
+      type: sring
+      description: 리뷰 내용
+      maxLength: 700
+
 
 path:
   /review/{id}:
 #    get:
-#      summary: 리뷰 내용 받아오기
+#      summary: 리뷰 불러오기
 #      description: |
-#        작성된 리뷰 내용을 받아옵니다.
+#        작성된 리뷰 내용을 불러옵니다
 #      tags: [ Review ]
 #      parameters:
 #        - name: id
@@ -27,7 +30,12 @@ path:
 #          content:
 #            application/json:
 #              schema:
-#                $ref: '#/components/scheme/list'
+#                type: object
+#                properties:
+#                  rating:
+#                    $ref: '#/components/scheme/rating'
+#                  content:
+#                    $ref: '#/components/scheme/content'
     put:
       summary: 리뷰 작성하기
       description: |
@@ -49,14 +57,9 @@ path:
               type: object
               properties:
                 rating:
-                  type: number
-                  description: 별점
-                  minimum: 1
-                  maximum: 5
+                  $ref: '#/components/scheme/rating'
                 content:
-                  type: sring
-                  description: 리뷰 내용
-                  maxLength: 700
+                  $ref: '#/components/scheme/content'
                 publicBody:
                   type: boolean
                   description: 체형 공개 여부
