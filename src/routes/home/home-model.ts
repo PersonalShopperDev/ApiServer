@@ -4,6 +4,7 @@ import db from '../../config/db'
 import { Banner, Review, Supplier } from './home-type'
 import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
+import ResourcePath from '../resource/resource-path'
 
 export default class HomeModel {
   getBanners = async (): Promise<Array<Banner> | null> => {
@@ -17,7 +18,7 @@ export default class HomeModel {
 
     return rows.map((e) => {
       return {
-        img: `${process.env.DOMAIN}v1/resource/banner/${e.img}`,
+        img: ResourcePath.bannerImg(e.img),
       }
     })
   }
@@ -48,7 +49,7 @@ LIMIT 6;`
     return rows.map((row) => {
       return {
         id: row.user_id,
-        img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
+        img: ResourcePath.profileImg(row.img),
         name: row.name,
         hireCount: row.hireCount ? row.hireCount : 0,
         reviewCount: row.reviewCount ? row.reviewCount : 0,
@@ -72,7 +73,7 @@ LIMIT 6;`
     return rows.map((row) => {
       return {
         id: row.user_id,
-        img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
+        img: ResourcePath.profileImg(row.img),
         name: row.name,
         hireCount: row.hireCount ? row.hireCount : 0,
         reviewCount: row.reviewCount ? row.reviewCount : 0,

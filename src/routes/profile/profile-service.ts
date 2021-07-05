@@ -7,6 +7,7 @@ import {
   ProfileSupplierPatch,
   ProfileUser,
 } from './profile-type'
+import ResourcePath from '../resource/resource-path'
 
 export default class ProfileService {
   model = new ProfileModel()
@@ -32,7 +33,7 @@ export default class ProfileService {
       userType: 'S',
       name,
       introduction,
-      img: this.getImgUrl(img),
+      img: ResourcePath.profileImg(img),
       ...profile,
       styles,
       price,
@@ -65,7 +66,7 @@ export default class ProfileService {
       userType: 'D',
       name,
       introduction,
-      img: this.getImgUrl(img),
+      img: ResourcePath.profileImg(img),
       ...profile,
       styles,
       closet: closetList,
@@ -90,7 +91,7 @@ export default class ProfileService {
       userType: 'S',
       name,
       introduction,
-      img: this.getImgUrl(img),
+      img: ResourcePath.profileImg(img),
       ...profile,
       styles,
       price,
@@ -115,7 +116,7 @@ export default class ProfileService {
       userType: 'D',
       name,
       introduction,
-      img: this.getImgUrl(img),
+      img: ResourcePath.profileImg(img),
       ...profile,
       styles,
       closet: closetList,
@@ -186,13 +187,6 @@ export default class ProfileService {
   }
   postCloset = async (userId: number, path: string): Promise<number> => {
     return await this.model.postCloset(userId, path)
-  }
-
-  private getImgUrl = (img: string | undefined): string => {
-    return (
-      `${process.env.DOMAIN}v1/resource/profile/` +
-      (img != null ? img : 'default')
-    )
   }
 
   private dataOverlap = (

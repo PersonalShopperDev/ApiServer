@@ -1,6 +1,7 @@
 import db from '../../config/db'
 import { RowDataPacket } from 'mysql2'
 import { Img, ProfileDemanderPatch, ProfileSupplierPatch } from './profile-type'
+import ResourcePath from '../resource/resource-path'
 
 export default class ProfileModel {
   saveProfile = async (
@@ -100,7 +101,11 @@ export default class ProfileModel {
     connection.release()
 
     return rows.map((row) => {
-      return this.convertImg(row, 'closet')
+      const { id, img } = row
+      return {
+        id,
+        img: ResourcePath.closetImg(img),
+      }
     })
   }
 
@@ -142,7 +147,11 @@ export default class ProfileModel {
     connection.release()
 
     return rows.map((row) => {
-      return this.convertImg(row, 'lookbook')
+      const { id, img } = row
+      return {
+        id,
+        img: ResourcePath.lookbookImg(img),
+      }
     })
   }
 
@@ -160,7 +169,11 @@ export default class ProfileModel {
     connection.release()
 
     return rows.map((row) => {
-      return this.convertImg(row, 'lookbook')
+      const { id, img } = row
+      return {
+        id,
+        img: ResourcePath.lookbookImg(img),
+      }
     })
   }
 
@@ -213,14 +226,5 @@ export default class ProfileModel {
 
     connection.release()
     return result['insertId']
-  }
-
-  private convertImg = (row, path) => {
-    const { id, img } = row
-
-    return {
-      id,
-      img: `${process.env.DOMAIN}v1/resource/${path}/${img}`,
-    }
   }
 }

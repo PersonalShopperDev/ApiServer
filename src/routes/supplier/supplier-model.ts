@@ -2,6 +2,7 @@ import db from '../../config/db'
 import { Supplier } from './supplier-type'
 import { RowDataPacket } from 'mysql2'
 import StyleModel from '../style/style-model'
+import ResourcePath from '../resource/resource-path'
 
 export default class SupplierModel {
   getStyleTypeId = async (userId: number): Promise<number[] | null> => {
@@ -66,7 +67,7 @@ LIMIT :pageOffset, :pageAmount;
     return rows.map((row) => {
       return {
         id: row.user_id,
-        img: row.img ? `${process.env.DOMAIN}v1/resource/${row.img}` : null,
+        img: ResourcePath.profileImg(row.img),
         name: row.name,
         price: row.price,
         styleType:
