@@ -141,18 +141,18 @@ export class TokenManager {
   static generateAccessToken = async (userId: number): Promise<string> => {
     const connection = await db.getConnection()
     const sql =
-      'SELECT gender, onboard, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
+      'SELECT gender, onboard, u.email, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
     const value = { userId }
 
     const [rows] = await connection.query(sql, value)
 
-    const { onboard, gender, status } = rows[0]
+    const { onboard, gender, status, email } = rows[0]
     const userType =
       onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
 
     connection.release()
 
-    return jwt.sign({ userId, gender, userType }, process.env.JWT_KEY, {
+    return jwt.sign({ userId, gender, userType, email }, process.env.JWT_KEY, {
       expiresIn: 30 * 60 * 1000,
     })
   }
