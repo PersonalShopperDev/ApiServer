@@ -1,5 +1,6 @@
 import StyleModel from '../style/style-model'
 import { StyleType } from '../style/style-type'
+import { IdValuePair } from '../../data/data-type'
 
 export type ProfileDemanderGet = UserProfileGet &
   ProfileDemanderPatch &
@@ -80,6 +81,6 @@ export interface ReviewData {
   date: string
   weight: number | undefined
   height: number | undefined
-  body: string
+  body: IdValuePair
   styleTypeList: StyleType[]
 }

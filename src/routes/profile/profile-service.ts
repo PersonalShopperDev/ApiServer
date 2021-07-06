@@ -10,6 +10,7 @@ import {
 } from './profile-type'
 import ResourcePath from '../resource/resource-path'
 import { body } from 'express-validator'
+import Data from '../../data/data'
 
 export default class ProfileService {
   model = new ProfileModel()
@@ -53,7 +54,7 @@ export default class ProfileService {
     const styles = await StyleModel.getUserStyleOnlyValue(userId)
     const closetList = await this.model.getClosetList(userId)
 
-    const additionalBodyStat = { body: onboard['body'] }
+    const additionalBodyStat = { body: Data.getBodyItem(onboard['body']) }
     if (profile == null) {
       profile = { bodyStat: additionalBodyStat }
     } else if (profile['bodyStat'] == null) {
@@ -222,7 +223,7 @@ export default class ProfileService {
         rating,
         content,
         date: `${year}-${month}-${day}`,
-        body: onboard['body'], // TODO : String으로 전환 필요
+        body: Data.getBodyItem(onboard['body']),
         styleTypeList: StyleModel.getStyleTypeList(type),
         weight: undefined,
         height: undefined,

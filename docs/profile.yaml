@@ -185,11 +185,15 @@ components:
         description: 신체 정보
         allOf:
           - $ref: '#/components/scheme/demander/bodyStat'
-          - type: object
-            properties:
-              body:
-                type: number
-                description: 사용자의 체형 ID
+          - $ref: '#/components/scheme/demander/body'
+      body:
+        type: object
+        description: 사용자의 체형
+        properties:
+          id:
+            type: number
+          value:
+            type: string
       closet:
         type: array
         description: 옷장
@@ -409,7 +413,7 @@ path:
                           type: number
                           description: 리뷰 작성자의 몸무게 (체형 비공개 시 생략)
                         body:
-                          type: string
+                          $ref: '#/components/scheme/demander/body'
                         styleTypeList:
                           $ref: './swagger.yaml#/components/scheme/StyleTypeList'
                       required:
