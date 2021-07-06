@@ -21,6 +21,8 @@
   $ref: 'onboard.yaml#/path/~1onboard'
 /onboard/{id}:
   $ref: 'onboard.yaml#/path/~1onboard~1{id}'
+/onboard/body:
+  $ref: 'onboard.yaml#/path/~1onboard~1body'
 
 /style:
   $ref: 'style.yaml#/path/~1style'

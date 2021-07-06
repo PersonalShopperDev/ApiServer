@@ -249,3 +249,35 @@ path:
                   - $ref: '#/components/get/supplier'
         '404':
           description: User Not Found
+
+  /onboard/body:
+    get:
+      summary: 체형 목록 불러오기
+      description: 성별에 맞춰 체형 목록을 불러옵니다.
+      tags: [ Onboard ]
+      parameters:
+        - name: gender
+          in: 'query'
+          description: 열람하고자 하는 demanderId
+          enum: [ M, F ]
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        value:
+                          type: string
+
