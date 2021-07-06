@@ -8,6 +8,7 @@ import {
   OnboardSupplierPut,
 } from './onboard-type'
 import { validationResult } from 'express-validator'
+import Data from '../../data/data'
 
 export default class OnboardController {
   service = new OnboardService()
@@ -57,6 +58,18 @@ export default class OnboardController {
 
       res.sendStatus(200)
     } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  getBody = async (req: Request, res: Response): Promise<void> => {
+    const { gender } = req.query as any
+    try {
+      const result = Data.getBodyList(gender)
+
+      res.status(200).json(result)
+    } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }

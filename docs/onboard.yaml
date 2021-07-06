@@ -280,4 +280,6 @@ path:
                           type: number
                         value:
                           type: string
+                        img:
+                          type: string
 

@@ -5,6 +5,7 @@ const router = express.Router()
 
 const controller = new ResourceController()
 
+router.get('/body/:id', controller.getBody)
 router.get('/:path/:id', controller.get)
 
 export default router

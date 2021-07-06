@@ -28,4 +28,8 @@ export default class ResourcePath {
   static reviewImg = (path: string | undefined): string => {
     return `${ResourcePath.baseURL}review/${path}`
   }
+
+  static bodyImg = (id: number): string => {
+    return `${ResourcePath.baseURL}body/${id}.png`
+  }
 }

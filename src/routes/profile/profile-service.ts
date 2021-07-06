@@ -222,7 +222,7 @@ export default class ProfileService {
         rating,
         content,
         date: `${year}-${month}-${day}`,
-        body: onboard['body'],
+        body: onboard['body'], // TODO : String으로 전환 필요
         styleTypeList: StyleModel.getStyleTypeList(type),
         weight: undefined,
         height: undefined,

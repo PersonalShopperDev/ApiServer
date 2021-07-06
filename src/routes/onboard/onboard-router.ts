@@ -7,6 +7,7 @@ const router = express.Router()
 const controller = new OnboardController()
 
 router.get('/', AuthRequire, controller.getOnboard)
+router.get('/body', controller.getBody)
 router.get('/:id', AuthCheck, controller.getOnboard)
 
 router.put(
