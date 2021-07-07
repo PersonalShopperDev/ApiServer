@@ -28,7 +28,7 @@ export default class ResourceController {
       res.sendStatus(404)
     } else {
       res.contentType('image/png')
-      res.end({ list: result })
+      res.end(result)
     }
   }
 }

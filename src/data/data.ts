@@ -3,6 +3,8 @@ import ResourcePath from '../routes/resource/resource-path'
 import { IdValuePair } from './data-type'
 
 export default class Data {
+  private static baseUrl = `${__dirname}/../../data/`
+
   static getBodyList(gender: string): (IdValuePair & { img: string })[] {
     const json = this.getDefaultBodyList(gender)
 
@@ -15,7 +17,7 @@ export default class Data {
 
   static getBodyImg(file: string): Buffer | null {
     try {
-      return fs.readFileSync(`${__dirname}\\body\\${file}`)
+      return fs.readFileSync(`${this.baseUrl}body/${file}`)
     } catch (e) {
       return null
     }
@@ -37,8 +39,9 @@ export default class Data {
   private static getDefaultBodyList(gender: string): IdValuePair[] {
     const path =
       gender == 'M'
-        ? `${__dirname}\\body\\body-male.json`
-        : `${__dirname}\\body\\body-female.json`
+        ? `${Data.baseUrl}body/body-male.json`
+        : `${Data.baseUrl}body/body-female.json`
+
     const file = fs.readFileSync(path, 'utf-8')
 
     const json = JSON.parse(file)
