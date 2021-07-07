@@ -24,9 +24,9 @@ export default class ReviewService {
 
     for (const index in files) {
       const file = files[index]
-      const key = `review/${Date.now()}${index}${userId}${coordId}b`
+      const key = `${Date.now()}${index}${userId}${coordId}b`
       keyList.push(key)
-      await this.s3.upload(key, file.mimetype, file.buffer)
+      await this.s3.upload(`review/${key}`, file.mimetype, file.buffer)
     }
 
     await this.model.saveReviewImage(coordId, keyList, 'B')
@@ -37,9 +37,9 @@ export default class ReviewService {
 
     for (const index in files) {
       const file = files[index]
-      const key = `review/${Date.now()}${index}${userId}${coordId}a`
+      const key = `${Date.now()}${index}${userId}${coordId}a`
       keyList.push(key)
-      await this.s3.upload(key, file.mimetype, file.buffer)
+      await this.s3.upload(`review/${key}`, file.mimetype, file.buffer)
     }
 
     await this.model.saveReviewImage(coordId, keyList, 'A')

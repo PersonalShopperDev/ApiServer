@@ -393,6 +393,12 @@ path:
                         id:
                           type: number
                           description: Review ID
+                        name:
+                          type: string
+                          description: 리뷰 작성자 이름
+                        profileImg:
+                          type: sting
+                          description: Profile Img URL
                         img:
                           type: array
                           description: Img URL List, 첫 인덱스는 무조건 코디 사진.

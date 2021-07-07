@@ -184,7 +184,7 @@ export default class ProfileModel {
     const pageAmount = 20
 
     const connection = await db.getConnection()
-    const sql = `SELECT r.coordination_id AS id, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_date AS date  FROM coordination_reviews r
+    const sql = `SELECT r.coordination_id AS id, u.name, u.img AS profileImg, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_date AS date  FROM coordination_reviews r
 LEFT JOIN coordinations c ON c.coordination_id = r.coordination_id
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style

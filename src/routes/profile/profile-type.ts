@@ -61,24 +61,26 @@ export interface Img {
   img: string
 }
 
-export interface ReviewModelData {
+interface _ReviewData {
   id: number
-  coordImg: string
-  content: string
+  name: string
+  profileImg: string
   rating: number
+  content: string
+}
+
+export interface ReviewModelData extends _ReviewData {
+  date: Date
   publicBody: number
+  coordImg: string
   type: number[]
   profile: any
   onboard: any
-  date: Date
 }
 
-export interface ReviewData {
-  id: number
-  img: string[]
-  rating: number
-  content: string
+export interface ReviewData extends _ReviewData {
   date: string
+  img: string[]
   weight: number | undefined
   height: number | undefined
   body: IdValuePair

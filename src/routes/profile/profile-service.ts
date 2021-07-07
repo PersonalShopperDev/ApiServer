@@ -196,6 +196,8 @@ export default class ProfileService {
     for (const index in base) {
       const {
         id,
+        name,
+        profileImg,
         coordImg,
         content,
         rating,
@@ -219,9 +221,11 @@ export default class ProfileService {
 
       const item: ReviewData = {
         id,
+        name,
         img,
         rating,
         content,
+        profileImg: ResourcePath.profileImg(profileImg),
         date: `${year}-${month}-${day}`,
         body: Data.getBodyItem(onboard['body']),
         styleTypeList: StyleModel.getStyleTypeList(type),
