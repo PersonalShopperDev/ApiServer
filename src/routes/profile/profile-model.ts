@@ -68,7 +68,7 @@ export default class ProfileModel {
     rating: number | undefined
   }> => {
     const connection = await db.getConnection()
-    const sql = `SELECT COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, AVG(rating) AS rating FROM coordinations c
+    const sql = `SELECT COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coordinations c
       LEFT JOIN coordination_reviews cr ON cr.coordination_id = c.coordination_id
       WHERE supplier_id = :userId GROUP BY supplier_id;`
 

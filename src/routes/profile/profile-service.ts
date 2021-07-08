@@ -233,7 +233,7 @@ export default class ProfileService {
         height: undefined,
       }
 
-      if (publicBody && profile['BodyStat'] != null) {
+      if (publicBody && profile != null && profile['BodyStat'] != null) {
         const { weight, height } = profile['BodyStat']
         if (weight != null) {
           item['weight'] = weight

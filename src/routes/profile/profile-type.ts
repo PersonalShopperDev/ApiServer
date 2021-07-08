@@ -74,7 +74,7 @@ export interface ReviewModelData extends _ReviewData {
   publicBody: number
   coordImg: string
   type: number[]
-  profile: any
+  profile: any | null
   onboard: any
 }
 
