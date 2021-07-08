@@ -145,7 +145,7 @@ export default class ProfileService {
       userId,
       name,
       introduction,
-      JSON.stringify({ profile }),
+      JSON.stringify(profile),
     )
   }
 
