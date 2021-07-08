@@ -220,7 +220,7 @@ export class UserManager {
       const sql =
         'INSERT INTO users(birthday, gender, phone, email, third_party, third_party_id)' +
         ' VALUES (:birthday, :gender, :phone, :email, :resource, :id)' +
-        ' ON DUPLICATE KEY UPDATE birthday=:birthday,gender=:gender,phone=:phone,email=:email'
+        ' ON DUPLICATE KEY UPDATE birthday=:birthday,phone=:phone,email=:email'
       const value = {
         resource,
         id: userData.id,
