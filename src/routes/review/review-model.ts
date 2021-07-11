@@ -1,30 +1,32 @@
 import db from '../../config/db'
-import { ReviewContent, ReviewCoord } from './review-type'
+import { ReviewContent } from './review-type'
 
 export default class ReviewModel {
   getCoordinationUserId = async (coordId: number): Promise<number | null> => {
     const connection = await db.getConnection()
-    const sql =
-      'SELECT demander_id as id FROM coordinations WHERE coordination_id=:coordId'
+    try {
+      const sql =
+        'SELECT demander_id as id FROM coordinations WHERE coordination_id=:coordId'
 
-    const [result] = await connection.query(sql, { coordId })
-    connection.release()
+      const [result] = await connection.query(sql, { coordId })
 
-    if (result[0] == null) return null
-    return result[0]['id']
-
-    return null
-    // throw Error()
+      if (result[0] == null) return null
+      return result[0]['id']
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
   saveReview = async (coordId: number, data: ReviewContent): Promise<void> => {
     const connection = await db.getConnection()
-    const sql =
-      'INSERT INTO coordination_reviews(coordination_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
-
-    const { content, rating, publicBody } = data
-
     try {
+      const sql =
+        'INSERT INTO coordination_reviews(coordination_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
+
+      const { content, rating, publicBody } = data
+
       await connection.query(sql, {
         coordId,
         content,
@@ -35,7 +37,7 @@ export default class ReviewModel {
       if (e.code == 'ER_DUP_ENTRY' || e.code == 1062) {
         throw Error('DUP_REVIEW')
       } else {
-        throw Error()
+        throw e
       }
     } finally {
       connection.release()
@@ -48,15 +50,20 @@ export default class ReviewModel {
     type: string,
   ): Promise<void> => {
     const connection = await db.getConnection()
-    const sql =
-      'INSERT INTO coordination_review_imgs(coordination_id, img, type) VALUES :value'
+    try {
+      const sql =
+        'INSERT INTO coordination_review_imgs(coordination_id, img, type) VALUES :value'
 
-    const value = keyList.map((key) => {
-      return [coordId, key, type]
-    })
+      const value = keyList.map((key) => {
+        return [coordId, key, type]
+      })
 
-    await connection.query(sql, { value })
-    connection.release()
+      await connection.query(sql, { value })
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
   getCoordInfo = async (
@@ -69,7 +76,8 @@ export default class ReviewModel {
     type: number[]
   }> => {
     const connection = await db.getConnection()
-    const sql = `SELECT supplier_id as id, u.name, u.img as profile, c.img, type FROM coordinations c
+    try {
+      const sql = `SELECT supplier_id as id, u.name, u.img as profile, c.img, type FROM coordinations c
 LEFT JOIN users u ON c.supplier_id = u.user_id
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
@@ -78,9 +86,12 @@ LEFT JOIN (
 WHERE coordination_id=:coordId
 ;`
 
-    const [rows] = await connection.query(sql, { coordId })
-    connection.release()
-
-    return rows[0]
+      const [rows] = await connection.query(sql, { coordId })
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 }

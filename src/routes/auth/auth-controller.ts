@@ -1,6 +1,6 @@
-import {NextFunction, Request, Response} from 'express'
+import { Request, Response } from 'express'
 import AuthService from './auth-service'
-import {validationResult} from 'express-validator'
+import { validationResult } from 'express-validator'
 
 export default class AuthController {
   login = async (req: Request, res: Response): Promise<void> => {
@@ -8,15 +8,19 @@ export default class AuthController {
       res.sendStatus(422)
       return
     }
-    const {resource, token} = req.body
+    try {
+      const { resource, token } = req.body
 
-    const service = new AuthService()
-    const result = await service.login(resource, token)
+      const service = new AuthService()
+      const result = await service.login(resource, token)
 
-    if (result) {
-      res.status(200).send(result)
-    } else {
-      res.sendStatus(400)
+      if (result) {
+        res.status(200).send(result)
+      } else {
+        res.sendStatus(400)
+      }
+    } catch (e) {
+      res.sendStatus(500)
     }
   }
 
@@ -24,16 +28,19 @@ export default class AuthController {
     if (!validationResult(req).isEmpty()) {
       return res.sendStatus(422)
     }
+    try {
+      const { refreshToken } = req.body
 
-    const {refreshToken} = req.body
+      const service = new AuthService()
+      const result = await service.newTokenWithRefreshToken(refreshToken)
 
-    const service = new AuthService()
-    const result = await service.newTokenWithRefreshToken(refreshToken)
-
-    if (result) {
-      res.status(200).send(result)
-    } else {
-      res.sendStatus(400)
+      if (result) {
+        res.status(200).send(result)
+      } else {
+        res.sendStatus(400)
+      }
+    } catch (e) {
+      res.sendStatus(500)
     }
   }
 
@@ -46,15 +53,18 @@ export default class AuthController {
       res.sendStatus(422)
       return
     }
+    try {
+      const { userId } = req['auth']
+      const service = new AuthService()
+      const result = await service.withdraw(userId)
 
-    const {userId} = req['auth']
-    const service = new AuthService()
-    const result = await service.withdraw(userId)
-
-    if (result) {
-      res.sendStatus(200)
-    } else {
-      res.sendStatus(400)
+      if (result) {
+        res.sendStatus(200)
+      } else {
+        res.sendStatus(400)
+      }
+    } catch (e) {
+      res.sendStatus(500)
     }
   }
 }

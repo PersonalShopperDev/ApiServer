@@ -9,26 +9,30 @@ import ResourcePath from '../resource/resource-path'
 export default class HomeModel {
   getBanners = async (): Promise<Array<Banner> | null> => {
     const connection = await db.getConnection()
+    try {
+      const sql =
+        'SELECT img_path as img FROM banners WHERE (start_date IS NULL OR DATE(start_date) < NOW()) AND (end_date IS NULL OR DATE(end_date) > NOW());'
 
-    const sql =
-      'SELECT img_path as img FROM banners WHERE (start_date IS NULL OR DATE(start_date) < NOW()) AND (end_date IS NULL OR DATE(end_date) > NOW());'
+      const [rows] = (await connection.query(sql)) as RowDataPacket[]
 
-    const [rows] = (await connection.query(sql)) as RowDataPacket[]
-    connection.release()
-
-    return rows.map((e) => {
-      return {
-        img: ResourcePath.bannerImg(e.img),
-      }
-    })
+      return rows.map((e) => {
+        return {
+          img: ResourcePath.bannerImg(e.img),
+        }
+      })
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
   getSupplierWithStyle = async (
     userId: number,
   ): Promise<Array<Supplier> | null> => {
     const connection = await db.getConnection()
-
-    const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount FROM 
+    try {
+      const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount FROM 
 (
     SELECT a.user_id, COUNT(*) as typeCount FROM user_style a
     RIGHT JOIN (SELECT style_id FROM user_style WHERE user_id = :userId) b ON a.style_id = b.style_id
@@ -42,43 +46,51 @@ LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_review
 ORDER BY typeCount DESC, hireCount DESC
 LIMIT 6;`
 
-    const value = { userId }
-    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-    connection.release()
+      const value = { userId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-    return rows.map((row) => {
-      return {
-        id: row.user_id,
-        img: ResourcePath.profileImg(row.img),
-        name: row.name,
-        hireCount: row.hireCount ? row.hireCount : 0,
-        reviewCount: row.reviewCount ? row.reviewCount : 0,
-      }
-    })
+      return rows.map((row) => {
+        return {
+          id: row.user_id,
+          img: ResourcePath.profileImg(row.img),
+          name: row.name,
+          hireCount: row.hireCount ? row.hireCount : 0,
+          reviewCount: row.reviewCount ? row.reviewCount : 0,
+        }
+      })
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
   getSupplier = async (): Promise<Array<Supplier> | null> => {
     const connection = await db.getConnection()
-
-    const sql = `SELECT a.user_id, name, img, price, hireCount, reviewCount FROM suppliers a
+    try {
+      const sql = `SELECT a.user_id, name, img, price, hireCount, reviewCount FROM suppliers a
 LEFT JOIN users u ON a.user_id = u.user_id 
 LEFT JOIN ( SELECT supplier_id, COUNT(*) AS hireCount FROM coordinations GROUP BY supplier_id) h ON h.supplier_id = a.user_id
 LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY supplier_id) r ON r.supplier_id = a.user_id
 ORDER BY hireCount DESC, reviewCount DESC, price ASC
 LIMIT 6;`
 
-    const [rows] = (await connection.query(sql)) as RowDataPacket[]
-    connection.release()
+      const [rows] = (await connection.query(sql)) as RowDataPacket[]
 
-    return rows.map((row) => {
-      return {
-        id: row.user_id,
-        img: ResourcePath.profileImg(row.img),
-        name: row.name,
-        hireCount: row.hireCount ? row.hireCount : 0,
-        reviewCount: row.reviewCount ? row.reviewCount : 0,
-      }
-    })
+      return rows.map((row) => {
+        return {
+          id: row.user_id,
+          img: ResourcePath.profileImg(row.img),
+          name: row.name,
+          hireCount: row.hireCount ? row.hireCount : 0,
+          reviewCount: row.reviewCount ? row.reviewCount : 0,
+        }
+      })
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
   getReviews = async (): Promise<Array<Review> | null> => {

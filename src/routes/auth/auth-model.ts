@@ -127,12 +127,13 @@ export class TokenManager {
 
       const [rows] = await connection.query(sql, value)
 
+      if (rows[0] == null) return null
       return {
         userId: rows[0].user_id,
         expire: rows[0].refresh_token_expire,
       }
     } catch (e) {
-      return null
+      throw e
     } finally {
       connection.release()
     }
@@ -140,23 +141,37 @@ export class TokenManager {
 
   static generateAccessToken = async (userId: number): Promise<string> => {
     const connection = await db.getConnection()
-    const sql =
-      'SELECT gender, onboard, u.email, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
-    const value = { userId }
+    try {
+      const sql =
+        'SELECT gender, onboard, u.email, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
+      const value = { userId }
 
-    const [rows] = await connection.query(sql, value)
+      const [rows] = await connection.query(sql, value)
 
-    const { onboard, gender, status, email } = rows[0]
-    const userType =
-      onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
+      const { onboard, gender, status, email } = rows[0]
+      const userType =
+        onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
 
-    connection.release()
-
-    return jwt.sign({ userId, gender, userType, email }, process.env.JWT_KEY, {
-      expiresIn: 30 * 60 * 1000,
-    })
+      return jwt.sign(
+        { userId, gender, userType, email },
+        process.env.JWT_KEY,
+        {
+          expiresIn: 30 * 60 * 1000,
+        },
+      )
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
+  /**
+   * @name saveRefreshToken
+   * @param userId
+   * @param refreshToken
+   * @return boolean: 저장 성공 여부
+   */
   private static saveRefreshToken = async (
     userId: number,
     refreshToken: string,
@@ -184,19 +199,22 @@ export class TokenManager {
 export class UserManager {
   static getUserType = async (userId: number): Promise<string> => {
     const connection = await db.getConnection()
-    const sql =
-      'SELECT onboard, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
-    const value = { userId }
+    try {
+      const sql =
+        'SELECT onboard, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
+      const value = { userId }
 
-    const [rows] = await connection.query(sql, value)
+      const [rows] = await connection.query(sql, value)
 
-    const { onboard, status } = rows[0]
-    const userType =
-      onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
-
-    connection.release()
-
-    return userType
+      const { onboard, status } = rows[0]
+      const userType =
+        onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
+      return userType
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
   static getUserIdWithThirdPartyID = async (resource: string, id: string) => {
     const connection = await db.getConnection()
@@ -206,9 +224,10 @@ export class UserManager {
       const value = { resource, id }
 
       const [rows] = await connection.query(sql, value)
+      if (rows[0] == null) return null
       return rows[0].user_id
     } catch (e) {
-      return null
+      throw e
     } finally {
       connection.release()
     }
@@ -241,7 +260,7 @@ export class UserManager {
       }
       return null
     } catch (e) {
-      return null
+      throw e
     } finally {
       connection.release()
     }

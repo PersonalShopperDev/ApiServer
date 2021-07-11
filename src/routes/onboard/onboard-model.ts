@@ -13,21 +13,25 @@ export default class OnboardModel {
     onboard: OnboardDemander | OnboardSupplier | undefined
   }> => {
     const connection = await db.getConnection()
-    const sql = 'SELECT gender, onboard FROM users WHERE user_id=:userId'
+    try {
+      const sql = 'SELECT gender, onboard FROM users WHERE user_id=:userId'
 
-    const value = { userId }
+      const value = { userId }
 
-    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-    connection.release()
+      if (rows[0] == null)
+        return {
+          gender: undefined,
+          onboard: undefined,
+        }
 
-    if (rows[0] == null)
-      return {
-        gender: undefined,
-        onboard: undefined,
-      }
-
-    return rows[0]
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
   saveBasicUserData = async (
@@ -36,18 +40,22 @@ export default class OnboardModel {
     userType: string,
   ): Promise<void> => {
     const connection = await db.getConnection()
-    const value = { userId, gender }
+    try {
+      const value = { userId, gender }
 
-    const sql = 'UPDATE users SET gender=:gender WHERE user_id=:userId;'
-    await connection.query(sql, value)
+      const sql = 'UPDATE users SET gender=:gender WHERE user_id=:userId;'
+      await connection.query(sql, value)
 
-    if (userType == 'S') {
-      const sql2 =
-        'INSERT IGNORE INTO suppliers(user_id, status) VALUES(:userId, 0);'
-      await connection.query(sql2, value)
+      if (userType == 'S') {
+        const sql2 =
+          'INSERT IGNORE INTO suppliers(user_id, status) VALUES(:userId, 0);'
+        await connection.query(sql2, value)
+      }
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
     }
-
-    connection.release()
   }
 
   saveOnboardData = async (
@@ -55,11 +63,16 @@ export default class OnboardModel {
     data: OnboardDemander | OnboardSupplier,
   ): Promise<void> => {
     const connection = await db.getConnection()
-    const sql = 'UPDATE users SET onboard=:onboard WHERE user_id=:userId'
+    try {
+      const sql = 'UPDATE users SET onboard=:onboard WHERE user_id=:userId'
 
-    const value = { userId, onboard: JSON.stringify(data) }
+      const value = { userId, onboard: JSON.stringify(data) }
 
-    await connection.query(sql, value)
-    connection.release()
+      await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 }
