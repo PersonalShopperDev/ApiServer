@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express'
+import express from 'express'
 import bodyParser from 'body-parser'
 import logger from 'morgan'
 import docController from './routes/docs'
@@ -14,13 +14,31 @@ import reviewRouter from './routes/review/review-router'
 import cors from 'cors'
 import { updateSupplierPopular } from './config/cron'
 
+const whitelist = [
+  'https://yourpersonalshoppers.com/',
+  'https://www.yourpersonalshoppers.com/',
+]
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (process.env.node_mode == 'production') {
+      const isWhitelisted = whitelist.indexOf(origin) !== -1
+      callback(null, isWhitelisted)
+    } else {
+      callback(null, true)
+    }
+    // callback expects two parameters: error and options
+  },
+  credentials: true,
+}
+
 const app = express()
 
 app.set('port', process.env.PORT || 3000)
 if (process.env.NODE_MODE === 'development') app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(cors())
+app.use(cors(corsOptions))
 
 app.use('/health', (req: express.Request, res: express.Response) => {
   res.sendStatus(200)
