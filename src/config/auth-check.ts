@@ -6,7 +6,7 @@ export const AuthRequire = (
   res: Response,
   next: NextFunction,
 ) => {
-  if (auth(req)) {
+  if (checkHeader(req)) {
     next()
   } else {
     res.sendStatus(401)
@@ -15,33 +15,47 @@ export const AuthRequire = (
 }
 
 export const AuthCheck = (req: Request, res: Response, next: NextFunction) => {
-  auth(req)
+  checkHeader(req)
   next()
 }
 
-const auth = (req: Request): boolean => {
+const checkHeader = (req: Request): boolean => {
   const auth = req.header('Authorization')
-  req['auth'] = {}
+  const result = checkAuthorization(auth)
+  if (result == null) {
+    req['auth'] = {}
+    return false
+  } else {
+    req['auth'] = result
+    return true
+  }
+}
 
+const checkAuthorization = (t: string | undefined): Payload | null => {
   try {
-    if (auth == null) {
-      return false
+    if (t == null) {
+      return null
     }
-    const list = auth.split(' ')
+    const list = t.split(' ')
     if (list[0].toLowerCase() != 'bearer') {
-      return false
+      return null
     }
 
     const token = list[1]
     const verify = jwt.verify(token, process.env.JWT_KEY)
 
     if (verify.exp < new Date().getTime() * 0.001) {
-      return false
+      return null
     }
 
-    req['auth'] = verify
-    return true
+    return verify
   } catch (e) {
-    return false
+    return null
   }
+}
+
+interface Payload {
+  userId: number
+  gender: string
+  email: string
 }
