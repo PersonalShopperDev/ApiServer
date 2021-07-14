@@ -42,44 +42,56 @@ export default class ChatSocket {
   }
 
   private onSendMsg = async (socket: Socket, userId: number, data) => {
-    const { roomId, msg } = JSON.parse(data)
+    try {
+      const { roomId, msg } = data
 
-    if (isNaN(Number(roomId)) || msg == null) {
-      socket.emit('error', 422)
-      return
+      if (isNaN(Number(roomId)) || msg == null) {
+        socket.emit('error', 422)
+        return
+      }
+
+      await this.model.saveMsg(roomId, userId, 0, msg, null)
+
+      socket
+        .to(roomId.toString())
+        .emit('receiveMsg', { roomId, msg, chatType: 0 })
+    } catch (e) {
+      socket.emit('error', 500)
     }
-
-    await this.model.saveMsg(roomId, userId, 0, msg, null)
-
-    socket
-      .to(roomId.toString())
-      .emit('receiveMsg', { roomId, msg, chatType: 0 })
   }
   private onSendEstimate = async (socket: Socket, userId: number, data) => {
-    const { roomId, msg, price } = JSON.parse(data)
+    try {
+      const { roomId, msg, price } = data
 
-    if (isNaN(Number(roomId)) || msg == null || isNaN(Number(price))) {
-      socket.emit('error', 422)
-      return
+      if (isNaN(Number(roomId)) || msg == null || isNaN(Number(price))) {
+        socket.emit('error', 422)
+        return
+      }
+
+      await this.model.saveMsg(roomId, userId, 1, msg, price)
+
+      socket
+        .to(roomId.toString())
+        .emit('receiveMsg', { roomId, msg, price, chatType: 1 })
+    } catch (e) {
+      socket.emit('error', 500)
     }
-
-    await this.model.saveMsg(roomId, userId, 1, msg, price)
-
-    socket
-      .to(roomId.toString())
-      .emit('receiveMsg', { roomId, msg, price, chatType: 1 })
   }
   private onSendCoord = async (data) => {}
 
   private onResponseEstimate = async (socket: Socket, userId: number, data) => {
-    const { roomId, value } = JSON.parse(data)
-    if (isNaN(Number(roomId)) || typeof value == 'boolean') {
-      socket.emit('error', 422)
-      return
+    try {
+      const { roomId, value } = data
+      if (isNaN(Number(roomId)) || typeof value == 'boolean') {
+        socket.emit('error', 422)
+        return
+      }
+
+      await this.model.saveMsg(roomId, userId, 3, value, null)
+
+      socket.to(roomId.toString()).emit('responseEstimate', { roomId, value })
+    } catch (e) {
+      socket.emit('error', 500)
     }
-
-    await this.model.saveMsg(roomId, userId, 3, value, null)
-
-    socket.to(roomId.toString()).emit('responseEstimate', { roomId, value })
   }
 }
