@@ -24,7 +24,7 @@ export default class ChatSocket {
 
     const chatRoomList = await this.model.getChatRooms(jwt.userId)
 
-    socket.join(chatRoomList.map((roomId) => roomId.toString()))
+    socket.join(chatRoomList.map((item) => item.roomId.toString()))
 
     socket.on('sendMsg', async (data) => {
       await this.onSendMsg(socket, userId, data)

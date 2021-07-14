@@ -1,17 +1,22 @@
 import { Banner } from '../home/home-type'
 import db from '../../config/db'
 import { RowDataPacket } from 'mysql2'
+import { ChatRoomData } from './chat-type'
 
 export default class ChatModel {
-  getChatRooms = async (userId: number): Promise<Array<number>> => {
+  getChatRooms = async (userId: number): Promise<ChatRoomData[]> => {
     const connection = await db.getConnection()
     try {
-      const sql =
-        'SELECT chat_room_id as roomId FROM chat_user WHERE user_id = :userId'
+      const sql = `SELECT a.chat_room_id as roomId, users FROM chat_user a
+LEFT JOIN (
+    SELECT chat_room_id, json_arrayagg(user_id) as users FROM chat_user GROUP BY chat_room_id
+) b ON a.chat_room_id = b.chat_room_id
+WHERE user_id = :userId;`
+
       const value = { userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-      return rows.map((row) => row.roomId)
+      return rows as ChatRoomData[]
     } catch (e) {
       throw e
     } finally {

@@ -53,3 +53,7 @@
   $ref: 'review.yaml#/path/~1review~1{id}'
 /review/{id}/coord:
   $ref: 'review.yaml#/path/~1review~1{id}~1coord'
+
+
+/chat:
+  $ref: 'chat.yaml#/path/~1chat'
