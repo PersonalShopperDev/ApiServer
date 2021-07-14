@@ -7,7 +7,7 @@
     "deploy": "npm run build && npm run docs && eb deploy",
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "npm run docs && nodemon --exec ts-node -r dotenv/config src/server.ts",
+    "dev": "npm run docs && ts-node -r dotenv/config src/server.ts",
     "docs": "swagger-cli bundle -t yaml -o dist/docs.yaml -r docs/swagger.yaml",
     "test": "mocha -r ts-node/register ./test/**/*.test.ts",
     "lint": "eslint src/**/*.ts",
