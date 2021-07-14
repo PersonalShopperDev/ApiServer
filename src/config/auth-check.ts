@@ -31,7 +31,9 @@ const checkHeader = (req: Request): boolean => {
   }
 }
 
-const checkAuthorization = (t: string | undefined): Payload | null => {
+export const checkAuthorization = (
+  t: string | undefined,
+): JwtPayload | null => {
   try {
     if (t == null) {
       return null
@@ -54,8 +56,8 @@ const checkAuthorization = (t: string | undefined): Payload | null => {
   }
 }
 
-interface Payload {
+export interface JwtPayload {
   userId: number
-  gender: string
-  email: string
+  gender: string | undefined
+  email: string | undefined
 }
