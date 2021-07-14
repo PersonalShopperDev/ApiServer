@@ -36,7 +36,9 @@ export default class ChatSocket {
 
     socket.on('sendCoord', this.onSendCoord)
 
-    socket.on('responseEstimate', this.onResponseEstimate)
+    socket.on('responseEstimate', async (data) => {
+      await this.onResponseEstimate(socket, userId, data)
+    })
   }
 
   private onSendMsg = async (socket: Socket, userId: number, data) => {
@@ -68,5 +70,16 @@ export default class ChatSocket {
       .emit('receiveMsg', { roomId, msg, price, chatType: 1 })
   }
   private onSendCoord = async (data) => {}
-  private onResponseEstimate = async (data) => {}
+
+  private onResponseEstimate = async (socket: Socket, userId: number, data) => {
+    const { roomId, value } = JSON.parse(data)
+    if (isNaN(Number(roomId)) || typeof value == 'boolean') {
+      socket.emit('error', 422)
+      return
+    }
+
+    await this.model.saveMsg(roomId, userId, 3, value, null)
+
+    socket.to(roomId.toString()).emit('responseEstimate', { roomId, value })
+  }
 }
