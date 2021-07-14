@@ -7,11 +7,11 @@ export default class ChatModel {
     const connection = await db.getConnection()
     try {
       const sql =
-        'SELECT chat_id as chatId FROM chat_user WHERE user_id = :userId'
+        'SELECT chat_room_id as roomId FROM chat_user WHERE user_id = :userId'
       const value = { userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-      return rows.map((row) => row.chatId)
+      return rows.map((row) => row.roomId)
     } catch (e) {
       throw e
     } finally {
@@ -20,15 +20,17 @@ export default class ChatModel {
   }
 
   saveMsg = async (
-    chatId: number,
+    roomId: number,
     userId: number,
+    type: number,
     msg: string,
+    sub: string | null,
   ): Promise<void> => {
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO chat_history(chat_id,user_id,msg) VALUES(:chatId, :userId, :msg)'
-      const value = { userId, chatId, msg }
+        'INSERT INTO chat_history(chat_room_id, user_id, type, msg, subData) VALUES(:roomId, :userId, :type, :msg, :sub)'
+      const value = { userId, roomId, msg, type, sub }
       await connection.query(sql, value)
     } catch (e) {
       throw e

@@ -17,13 +17,15 @@ export default class ChatSocket {
 
     const chatRoomList = await this.model.getChatRooms(jwt.userId)
 
-    socket.join(chatRoomList.map((chatId) => chatId.toString()))
+    socket.join(chatRoomList.map((roomId) => roomId.toString()))
 
     socket.on('sendMsg', async (data) => {
-      this.onSendMsg(socket, userId, data)
+      await this.onSendMsg(socket, userId, data)
     })
 
-    socket.on('sendEstimate', this.onSendEstimate)
+    socket.on('sendEstimate', async (data) => {
+      await this.onSendEstimate(socket, userId, data)
+    })
 
     socket.on('sendCoord', this.onSendCoord)
 
@@ -31,20 +33,33 @@ export default class ChatSocket {
   }
 
   private onSendMsg = async (socket: Socket, userId: number, data) => {
-    const { chatId, msg } = JSON.parse(data)
+    const { roomId, msg } = JSON.parse(data)
 
-    if (isNaN(Number(chatId)) || msg == null) {
+    if (isNaN(Number(roomId)) || msg == null) {
       socket.emit('error', 422)
       return
     }
 
-    await this.model.saveMsg(chatId, userId, msg)
+    await this.model.saveMsg(roomId, userId, 0, msg, null)
 
     socket
-      .to(chatId.toString())
-      .emit('receiveMsg', { chatId, msg, chatType: 0 })
+      .to(roomId.toString())
+      .emit('receiveMsg', { roomId, msg, chatType: 0 })
   }
-  private onSendEstimate = async (data) => {}
+  private onSendEstimate = async (socket: Socket, userId: number, data) => {
+    const { roomId, msg, price } = JSON.parse(data)
+
+    if (isNaN(Number(roomId)) || msg == null || isNaN(Number(price))) {
+      socket.emit('error', 422)
+      return
+    }
+
+    await this.model.saveMsg(roomId, userId, 1, msg, price)
+
+    socket
+      .to(roomId.toString())
+      .emit('receiveMsg', { roomId, msg, price, chatType: 1 })
+  }
   private onSendCoord = async (data) => {}
   private onResponseEstimate = async (data) => {}
 }
