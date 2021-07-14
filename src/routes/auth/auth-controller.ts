@@ -3,6 +3,8 @@ import AuthService from './auth-service'
 import { validationResult } from 'express-validator'
 
 export default class AuthController {
+  service = new AuthService()
+
   login = async (req: Request, res: Response): Promise<void> => {
     if (!validationResult(req).isEmpty()) {
       res.sendStatus(422)
@@ -11,8 +13,7 @@ export default class AuthController {
     try {
       const { resource, token } = req.body
 
-      const service = new AuthService()
-      const result = await service.login(resource, token)
+      const result = await this.service.login(resource, token)
 
       if (result) {
         res.status(200).send(result)
@@ -31,8 +32,7 @@ export default class AuthController {
     try {
       const { refreshToken } = req.body
 
-      const service = new AuthService()
-      const result = await service.newTokenWithRefreshToken(refreshToken)
+      const result = await this.service.newTokenWithRefreshToken(refreshToken)
 
       if (result) {
         res.status(200).send(result)
@@ -55,14 +55,36 @@ export default class AuthController {
     }
     try {
       const { userId } = req['auth']
-      const service = new AuthService()
-      const result = await service.withdraw(userId)
+      const result = await this.service.withdraw(userId)
 
       if (result) {
         res.sendStatus(200)
       } else {
         res.sendStatus(400)
       }
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  getAgreement = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req['auth']
+      const result = await this.service.getAgreement(userId)
+
+      res.status(200).send(result)
+    } catch (e) {
+      console.log(e)
+      res.sendStatus(500)
+    }
+  }
+  setAgreement = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req['auth']
+      const { terms, privacy } = req.body
+      await this.service.setAgreement(userId, terms, privacy)
+
+      res.sendStatus(200)
     } catch (e) {
       res.sendStatus(500)
     }

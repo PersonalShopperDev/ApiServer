@@ -14,6 +14,9 @@ router.post(
   authController.login,
 )
 
+router.get('/agreement', AuthRequire, authController.getAgreement)
+router.put('/agreement', AuthRequire, authController.setAgreement)
+
 router.post('/token', body('refreshToken').isBase64(), authController.getToken)
 
 router.delete('/withdraw', AuthRequire, authController.withdraw)

@@ -36,6 +36,7 @@ export default class OnboardController {
   putOnboard = async (req: Request, res: Response): Promise<void> => {
     if (!validationResult(req).isEmpty()) {
       res.sendStatus(422)
+      return
     }
 
     const { userId } = req['auth']

@@ -279,4 +279,43 @@ export class UserManager {
       connection.release()
     }
   }
+
+  static getAgreement = async (
+    userId: number,
+  ): Promise<{
+    trems: number
+    privacy: number
+  }> => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'SELECT agreement_terms as terms, agreement_privacy as privacy FROM users WHERE user_id=:userId'
+      const value = { userId }
+      const [rows] = await connection.query(sql, value)
+
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  static setAgreement = async (
+    userId: number,
+    terms: number,
+    privacy: number,
+  ): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'UPDATE users SET agreement_terms=:terms, agreement_privacy=:privacy WHERE user_id=:userId'
+      const value = { userId, terms, privacy }
+      await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
 }

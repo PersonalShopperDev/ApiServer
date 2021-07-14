@@ -66,4 +66,23 @@ export default class AuthService {
 
     return { accessToken, refreshToken }
   }
+
+  getAgreement = async (
+    userId: number,
+  ): Promise<{
+    trems: number
+    privacy: number
+  }> => {
+    return await UserManager.getAgreement(userId)
+  }
+
+  setAgreement = async (
+    userId: number,
+    terms: number,
+    privacy: number,
+  ): Promise<void> => {
+    //TOOD : Check Max Version
+
+    await UserManager.setAgreement(userId, terms, privacy)
+  }
 }
