@@ -2,6 +2,13 @@ import { Socket } from 'socket.io'
 import { checkAuthorization, JwtPayload } from '../../config/auth-check'
 import ChatModel from './chat-model'
 export default class ChatSocket {
+  private static instance: ChatSocket
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  private constructor() {}
+  static getInstance = (): ChatSocket => {
+    return ChatSocket.instance || (ChatSocket.instance = new ChatSocket())
+  }
+
   private model = new ChatModel()
 
   connect = async (socket: Socket) => {
