@@ -67,22 +67,35 @@ export default class AuthService {
     return { accessToken, refreshToken }
   }
 
+  private maxTerms = 1
+  private maxPrivacy = 1
+
   getAgreement = async (
     userId: number,
   ): Promise<{
-    trems: number
+    terms: number
     privacy: number
+    maxTerms: number
+    maxPrivacy: number
   }> => {
-    return await UserManager.getAgreement(userId)
+    const result = await UserManager.getAgreement(userId)
+
+    return {
+      ...result,
+      maxTerms: this.maxTerms,
+      maxPrivacy: this.maxPrivacy,
+    }
   }
 
   setAgreement = async (
     userId: number,
     terms: number,
     privacy: number,
-  ): Promise<void> => {
-    //TOOD : Check Max Version
-
+  ): Promise<boolean> => {
+    if (terms > this.maxTerms || privacy > this.maxPrivacy) {
+      return false
+    }
     await UserManager.setAgreement(userId, terms, privacy)
+    return true
   }
 }

@@ -74,7 +74,6 @@ export default class AuthController {
 
       res.status(200).send(result)
     } catch (e) {
-      console.log(e)
       res.sendStatus(500)
     }
   }
@@ -82,9 +81,13 @@ export default class AuthController {
     try {
       const { userId } = req['auth']
       const { terms, privacy } = req.body
-      await this.service.setAgreement(userId, terms, privacy)
+      const result = await this.service.setAgreement(userId, terms, privacy)
 
-      res.sendStatus(200)
+      if (result) {
+        res.sendStatus(200)
+      } else {
+        res.sendStatus(400)
+      }
     } catch (e) {
       res.sendStatus(500)
     }

@@ -283,7 +283,7 @@ export class UserManager {
   static getAgreement = async (
     userId: number,
   ): Promise<{
-    trems: number
+    terms: number
     privacy: number
   }> => {
     const connection = await db.getConnection()

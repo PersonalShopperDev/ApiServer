@@ -15,7 +15,13 @@ router.post(
 )
 
 router.get('/agreement', AuthRequire, authController.getAgreement)
-router.put('/agreement', AuthRequire, authController.setAgreement)
+router.put(
+  '/agreement',
+  body('terms'),
+  body('privacy'),
+  AuthRequire,
+  authController.setAgreement,
+)
 
 router.post('/token', body('refreshToken').isBase64(), authController.getToken)
 
