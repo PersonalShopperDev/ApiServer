@@ -12,9 +12,14 @@ export default class S3 {
     region: process.env.AWS_REGION,
   })
 
+  private resourceBucket =
+    process.env.NODE_MODE == 'production'
+      ? 'personal-shopper-resource'
+      : 'personal-shopper-resource-dev'
+
   download = async (key: string) => {
     const params = {
-      Bucket: 'personal-shopper-resource',
+      Bucket: this.resourceBucket,
       Key: key,
     }
 
@@ -23,7 +28,7 @@ export default class S3 {
 
   upload = async (key, mimetype, buffer) => {
     const params = {
-      Bucket: 'personal-shopper-resource',
+      Bucket: this.resourceBucket,
       Key: key,
       ContentType: mimetype,
       Body: buffer,
@@ -38,21 +43,10 @@ export default class S3 {
     }
   }
 
-  copy = async (oldKey: string, newKey: string) => {
-    const bucket = 'personal-shopper-resource'
-    const params = {
-      Bucket: bucket /* Another bucket working fine */,
-      CopySource: `${bucket}/${oldKey}` /* required */,
-      Key: newKey /* required */,
-      ACL: 'private',
-    }
-    await this.s3.copyObject(params).promise()
-  }
-
   uploadProfile = multer({
     storage: multerS3({
       s3: this.s3,
-      bucket: 'personal-shopper-resource',
+      bucket: this.resourceBucket,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'private',
       key: function (req, file, cb) {
@@ -64,7 +58,7 @@ export default class S3 {
   uploadCloset = multer({
     storage: multerS3({
       s3: this.s3,
-      bucket: 'personal-shopper-resource',
+      bucket: this.resourceBucket,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'private',
       key: function (req, file, cb) {
@@ -76,7 +70,7 @@ export default class S3 {
   uploadLookbook = multer({
     storage: multerS3({
       s3: this.s3,
-      bucket: 'personal-shopper-resource',
+      bucket: this.resourceBucket,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'private',
       key: function (req, file, cb) {
@@ -95,7 +89,7 @@ export default class S3 {
     },
     storage: multerS3({
       s3: this.s3,
-      bucket: 'personal-shopper-resource',
+      bucket: this.resourceBucket,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       acl: 'private',
       key: function (req, file, cb) {
