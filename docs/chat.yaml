@@ -36,3 +36,24 @@ path:
       tags: [ Chat ]
       security:
         - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetId:
+                  type: number
+                  description: 대화할 상대 User Id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roomId:
+                    type: number
+                    description: 생성된 채팅방 ID
+

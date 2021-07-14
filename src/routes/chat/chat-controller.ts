@@ -18,4 +18,20 @@ export default class ChatController {
       res.sendStatus(500)
     }
   }
+
+  newChatList = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req['auth']
+      const { targetId } = req.body
+      const result = await this.service.newChatList(userId, targetId)
+
+      if (result == null) {
+        res.sendStatus(400)
+      } else {
+        res.status(200).json(result)
+      }
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
 }
