@@ -11,6 +11,16 @@ components:
             refreshToken:
               type: string
               description: 로그인 할 때, refreshToken 유효 시간이 얼마 남지 않았을 때 새로 발급
+  agreement:
+    type: object
+    properties:
+      terms:
+        type: number
+        format: 동의한 이용 약관 버전
+      privacy:
+        type: number
+        description: 동의한 개인정보 보호 버전
+
 path :
   /auth/test:
     get:
@@ -75,6 +85,41 @@ path :
           description: refreshToken is invalid
         '422':
           $ref: './swagger.yaml#/components/Errors/ParameterError'
+  /auth/agreement:
+    get:
+      summary: 동의 정보 버전 확인
+      description: 회원 탈퇴
+      tags: [ Auth ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/agreement'
+                required:
+                  - terms
+                  - privacy
+    put:
+      summary: 동의 정보 버전 수정
+      description: 회원 탈퇴
+      tags: [ Auth ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/agreement'
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad Request, 버전 범위가 벗어나도 해당 에러를 발생합니다.
+
+
   /auth/withdraw:
     delete:
       summary: With Draw User

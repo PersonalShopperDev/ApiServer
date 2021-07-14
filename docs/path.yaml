@@ -2,6 +2,8 @@
   $ref: 'auth.yaml#/path/~1auth~1login'
 /auth/token:
   $ref: 'auth.yaml#/path/~1auth~1token'
+/auth/agreement:
+  $ref: 'auth.yaml#/path/~1auth~1agreement'
 /auth/withdraw:
   $ref: 'auth.yaml#/path/~1auth~1withdraw'
 /auth/test:
