@@ -24,8 +24,13 @@ export default class ReviewController {
       }
 
       await this.service.saveReview(coordId, req.body)
-      await this.service.saveBeforeImage(userId, coordId, req['files'].before)
-      await this.service.saveAfterImage(userId, coordId, req['files'].after)
+
+      const { beforeImg, afterImg } = req['files']
+
+      if (beforeImg != null)
+        await this.service.saveBeforeImage(userId, coordId, beforeImg)
+      if (afterImg != null)
+        await this.service.saveAfterImage(userId, coordId, afterImg)
 
       res.sendStatus(200)
     } catch (e) {
