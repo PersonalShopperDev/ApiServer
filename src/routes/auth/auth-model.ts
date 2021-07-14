@@ -59,7 +59,6 @@ export class NaverAuth implements AuthThirdParty {
   }
 
   async updateUserData(userData: UserData): Promise<number | null> {
-    const userManager = new UserManager()
     return await UserManager.updateUserData('naver', userData)
   }
 }
@@ -93,7 +92,7 @@ export class KaKaoAuth implements AuthThirdParty {
         id: String(id),
         gender: has_gender ? (gender === 'female' ? 'F' : 'M') : undefined,
         email,
-        birthday: `${birthyear}${birthday}`,
+        // birthday: `${birthyear}${birthday}`,
         phone: mobile,
       }
     } catch (e) {
@@ -237,9 +236,9 @@ export class UserManager {
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO users(birthday, gender, phone, email, third_party, third_party_id)' +
+        'INSERT IGNORE INTO users(birthday, gender, phone, email, third_party, third_party_id)' +
         ' VALUES (:birthday, :gender, :phone, :email, :resource, :id)' +
-        ' ON DUPLICATE KEY UPDATE birthday=:birthday,phone=:phone,email=:email'
+        (userData.email != null ? ' ON DUPLICATE KEY UPDATE email=:email' : '')
       const value = {
         resource,
         id: userData.id,
