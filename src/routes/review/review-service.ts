@@ -5,6 +5,7 @@ import StyleModel from '../style/style-model'
 import { UserManager } from '../auth/auth-model'
 import ResourceModel from '../resource/resource-model'
 import ResourcePath from '../resource/resource-path'
+import Data from '../../data/data'
 
 export default class ReviewService {
   model = new ReviewModel()
@@ -55,7 +56,7 @@ export default class ReviewService {
       profile: ResourcePath.profileImg(profile),
       img: ResourcePath.coordImg(img),
       title: `${name} 스타일리스트의 코디`,
-      styleTypeList: StyleModel.getStyleTypeList(type),
+      styleTypeList: Data.getStyleItemList(type),
     }
   }
 }

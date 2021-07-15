@@ -3,6 +3,7 @@ import { Supplier } from './supplier-type'
 import { RowDataPacket } from 'mysql2'
 import StyleModel from '../style/style-model'
 import ResourcePath from '../resource/resource-path'
+import Data from '../../data/data'
 
 export default class SupplierModel {
   getStyleTypeId = async (userId: number): Promise<number[] | null> => {
@@ -70,12 +71,7 @@ LIMIT :pageOffset, :pageAmount;
         img: ResourcePath.profileImg(row.img),
         name: row.name,
         price: row.price,
-        styleType:
-          row.type == null
-            ? []
-            : row.type.map((id) => {
-                return { id, value: StyleModel.convertStyleIdToValue(id) }
-              }),
+        styleType: row.type == null ? [] : Data.getStyleItemList(row.type),
         hireCount: row.hireCount,
         reviewCount: row.reviewCount,
         rating: row.rating,

@@ -228,7 +228,7 @@ export default class ProfileService {
         profileImg: ResourcePath.profileImg(profileImg),
         date: `${year}-${month}-${day}`,
         body: Data.getBodyItem(onboard['body']),
-        styleTypeList: StyleModel.getStyleTypeList(type),
+        styleTypeList: Data.getStyleItemList(type),
         weight: undefined,
         height: undefined,
       }

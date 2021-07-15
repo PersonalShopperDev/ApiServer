@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "style": 122,
+    "img": "01.jpeg"
+  },
+  {
+    "id": 10,
+    "style": 122,
+    "img": "10.jpeg"
+  },
+  {
+    "id": 26,
+    "style": 112,
+    "img": "26.jpeg"
+  },
+  {
+    "id": 26,
+    "style": 112,
+    "img": "26.jpeg"
+  },
+  {
+    "id": 12,
+    "style": 102,
+    "img": "12.jpeg"
+  },
+  {
+    "id": 24,
+    "style": 102,
+    "img": "24.jpeg"
+  },
+  {
+    "id": 23,
+    "style": 92,
+    "img": "23.jpeg"
+  },
+  {
+    "id": 29,
+    "style": 82,
+    "img": "29.jpeg"
+  },
+  {
+    "id": 30,
+    "style": 82,
+    "img": "30.jpeg"
+  },
+  {
+    "id": 8,
+    "style": 72,
+    "img": "08.jpeg"
+  },
+  {
+    "id": 14,
+    "style": 72,
+    "img": "14.jpeg"
+  },
+  {
+    "id": 19,
+    "style": 62,
+    "img": "19.jpeg"
+  },
+  {
+    "id": 32,
+    "style": 52,
+    "img": "32.jpeg"
+  },
+  {
+    "id": 31,
+    "style": 52,
+    "img": "31.jpeg"
+  },
+  {
+    "id": 11,
+    "style": 42,
+    "img": "11.jpeg"
+  },
+  {
+    "id": 28,
+    "style": 42,
+    "img": "28.jpeg"
+  },
+  {
+    "id": 3,
+    "style": 32,
+    "img": "03.jpeg"
+  },
+  {
+    "id": 21,
+    "style": 32,
+    "img": "21.jpeg"
+  },
+  {
+    "id": 9,
+    "style": 22,
+    "img": "09.jpeg"
+  },
+  {
+    "id": 6,
+    "style": 12,
+    "img": "06.jpeg"
+  },
+  {
+    "id": 4,
+    "style": 12,
+    "img": "04.jpeg"
+  }
+]

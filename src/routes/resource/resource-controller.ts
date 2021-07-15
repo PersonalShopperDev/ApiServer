@@ -31,4 +31,17 @@ export default class ResourceController {
       res.end(result)
     }
   }
+
+  getStyle = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params
+
+    const result = Data.getStyleImg(id)
+
+    if (result == null) {
+      res.sendStatus(404)
+    } else {
+      res.contentType('image/jpeg')
+      res.end(result)
+    }
+  }
 }

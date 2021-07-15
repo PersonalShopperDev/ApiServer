@@ -95,4 +95,23 @@ export default class StyleController {
       res.sendStatus(500)
     }
   }
+
+  putStyleByImg = async (req: Request, res: Response): Promise<void> => {
+    if (!validationResult(req).isEmpty()) {
+      res.sendStatus(422)
+      return
+    }
+
+    const { userId } = req['auth']
+
+    const { list } = req.body
+    try {
+      await this.service.saveStyleByImg(userId, list)
+
+      res.sendStatus(200)
+    } catch (e) {
+      console.log(e)
+      res.sendStatus(500)
+    }
+  }
 }

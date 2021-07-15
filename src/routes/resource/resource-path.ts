@@ -32,4 +32,8 @@ export default class ResourcePath {
   static bodyImg = (id: number): string => {
     return `${ResourcePath.baseURL}body/${id}.png`
   }
+
+  static styleImg = (file: string): string => {
+    return `${ResourcePath.baseURL}style/${file}`
+  }
 }

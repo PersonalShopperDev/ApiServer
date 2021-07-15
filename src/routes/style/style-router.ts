@@ -11,6 +11,11 @@ router.get('/supply', AuthRequire, controller.getStyleSupply)
 router.get('/img', AuthCheck, controller.getStyleImg)
 
 router.put('/', body('list').isArray(), AuthRequire, controller.putStyle)
-router.put('/img', body('list').isArray(), AuthRequire, controller.putStyle)
+router.put(
+  '/img',
+  body('list').isArray(),
+  AuthRequire,
+  controller.putStyleByImg,
+)
 
 export default router
