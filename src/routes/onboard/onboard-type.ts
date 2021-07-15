@@ -16,8 +16,6 @@ export const OnBoardingDataFields = [
   'hatPrice',
   'bagPrice',
   'accessoryPrice',
-  'supplyMale',
-  'supplyFemale',
   'career',
 ]
 

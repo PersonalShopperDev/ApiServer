@@ -1,10 +1,9 @@
-import ProfileModel from '../onboard/onboard-model'
+import OnboardModel from '../onboard/onboard-model'
 import StyleModel from './style-model'
-import { OnboardSupplier } from '../onboard/onboard-type'
 import Data from '../../data/data'
 
 export default class StyleService {
-  profileModel = new ProfileModel()
+  onboardModel = new OnboardModel()
   model = new StyleModel()
 
   getStyleTypeList = (M: boolean | undefined, F: boolean | undefined) => {
@@ -15,7 +14,7 @@ export default class StyleService {
     }
 
     if (F) {
-      result['male'] = Data.getStyleList('F')
+      result['female'] = Data.getStyleList('F')
     }
 
     return result
@@ -41,12 +40,18 @@ export default class StyleService {
     return array
   }
 
-  getSupplyGender = async (userId: number): Promise<OnboardSupplier> => {
-    const { onboard } = await this.profileModel.getOnboardData(userId)
-    if (onboard == null) {
-      return {} as OnboardSupplier
+  getSupplyGender = async (
+    userId: number,
+  ): Promise<{ supplyMale: boolean; supplyFemale: boolean }> => {
+    const {
+      supplyMale,
+      supplyFemale,
+    } = await this.onboardModel.getSupplyGender(userId)
+
+    return {
+      supplyMale,
+      supplyFemale,
     }
-    return onboard as OnboardSupplier
   }
 
   saveStyle = async (userId: number, styles: number[]): Promise<void> => {

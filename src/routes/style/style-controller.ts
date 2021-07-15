@@ -46,7 +46,7 @@ export default class StyleController {
         userId,
       )
 
-      if (supplyMale == null && supplyFemale == null) {
+      if (!supplyMale && !supplyFemale) {
         res.sendStatus(400)
         return
       }

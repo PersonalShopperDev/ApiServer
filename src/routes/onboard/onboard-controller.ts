@@ -40,10 +40,21 @@ export default class OnboardController {
     }
 
     const { userId } = req['auth']
-    const data = req.body as OnboardDemanderPut | OnboardSupplierPut
+    const data = req.body
 
     try {
-      await this.service.saveOnboardData(userId, data)
+      switch (data.userType) {
+        case 'D':
+          await this.service.saveDemander(userId, data)
+          break
+        case 'S':
+          await this.service.saveSupplier(userId, data)
+          break
+        default:
+          res.sendStatus(400)
+          return
+      }
+
       res.sendStatus(200)
     } catch (e) {
       res.sendStatus(500)
@@ -51,11 +62,11 @@ export default class OnboardController {
   }
 
   patchOnboard = async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req['auth']
+    const { userId, userType } = req['auth']
     const data = req.body as OnboardDemander | OnboardSupplier
 
     try {
-      await this.service.updateOnBoardData(userId, data)
+      await this.service.updateOnBoardData(userId, userType, data)
 
       res.sendStatus(200)
     } catch (e) {
