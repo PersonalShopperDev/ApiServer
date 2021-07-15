@@ -1,0 +1,59 @@
+path:
+  /chat:
+    get:
+      summary: 사용자의 Chat 목록
+      description: 사용자가 여태 연락한 채팅방 목록, 페이징 처리
+      tags: [ Chat ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: './swagger.yaml#/components/Request/page'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        roomId:
+                          type: number
+                          description: 채팅방 ID
+                        users:
+                          type: array
+                          description: 채팅방에 존재하는 User Id List
+                          items:
+                            type: number
+
+    post:
+      summary: 새로운 채팅방 개설
+      description: 사용자가 여태 연락한 채팅방 목록, 페이징 처리
+      tags: [ Chat ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetId:
+                  type: number
+                  description: 대화할 상대 User Id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roomId:
+                    type: number
+                    description: 생성된 채팅방 ID
+
