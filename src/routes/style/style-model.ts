@@ -38,14 +38,19 @@ export default class StyleModel {
 
   static getUserStyle = async (userId: number): Promise<StyleType[]> => {
     const connection = await db.getConnection()
-    const sql = 'SELECT style_id as id FROM user_style WHERE user_id=:userId'
+    try {
+      const sql = 'SELECT style_id as id FROM user_style WHERE user_id=:userId'
 
-    const value = { userId }
+      const value = { userId }
 
-    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-    connection.release()
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-    return Data.getStyleItemList(rows as { id: number }[])
+      return Data.getStyleItemList(rows.map((row) => row.id))
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
   }
 
   static getUserStyleOnlyValue = async (userId: number): Promise<string[]> => {

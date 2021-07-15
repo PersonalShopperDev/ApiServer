@@ -65,14 +65,13 @@ export default class Data {
     }
   }
 
-  static getStyleItemList(id: Array<number | { id: number }>): IdValuePair[] {
+  static getStyleItemList(id: Array<number>): IdValuePair[] {
     return id.map((item) => {
       return this.getStyleItem(item)
     })
   }
 
-  static getStyleItem(item: number | { id: number }): IdValuePair {
-    const id = isNaN(Number(item)) ? item : item['id']
+  static getStyleItem(id: number): IdValuePair {
     const gender = Data.idToGender(id)
     const json: IdValuePair[] = this.getStyleList(gender)
 
