@@ -9,29 +9,22 @@ export default class StyleController {
     const { userId, gender } = req['auth']
 
     try {
-      const { male, female } = req.query as any
-      let supplyMale: boolean | undefined
-      let supplyFemale: boolean | undefined
+      let { male, female } = req.query as any
 
-      if (gender == 'M') {
-        supplyMale = true
-      } else if (gender == 'F') {
-        supplyFemale = true
+      if (male == null && female == null) {
+        if (gender == 'M') {
+          male = true
+        } else if (gender == 'F') {
+          female = true
+        }
       }
 
-      if (male != null) {
-        supplyMale = male
-      }
-      if (female != null) {
-        supplyFemale = female
-      }
-
-      if (supplyMale == null && supplyFemale == null) {
+      if (male == null && female == null) {
         res.sendStatus(400)
         return
       }
 
-      const result = this.service.getStyleTypeList(supplyMale, supplyFemale)
+      const result = this.service.getStyleTypeList(male, female)
       res.status(200).json(result)
     } catch (e) {
       res.sendStatus(500)
