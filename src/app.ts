@@ -23,7 +23,7 @@ const corsUrl =
         'https://yourpersonalshoppers.com/',
         'https://www.yourpersonalshoppers.com/',
       ]
-    : ['http://localhost', 'http://amritb.github.io']
+    : '*'
 
 const corsOptions = {
   origin: corsUrl,
