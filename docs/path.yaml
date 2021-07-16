@@ -57,3 +57,5 @@
 
 /chat:
   $ref: 'chat.yaml#/path/~1chat'
+/chat/history:
+  $ref: 'chat.yaml#/path/~1chat~1history'

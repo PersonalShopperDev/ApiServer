@@ -24,12 +24,26 @@ path:
                         roomId:
                           type: number
                           description: 채팅방 ID
-                        users:
-                          type: array
-                          description: 채팅방에 존재하는 User Id List
-                          items:
-                            type: number
-
+                        targetUser:
+                          type: object
+                          description: 대화 상대 유저 정보
+                          properties:
+                            id:
+                              type: number
+                              description: user Id
+                            profileImg:
+                              type: string
+                              description: 상대방 유저 프로필 사진 URL
+                            name:
+                              type: sring
+                              description: 상대방 유저 이름
+                        lastChat:
+                          type: string
+                          description: 마지막 대화
+                        lastChatTime:
+                          type: string
+                          description: 마지막 대화 시간
+                          exmaple: 2021-07-16T08:57:51.673Z
     post:
       summary: 새로운 채팅방 개설
       description: 사용자가 여태 연락한 채팅방 목록, 페이징 처리
@@ -57,3 +71,61 @@ path:
                     type: number
                     description: 생성된 채팅방 ID
 
+  /chat/history:
+    get:
+      summary: 채팅 기록
+      description: 사용자가 여태 연락한 채팅방 목록, 페이징 처리 (좀 다르게 되어 있음)
+      tags: [ Chat ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: roomId
+          in: 'query'
+          description: 불러오고자 하는 RoomId
+          required: true
+          schema:
+            type: number
+        - name: olderChatId
+          in: 'query'
+          description: |
+            현재까지 읽어온 Chat 중 가장 오래된 Id
+
+            이 쳇 이전의 체팅을 페이징 형태로 불러온다.
+
+            이 파라미터가 없을 경우 가장 최근을 대화 내역을 보내준다.
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chatList:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        chatId:
+                          type: number
+                          description: 채팅 메시지 ID
+                        chatTime:
+                          type: string
+                          description: 메시지 전송 시간
+                          exmaple: 2021-07-16T08:57:51.673Z
+                        chatType:
+                          type: number
+                          description: |
+                            채팅의 종류
+
+                            0: 일반 메시지
+                            1: 견적서
+                            2: 코디 결과
+                        msg:
+                          type: string
+                          description: 보낸 메시지
+                        price:
+                          type: number
+                          description: 견적서에 함께 적힌 가격
