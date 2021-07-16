@@ -7,7 +7,8 @@ export default class ChatController {
   getChatList = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req['auth']
-      const result = await this.service.getChatList(userId)
+      const { page } = req.query as any
+      const result = await this.service.getChatList(userId, page || 0)
 
       if (result == null) {
         res.sendStatus(400)
@@ -21,9 +22,9 @@ export default class ChatController {
 
   newChatList = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { userId } = req['auth']
+      const { userId, userType } = req['auth']
       const { targetId } = req.body
-      const result = await this.service.newChatList(userId, targetId)
+      const result = await this.service.newChatList(userId, userType, targetId)
 
       if (result == null) {
         res.sendStatus(400)
