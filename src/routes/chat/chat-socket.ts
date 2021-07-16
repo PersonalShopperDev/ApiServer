@@ -50,29 +50,56 @@ export default class ChatSocket {
         return
       }
 
-      await this.model.saveMsg(roomId, userId, 0, msg, null)
+      if (!socket.rooms.has(roomId.toString())) {
+        socket.emit('error', 400)
+        return
+      }
 
-      socket
-        .to(roomId.toString())
-        .emit('receiveMsg', { roomId, msg, chatType: 0 })
+      const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
+
+      socket.to(roomId.toString()).emit('receiveMsg', {
+        roomId,
+        chatId,
+        chatTime: new Date(),
+        msg,
+        chatType: 0,
+      })
     } catch (e) {
       socket.emit('error', 500)
     }
   }
   private onSendEstimate = async (socket: Socket, userId: number, data) => {
     try {
-      const { roomId, msg, price } = data
+      const { roomId, msg, price, account, bank } = data
 
-      if (isNaN(Number(roomId)) || msg == null || isNaN(Number(price))) {
+      if (
+        isNaN(Number(roomId)) ||
+        msg == null ||
+        isNaN(Number(price)) ||
+        account == null ||
+        bank == null
+      ) {
         socket.emit('error', 422)
         return
       }
 
-      await this.model.saveMsg(roomId, userId, 1, msg, price)
+      if (!socket.rooms.has(roomId.toString())) {
+        socket.emit('error', 400)
+        return
+      }
 
-      socket
-        .to(roomId.toString())
-        .emit('receiveMsg', { roomId, msg, price, chatType: 1 })
+      //TODO account / bank 처리
+
+      const chatId = await this.model.saveMsg(roomId, userId, 1, msg, price)
+
+      socket.to(roomId.toString()).emit('receiveMsg', {
+        roomId,
+        chatId,
+        chatTime: new Date(),
+        msg,
+        price,
+        chatType: 1,
+      })
     } catch (e) {
       socket.emit('error', 500)
     }
