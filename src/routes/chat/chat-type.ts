@@ -15,3 +15,34 @@ export interface ChatUserProfile {
   profileImg: string
   name: string
 }
+
+export interface ChatHistoryModel {
+  chatId: number
+  userId: number
+  type: number
+  msg: string
+  subData: string
+  createTime: Date
+}
+
+interface ChatBase {
+  chatId: number
+  chatType: number
+  chatTime: Date
+}
+
+export interface ChatSimpleMsg extends ChatBase {
+  msg: string
+}
+
+export interface ChatEstimate extends ChatBase {
+  msg: string
+  price: number
+}
+
+export interface ChatCoord extends ChatBase {
+  coordTitle: string
+  coordImg: string
+}
+
+export type ChatHistoryData = ChatSimpleMsg | ChatEstimate | ChatCoord

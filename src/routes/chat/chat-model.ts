@@ -1,6 +1,6 @@
 import db from '../../config/db'
 import { RowDataPacket } from 'mysql2'
-import { ChatRoomData, ChatUserProfile } from './chat-type'
+import { ChatHistoryModel, ChatRoomData, ChatUserProfile } from './chat-type'
 
 export default class ChatModel {
   checkSupplier = async (supplierId: number): Promise<boolean> => {
@@ -12,6 +12,27 @@ export default class ChatModel {
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
       return rows[0] != null
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getChatRoom = async (roomId: number): Promise<ChatRoomData> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT demander_id, supplier_id FROM chat_rooms WHERE chat_room_id=:roomId;`
+
+      const value = { roomId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      const row = rows[0]
+
+      return {
+        roomId,
+        users: [row.supplier_id, row.demander_id],
+      }
     } catch (e) {
       throw e
     } finally {
@@ -101,7 +122,7 @@ LIMIT :pageOffset, :pageAmount;`
     }
   }
 
-  getChatRoom = async (
+  getChatRoomId = async (
     demanderId: number,
     supplierId: number,
   ): Promise<number | null> => {
@@ -148,6 +169,33 @@ LIMIT :pageOffset, :pageAmount;`
       const [rows] = await connection.query(sql, value)
 
       return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getChatHistory = async (
+    roomId: number,
+    olderChatId: number | undefined,
+  ): Promise<ChatHistoryModel[]> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT chat_id as chatId, user_id as userId, type, msg, subData, create_time as createTime FROM chat_history
+WHERE chat_room_id = :roomId 
+${olderChatId != undefined ? 'AND chat_id < :olderChatId' : ''}
+ORDER BY chat_id DESC
+LIMIT 50`
+
+      const value = { roomId, olderChatId }
+      const [rows] = await connection.query(sql, value)
+
+      for (const i in rows) {
+        rows[i]['createTime'] = new Date(rows[i]['createTime'])
+      }
+
+      return rows as ChatHistoryModel[]
     } catch (e) {
       throw e
     } finally {

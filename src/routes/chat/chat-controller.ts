@@ -35,4 +35,32 @@ export default class ChatController {
       res.sendStatus(500)
     }
   }
+
+  getChatHistory = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req['auth']
+      const { roomId, olderChatId } = req.query as any
+
+      const targetId = await this.service.checkRoom(roomId, userId)
+
+      if (targetId == null) {
+        res.sendStatus(400)
+        return
+      }
+
+      const chatList = await this.service.getChatHistory(
+        userId,
+        roomId,
+        olderChatId,
+      )
+      const targetUser = await this.service.getProfile(targetId)
+
+      res.status(200).json({
+        chatList,
+        targetUser,
+      })
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
 }
