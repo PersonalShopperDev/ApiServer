@@ -1,15 +1,34 @@
-import { Socket } from 'socket.io'
+import { Namespace, Server, Socket } from 'socket.io'
 import { checkAuthorization, JwtPayload } from '../../config/auth-check'
 import ChatModel from './chat-model'
 export default class ChatSocket {
   private static instance: ChatSocket
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  private constructor() {}
+  private constructor(io: Namespace) {
+    this.io = io
+  }
+
+  private io: Namespace
+  private userSocketMap = {}
+
   static getInstance = (): ChatSocket => {
-    return ChatSocket.instance || (ChatSocket.instance = new ChatSocket())
+    return ChatSocket.instance
+  }
+
+  static createInstance = (io: Namespace): ChatSocket => {
+    return ChatSocket.instance || (ChatSocket.instance = new ChatSocket(io))
   }
 
   private model = new ChatModel()
+
+  newChat = (userIds: number[], roomId: number) => {
+    const socketIds = userIds.map((id) => this.userSocketMap[id])
+    for (const socket of this.io.sockets) {
+      if (socketIds.includes(socket[0])) {
+        socket[1].join(roomId.toString())
+      }
+    }
+  }
 
   connect = async (socket: Socket) => {
     const auth = socket.handshake.auth
@@ -21,6 +40,11 @@ export default class ChatSocket {
     }
 
     const { userId } = jwt
+
+    this.userSocketMap[userId] = socket.id
+    socket.on('disconnect', () => {
+      this.userSocketMap[userId] = undefined
+    })
 
     const chatRoomList = await this.model.getChatRooms(jwt.userId)
 

@@ -1,6 +1,7 @@
 import ChatModel from './chat-model'
 import { ChatRoomData, ChatRoomDetail, ChatUserProfile } from './chat-type'
 import ResourcePath from '../resource/resource-path'
+import ChatSocket from './chat-socket'
 
 export default class ChatService {
   model = new ChatModel()
@@ -49,9 +50,8 @@ export default class ChatService {
     let roomId = await this.model.getChatRoom(demaderId, supplierId)
     if (roomId == null) {
       roomId = await this.model.newChatRoom(demaderId, supplierId)
+      ChatSocket.getInstance().newChat([userId, targetId], roomId)
     }
-
-    // TODO : Chat Socket 처리
 
     return { roomId }
   }

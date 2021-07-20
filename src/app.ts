@@ -69,7 +69,9 @@ app.use('/test', (req: express.Request, res: express.Response) => {
   res.sendStatus(200)
 })
 
-io.of('/chat').on('connect', ChatSocket.getInstance().connect)
+const chatIo = io.of('/chat')
+
+chatIo.on('connect', ChatSocket.createInstance(chatIo).connect)
 
 app.use(function (req: express.Request, res: express.Response) {
   res.sendStatus(404)
