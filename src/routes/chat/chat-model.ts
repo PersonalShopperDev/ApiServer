@@ -106,13 +106,34 @@ LIMIT :pageOffset, :pageAmount;`
     userId: number,
     type: number,
     msg: string,
-    sub: string | null,
+    sub: number | null,
   ): Promise<number> => {
     const connection = await db.getConnection()
     try {
       const sql =
         'INSERT INTO chat_history(chat_room_id, user_id, type, msg, subData) VALUES(:roomId, :userId, :type, :msg, :sub)'
       const value = { userId, roomId, msg, type, sub }
+      const [result] = await connection.query(sql, value)
+
+      return result['insertId']
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  saveEstimate = async (
+    roomId: number,
+    account: string,
+    bank: string,
+    price: number,
+  ): Promise<number> => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'INSERT INTO estimates(chat_room_id, price, account, bank, status) VALUES(:roomId, :price, :account, :bank, 0)'
+      const value = { roomId, account, bank, price }
       const [result] = await connection.query(sql, value)
 
       return result['insertId']
@@ -183,10 +204,11 @@ LIMIT :pageOffset, :pageAmount;`
   ): Promise<ChatHistoryModel[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT chat_id as chatId, user_id as userId, type, msg, subData, create_time as createTime FROM chat_history
-WHERE chat_room_id = :roomId 
-${olderChatId != undefined ? 'AND chat_id < :olderChatId' : ''}
-ORDER BY chat_id DESC
+      const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type, c.msg, e.price, c.create_time as createTime FROM chat_history c
+LEFT JOIN estimates e ON c.subData = e.estimate_id
+WHERE c.chat_room_id = :roomId 
+${olderChatId != undefined ? 'AND c.chat_id < :olderChatId' : ''}
+ORDER BY c.chat_id DESC
 LIMIT 50`
 
       const value = { roomId, olderChatId }

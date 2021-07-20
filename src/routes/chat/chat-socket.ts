@@ -112,9 +112,20 @@ export default class ChatSocket {
         return
       }
 
-      //TODO account / bank 처리
+      const estimateId = await this.model.saveEstimate(
+        roomId,
+        account,
+        bank,
+        price,
+      )
 
-      const chatId = await this.model.saveMsg(roomId, userId, 1, msg, price)
+      const chatId = await this.model.saveMsg(
+        roomId,
+        userId,
+        1,
+        msg,
+        estimateId,
+      )
 
       socket.to(roomId.toString()).emit('receiveMsg', {
         roomId,

@@ -93,37 +93,41 @@ export default class ChatService {
     olderChatId: number | undefined,
   ): Promise<Array<ChatHistoryData>> => {
     const historyList = await this.model.getChatHistory(roomId, olderChatId)
+    const result: ChatHistoryData[] = []
+    for (const item of historyList.reverse()) {
+      const { chatId, createTime, type } = item
+      switch (type) {
+        case 1:
+          result.push({
+            chatId,
+            chatTime: createTime,
+            chatType: type,
+            msg: item.msg,
+            price: item.price,
+          })
+          break
+        case 2:
+          // TODO : Coord
+          // result.push({
+          //   chatId,
+          //   chatTime: createTime,
+          //   chatType: type,
+          //   coordTitle: item.msg,
+          //   coordImg: ResourcePath.coordImg(item.subData),
+          // })
+          break
+        case 0:
+        default:
+          result.push({
+            chatId,
+            chatTime: createTime,
+            chatType: type,
+            msg: item.msg,
+          })
+          break
+      }
+    }
 
-    return historyList
-      .map((item) => {
-        const { chatId, createTime, type } = item
-        switch (type) {
-          case 1:
-            return {
-              chatId,
-              chatTime: createTime,
-              chatType: type,
-              msg: item.msg,
-              price: Number(item.subData),
-            }
-          case 2:
-            return {
-              chatId,
-              chatTime: createTime,
-              chatType: type,
-              coordTitle: item.msg,
-              coordImg: ResourcePath.coordImg(item.subData),
-            }
-          case 0:
-          default:
-            return {
-              chatId,
-              chatTime: createTime,
-              chatType: type,
-              msg: item.msg,
-            }
-        }
-      })
-      .reverse()
+    return result
   }
 }

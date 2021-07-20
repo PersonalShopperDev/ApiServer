@@ -21,7 +21,7 @@ export interface ChatHistoryModel {
   userId: number
   type: number
   msg: string
-  subData: string
+  price: number
   createTime: Date
 }
 
