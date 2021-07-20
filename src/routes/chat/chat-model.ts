@@ -79,6 +79,7 @@ WHERE supplier_id=:userId or demander_id=:userId;`
 RIGHT JOIN (SELECT chat_room_id, MAX(chat_id) AS lastChatId FROM chat_history GROUP BY chat_room_id) l ON l.chat_room_id = r.chat_room_id
 LEFT JOIN chat_history h ON h.chat_id = l.lastChatId 
 WHERE r.supplier_id=:userId OR r.demander_id=:userId
+ORDER BY h.create_time DESC
 LIMIT :pageOffset, :pageAmount;`
 
       const pageAmount = 20
