@@ -1,3 +1,18 @@
+components:
+  profile:
+    type: object
+    description: 대화 상대 유저 정보
+    properties:
+      id:
+        type: number
+        description: user Id
+      profileImg:
+        type: string
+        description: 상대방 유저 프로필 사진 URL
+      name:
+        type: sring
+        description: 상대방 유저 이름
+
 path:
   /chat:
     get:
@@ -25,18 +40,7 @@ path:
                           type: number
                           description: 채팅방 ID
                         targetUser:
-                          type: object
-                          description: 대화 상대 유저 정보
-                          properties:
-                            id:
-                              type: number
-                              description: user Id
-                            profileImg:
-                              type: string
-                              description: 상대방 유저 프로필 사진 URL
-                            name:
-                              type: sring
-                              description: 상대방 유저 이름
+                          $ref: "#/components/profile"
                         lastChat:
                           type: string
                           description: 마지막 대화
@@ -103,6 +107,8 @@ path:
               schema:
                 type: object
                 properties:
+                  targetUser:
+                    $ref: "#/components/profile"
                   chatList:
                     type: array
                     items:
