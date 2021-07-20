@@ -72,7 +72,7 @@ LIMIT 6;`
 LEFT JOIN users u ON a.user_id = u.user_id 
 LEFT JOIN ( SELECT supplier_id, COUNT(*) AS hireCount FROM coordinations GROUP BY supplier_id) h ON h.supplier_id = a.user_id
 LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY supplier_id) r ON r.supplier_id = a.user_id
-ORDER BY hireCount DESC, reviewCount DESC, price ASC
+ORDER BY img DESC, hireCount DESC, reviewCount DESC, price ASC
 LIMIT 6;`
 
       const [rows] = (await connection.query(sql)) as RowDataPacket[]
