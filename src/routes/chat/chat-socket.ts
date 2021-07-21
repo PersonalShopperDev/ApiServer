@@ -112,7 +112,7 @@ export default class ChatSocket {
         return
       }
 
-      const estimateId = await this.model.saveEstimate(
+      const estimateId = await this.model.newEstimate(
         roomId,
         account,
         bank,
@@ -143,15 +143,25 @@ export default class ChatSocket {
 
   private onResponseEstimate = async (socket: Socket, userId: number, data) => {
     try {
-      const { roomId, value } = data
-      if (isNaN(Number(roomId)) || typeof value == 'boolean') {
+      const { estimateId, value } = data
+      if (isNaN(Number(estimateId)) || typeof value != 'boolean') {
         socket.emit('error', 422)
         return
       }
 
-      await this.model.saveMsg(roomId, userId, 3, value, null)
+      const roomData = await this.model.getChatRoomIdWithEstimate(estimateId)
+      if (roomData == null || roomData.demanderId != userId) {
+        socket.emit('error', 400)
+        return
+      }
 
-      socket.to(roomId.toString()).emit('responseEstimate', { roomId, value })
+      await this.model.saveEstimate(estimateId, value ? 2 : 1)
+
+      const { roomId } = roomData
+
+      socket
+        .to(roomId.toString())
+        .emit('responseEstimate', { roomId, estimateId, value })
     } catch (e) {
       socket.emit('error', 500)
     }

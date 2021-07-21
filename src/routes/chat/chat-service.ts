@@ -104,6 +104,7 @@ export default class ChatService {
             chatType: type,
             msg: item.msg,
             price: item.price,
+            status: item.status,
           })
           break
         case 2:

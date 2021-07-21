@@ -123,7 +123,7 @@ LIMIT :pageOffset, :pageAmount;`
     }
   }
 
-  saveEstimate = async (
+  newEstimate = async (
     roomId: number,
     account: string,
     bank: string,
@@ -144,6 +144,20 @@ LIMIT :pageOffset, :pageAmount;`
     }
   }
 
+  saveEstimate = async (estimateId: number, status: number): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql =
+        'UPDATE estimates SET status=:status WHERE estimate_id=:estimateId'
+      const value = { estimateId, status }
+      await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
   getChatRoomId = async (
     demanderId: number,
     supplierId: number,
@@ -155,6 +169,27 @@ LIMIT :pageOffset, :pageAmount;`
       const [rows] = await connection.query(sql, value)
 
       if (rows[0] != null) return rows[0].chat_room_id
+
+      return null
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getChatRoomIdWithEstimate = async (
+    estimateId: number,
+  ): Promise<{ roomId: number; demanderId: number } | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT e.chat_room_id as roomId, r.demander_id as demanderId FROM estimates e 
+LEFT JOIN chat_rooms r on e.chat_room_id = r.chat_room_id 
+WHERE estimate_id = :estimateId;`
+      const value = { estimateId }
+      const [rows] = await connection.query(sql, value)
+
+      if (rows[0] != null) return rows[0]
 
       return null
     } catch (e) {
@@ -204,7 +239,7 @@ LIMIT :pageOffset, :pageAmount;`
   ): Promise<ChatHistoryModel[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type, c.msg, e.price, c.create_time as createTime FROM chat_history c
+      const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type, c.msg, e.price, e.status, c.create_time as createTime FROM chat_history c
 LEFT JOIN estimates e ON c.subData = e.estimate_id
 WHERE c.chat_room_id = :roomId 
 ${olderChatId != undefined ? 'AND c.chat_id < :olderChatId' : ''}
