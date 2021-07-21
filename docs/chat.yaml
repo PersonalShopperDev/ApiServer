@@ -117,6 +117,9 @@ path:
                         chatId:
                           type: number
                           description: 채팅 메시지 ID
+                        userId:
+                          type: number
+                          description: 보낸 사람 ID
                         chatTime:
                           type: string
                           description: 메시지 전송 시간
@@ -143,3 +146,6 @@ path:
                             0: 미응답
                             1: 거절
                             2: 수락
+                        isRead:
+                          type: boolean
+                          description: 메시지 읽음 처리

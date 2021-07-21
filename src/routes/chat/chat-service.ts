@@ -95,35 +95,41 @@ export default class ChatService {
     const historyList = await this.model.getChatHistory(roomId, olderChatId)
     const result: ChatHistoryData[] = []
     for (const item of historyList.reverse()) {
-      const { chatId, createTime, type } = item
+      const { chatId, createTime, type, userId } = item
       switch (type) {
         case 1:
           result.push({
             chatId,
+            userId,
             chatTime: createTime,
             chatType: type,
             msg: item.msg,
             price: item.price,
             status: item.status,
+            isRead: true,
           })
           break
         case 2:
           // TODO : Coord
           // result.push({
           //   chatId,
+          //   userId,
           //   chatTime: createTime,
           //   chatType: type,
           //   coordTitle: item.msg,
           //   coordImg: ResourcePath.coordImg(item.subData),
+          //   isRead: true,
           // })
           break
         case 0:
         default:
           result.push({
             chatId,
+            userId,
             chatTime: createTime,
             chatType: type,
             msg: item.msg,
+            isRead: true,
           })
           break
       }

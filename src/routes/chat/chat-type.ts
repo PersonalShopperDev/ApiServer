@@ -28,8 +28,10 @@ export interface ChatHistoryModel {
 
 interface ChatBase {
   chatId: number
+  userId: number
   chatType: number
   chatTime: Date
+  isRead: boolean
 }
 
 export interface ChatSimpleMsg extends ChatBase {
