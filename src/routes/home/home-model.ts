@@ -32,18 +32,21 @@ export default class HomeModel {
   ): Promise<Array<Supplier> | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT a.user_id, name, img, hireCount, reviewCount, typeCount FROM 
-(
+      const sql = `
+SELECT s.user_id, name, img, hireCount, reviewCount, tf.typeCount FROM suppliers s
+LEFT JOIN users u ON s.user_id = u.user_id
+LEFT JOIN (
+    SELECT supplier_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount FROM coordinations c
+    LEFT JOIN coordination_reviews cr ON cr.coordination_id = c.coordination_id
+) cnt ON s.user_id=cnt.supplier_id
+LEFT JOIN (
     SELECT a.user_id, COUNT(*) as typeCount FROM user_style a
     RIGHT JOIN (SELECT style_id FROM user_style WHERE user_id = :userId) b ON a.style_id = b.style_id
     INNER JOIN (SELECT user_id FROM suppliers) c ON a.user_id = c.user_id
     GROUP BY a.user_id
-    HAVING COUNT(*) >= 2
-) a
-LEFT JOIN users u ON a.user_id = u.user_id 
-LEFT JOIN ( SELECT supplier_id, COUNT(*) AS hireCount FROM coordinations GROUP BY supplier_id) h ON h.supplier_id = a.user_id
-LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY supplier_id) r ON r.supplier_id = a.user_id
-ORDER BY typeCount DESC, hireCount DESC
+) tf ON s.user_id = tf.user_id
+WHERE u.img IS NOT NULL
+ORDER BY ISNULL(img) ASC, typeCount DESC, s.popular DESC
 LIMIT 6;`
 
       const value = { userId }
@@ -72,7 +75,7 @@ LIMIT 6;`
 LEFT JOIN users u ON a.user_id = u.user_id 
 LEFT JOIN ( SELECT supplier_id, COUNT(*) AS hireCount FROM coordinations GROUP BY supplier_id) h ON h.supplier_id = a.user_id
 LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coordinations c ON cr.coordination_id = c.coordination_id GROUP BY supplier_id) r ON r.supplier_id = a.user_id
-ORDER BY hireCount DESC, reviewCount DESC, price ASC
+ORDER BY ISNULL(img) ASC, a.popular DESC
 LIMIT 6;`
 
       const [rows] = (await connection.query(sql)) as RowDataPacket[]
