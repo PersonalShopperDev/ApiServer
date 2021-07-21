@@ -12,6 +12,58 @@ components:
       name:
         type: sring
         description: 상대방 유저 이름
+  chat:
+    base:
+      type: object
+      properties:
+        chatId:
+          type: number
+          description: 채팅 메시지 ID
+        userId:
+          type: number
+          description: 보낸 사람 ID
+        chatType:
+          type: number
+          description: |
+            채팅의 종류
+
+            0: 일반 메시지
+            1: 견적서
+            2: 코디 결과
+        isRead:
+          type: boolean
+          description: 메시지 읽음 처리
+        chatTime:
+          type: string
+          description: 메시지 전송 시간
+          exmaple: 2021-07-16T08:57:51.673Z
+    msg:
+      type: object
+      allOf:
+        - $ref: "#/components/chat/base"
+        - type: object
+          properties:
+            msg:
+              type: string
+              description: 보낸 메시지
+    estimate:
+      type: object
+      allOf:
+        - $ref: "#/components/chat/base"
+        - type: object
+          properties:
+            price:
+              type: number
+              description: 견적서에 함께 적힌 가격, chatType 1 일 때만 존재
+            status:
+              type: number
+              description: |
+                견적서의 상태, chatType 1 일 때만 존재
+
+                0: 미응답
+                1: 거절
+                2: 수락
+
 
 path:
   /chat:
@@ -112,40 +164,6 @@ path:
                   chatList:
                     type: array
                     items:
-                      type: object
-                      properties:
-                        chatId:
-                          type: number
-                          description: 채팅 메시지 ID
-                        userId:
-                          type: number
-                          description: 보낸 사람 ID
-                        chatTime:
-                          type: string
-                          description: 메시지 전송 시간
-                          exmaple: 2021-07-16T08:57:51.673Z
-                        chatType:
-                          type: number
-                          description: |
-                            채팅의 종류
-
-                            0: 일반 메시지
-                            1: 견적서
-                            2: 코디 결과
-                        msg:
-                          type: string
-                          description: 보낸 메시지
-                        price:
-                          type: number
-                          description: 견적서에 함께 적힌 가격, chatType 1 일 때만 존재
-                        status:
-                          type: number
-                          description: |
-                            견적서의 상태, chatType 1 일 때만 존재
-
-                            0: 미응답
-                            1: 거절
-                            2: 수락
-                        isRead:
-                          type: boolean
-                          description: 메시지 읽음 처리
+                      oneOf:
+                        - $ref: "#/components/chat/msg"
+                        - $ref: "#/components/chat/estimate"
