@@ -22,25 +22,29 @@ export default class SupplierModel {
   }
 
   getSupplierList = async (
-    type: number[],
+    styleType: number | number[],
     page: number,
     sort: string,
+    supplierType: number | number[] | undefined,
     filter = false,
   ): Promise<Array<Supplier>> => {
     const pageAmount = 20
     let sortOption
     switch (sort) {
+      case 'hireCount':
+        sortOption = 'price ASC, hireCount DESC, popular DESC'
+        break
       case 'priceLow':
         sortOption = 'price ASC, typeCount DESC, popular DESC'
         break
-      case 'popular':
+      case 'recommend':
       default:
         sortOption = 'typeCount DESC, popular DESC'
         break
     }
 
     const connection = await db.getConnection()
-    const sql = `SELECT s.user_id, name, img, hireCount, reviewCount, typeCount, price, popular, type, rating FROM suppliers s
+    const sql = `SELECT s.user_id, name, img, hireCount, reviewCount, price, type, rating FROM suppliers s
 LEFT JOIN users u ON s.user_id = u.user_id
 LEFT JOIN (
     SELECT supplier_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coordinations c
@@ -48,19 +52,25 @@ LEFT JOIN (
 ) cnt ON s.user_id=cnt.supplier_id
 LEFT JOIN (
     SELECT user_id, COUNT(*) as typeCount FROM user_style
-    WHERE style_id IN (:type)
+    WHERE style_id IN (:styleType)
     GROUP BY user_id
 ) tf ON s.user_id = tf.user_id
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
 ) t ON s.user_id = t.user_id
-${filter ? `WHERE typeCount >= 1` : ''}
-ORDER BY ${sortOption}
+WHERE ${supplierType != null ? 's.status in (:supplierType)' : 's.status > 0'}
+${filter ? ` AND typeCount >= 0 ` : ''}
+ORDER BY ISNULL(img) ASC, ${sortOption}
 LIMIT :pageOffset, :pageAmount;
 `
 
-    const value = { type, pageAmount, pageOffset: page * pageAmount }
+    const value = {
+      styleType,
+      pageAmount,
+      supplierType,
+      pageOffset: page * pageAmount,
+    }
     const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
     connection.release()

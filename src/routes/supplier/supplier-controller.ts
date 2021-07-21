@@ -5,7 +5,8 @@ import { validationResult } from 'express-validator'
 interface Query {
   page: number | undefined
   sort: string | undefined
-  type: string | undefined
+  supplierType: number | number[] | undefined
+  styleType: number | number[]
 }
 
 export default class SupplierController {
@@ -13,13 +14,19 @@ export default class SupplierController {
 
   getList = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
-    const { page, sort }: Query = req.query as never
+    const { page, sort, supplierType }: Query = req.query as never
+
+    if (!validationResult(req).isEmpty()) {
+      res.sendStatus(422)
+      return
+    }
 
     try {
       const result = await this.service.getList(
         userId,
-        page == null ? 0 : page,
-        sort == null ? 'popular' : sort,
+        page,
+        sort,
+        supplierType,
       )
 
       if (result == null) {
@@ -34,18 +41,19 @@ export default class SupplierController {
   }
 
   getSearchList = async (req: Request, res: Response): Promise<void> => {
-    const { page, sort, type }: Query = req.query as never
+    const { page, sort, styleType, supplierType }: Query = req.query as never
 
-    if (!validationResult(req).isEmpty() || type == null) {
+    if (!validationResult(req).isEmpty() || styleType == null) {
       res.sendStatus(422)
       return
     }
 
     try {
       const result = await this.service.getSearchList(
-        type,
-        page == null ? 0 : page,
-        sort == null ? 'popular' : sort,
+        styleType,
+        page,
+        sort,
+        supplierType,
       )
 
       if (result == null) {

@@ -60,7 +60,7 @@ export default class OnboardModel {
   ): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO suppliers(user_id, supplyGender, status) VALUES(:userId, :supplyGender, 0) 
+      const sql = `INSERT INTO suppliers(user_id, supplyGender) VALUES(:userId, :supplyGender) 
         ON DUPLICATE KEY UPDATE supplyGender=:supplyGender `
 
       const supplyGender = this.getSupplyGenderNumber(supplyMale, supplyFemale)

@@ -1,15 +1,26 @@
 import express from 'express'
-import { query } from 'express-validator'
+import { oneOf, query } from 'express-validator'
 import { AuthRequire } from '../../config/auth-check'
 import SupplierController from './supplier-controller'
 
 const router = express.Router()
 const controller = new SupplierController()
 
-router.get('/', AuthRequire, controller.getList)
+const supplierTypeValidation = () =>
+  oneOf([
+    query('supplierType').isEmpty(),
+    [
+      query('supplierType').isArray(),
+      query('supplierType.*').isInt({ min: 0, max: 2 }),
+    ],
+    query('supplierType').isInt({ min: 0, max: 2 }),
+  ])
+
+router.get('/', supplierTypeValidation(), AuthRequire, controller.getList)
 router.get(
   '/search',
-  query('type').matches(/^\d[\|\d]*$/),
+  oneOf([query('styleType').isArray(), query('styleType').isInt()]),
+  supplierTypeValidation(),
   controller.getSearchList,
 )
 

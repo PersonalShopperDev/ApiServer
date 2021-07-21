@@ -6,8 +6,9 @@ export default class SupplierService {
 
   getList = async (
     userId: number,
-    page: number,
-    sort: string,
+    page: number | undefined,
+    sort: string | undefined,
+    supplierType: number | number[] | undefined,
   ): Promise<Supplier[] | null> => {
     const typeList = await this.model.getStyleTypeId(userId)
 
@@ -15,16 +16,26 @@ export default class SupplierService {
       return null
     }
 
-    return await this.model.getSupplierList(typeList, page, sort)
+    return await this.model.getSupplierList(
+      typeList,
+      page ?? 0,
+      sort ?? 'recommend',
+      supplierType,
+    )
   }
 
   getSearchList = async (
-    type: string,
-    page: number,
-    sort: string,
+    typeList: number | number[],
+    page: number | undefined,
+    sort: string | undefined,
+    supplierType: number | number[] | undefined,
   ): Promise<Supplier[] | null> => {
-    const typeList = type.split('|').map((item) => Number(item))
-
-    return await this.model.getSupplierList(typeList, page, sort, true)
+    return await this.model.getSupplierList(
+      typeList,
+      page ?? 0,
+      sort ?? 'recommend',
+      supplierType,
+      true,
+    )
   }
 }

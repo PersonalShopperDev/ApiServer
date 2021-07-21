@@ -38,8 +38,22 @@ components:
     description: 정렬 기준
     schema:
       type: string
-      enum: [ popular, priceLow, professional ]
-      default: popular
+      enum: [ recommend, hireCount, priceLow ]
+      default: recommend
+
+  supplierType:
+    name: supplierType
+    in: 'query'
+    description: |
+      Supplier 경력 종류 (온보딩에서 입력한 값), 여러개를 넘겨줘도 됍니다.
+
+      0: 일반인, 1: SNS 스타, 2: 전문 스타일리스트
+    schema:
+      type: array
+      items:
+        type: number
+        minmum: 0
+        maxmum: 2
 
 path:
   /supplier:
@@ -52,6 +66,7 @@ path:
       parameters:
         - $ref: './swagger.yaml#/components/Request/page'
         - $ref: '#/components/sort'
+        - $ref: '#/components/supplierType'
       responses:
         '200':
           description: OK
@@ -67,14 +82,16 @@ path:
       parameters:
         - $ref: './swagger.yaml#/components/Request/page'
         - $ref: '#/components/sort'
-        - name: type
+        - $ref: '#/components/supplierType'
+        - name: styleType
           in: 'query'
-          description: 검색하고자 하는 style Type ID. 스타일을 '|' 로 구분
-          example: 12|52|122
+          description: 검색하고자 하는 style Type ID. 여러개를 넘겨줘도 됍니다.
+          example: 12&type=62
           schema:
             type: array
             items:
               type: number
+          required: true
       responses:
         '200':
           description: OK
