@@ -5,8 +5,7 @@ export default class ReviewModel {
   getCoordinationUserId = async (coordId: number): Promise<number | null> => {
     const connection = await db.getConnection()
     try {
-      const sql =
-        'SELECT demander_id as id FROM coordinations WHERE coordination_id=:coordId'
+      const sql = 'SELECT demander_id as id FROM coords WHERE coord_id=:coordId'
 
       const [result] = await connection.query(sql, { coordId })
 
@@ -23,7 +22,7 @@ export default class ReviewModel {
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO coordination_reviews(coordination_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
+        'INSERT INTO coordination_reviews(coord_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
 
       const { content, rating, publicBody } = data
 
@@ -52,7 +51,7 @@ export default class ReviewModel {
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO coordination_review_imgs(coordination_id, img, type) VALUES :value'
+        'INSERT INTO coordination_review_imgs(coord_id, img, type) VALUES :value'
 
       const value = keyList.map((key) => {
         return [coordId, key, type]
@@ -77,13 +76,13 @@ export default class ReviewModel {
   }> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT supplier_id as id, u.name, u.img as profile, c.img, type FROM coordinations c
+      const sql = `SELECT supplier_id as id, u.name, u.img as profile, c.img, type FROM coords c
 LEFT JOIN users u ON c.supplier_id = u.user_id
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
 ) t ON c.supplier_id = t.user_id
-WHERE coordination_id=:coordId
+WHERE coord_id=:coordId
 ;`
 
       const [rows] = await connection.query(sql, { coordId })

@@ -76,8 +76,8 @@ export default class ProfileModel {
   }> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coordinations c
-      LEFT JOIN coordination_reviews cr ON cr.coordination_id = c.coordination_id
+      const sql = `SELECT COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coords c
+      LEFT JOIN coordination_reviews cr ON cr.coord_id = c.coord_id
       WHERE supplier_id = :userId GROUP BY supplier_id;`
 
       const value = { userId }
@@ -212,8 +212,8 @@ export default class ProfileModel {
 
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT r.coordination_id AS id, u.name, u.img AS profileImg, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coordination_reviews r
-LEFT JOIN coordinations c ON c.coordination_id = r.coordination_id
+      const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coordination_reviews r
+LEFT JOIN coords c ON c.coord_id = r.coord_id
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
@@ -239,7 +239,7 @@ LIMIT :pageOffset, :pageAmount;`
   ): Promise<Array<{ img: string; type: string }>> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT img, type FROM coordination_review_imgs WHERE coordination_id = :id`
+      const sql = `SELECT img, type FROM coordination_review_imgs WHERE coord_id = :id`
 
       const value = { id }
 
