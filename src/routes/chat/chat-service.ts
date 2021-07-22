@@ -19,8 +19,11 @@ export default class ChatService {
       const targetUser = await this.model.getChatProfile(targetId)
       targetUser.profileImg = ResourcePath.profileImg(targetUser.profileImg)
 
+      const unreadCount = await this.model.getUnreadCount(roomId, userId)
+
       const item: ChatRoomDetail = {
         roomId,
+        unreadCount,
         targetUser,
         lastChat,
         lastChatTime,
@@ -93,20 +96,23 @@ export default class ChatService {
     olderChatId: number | undefined,
   ): Promise<Array<ChatHistoryData>> => {
     const historyList = await this.model.getChatHistory(roomId, olderChatId)
+    const readInfo = await this.model.getReadInfo(roomId)
+
     const result: ChatHistoryData[] = []
     for (const item of historyList.reverse()) {
       const { chatId, createTime, type, userId } = item
+      const isRead = readInfo.filter((readId) => chatId <= readId).length >= 2
       switch (type) {
         case 1:
           result.push({
             chatId,
             userId,
+            isRead,
             chatTime: createTime,
             chatType: type,
             msg: item.msg,
             price: item.price,
             status: item.status,
-            isRead: true,
           })
           break
         case 2:
@@ -114,11 +120,11 @@ export default class ChatService {
           // result.push({
           //   chatId,
           //   userId,
+          //   isRead,
           //   chatTime: createTime,
           //   chatType: type,
           //   coordTitle: item.msg,
           //   coordImg: ResourcePath.coordImg(item.subData),
-          //   isRead: true,
           // })
           break
         case 0:
@@ -126,10 +132,10 @@ export default class ChatService {
           result.push({
             chatId,
             userId,
+            isRead,
             chatTime: createTime,
             chatType: type,
             msg: item.msg,
-            isRead: true,
           })
           break
       }

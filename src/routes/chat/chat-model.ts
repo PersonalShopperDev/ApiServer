@@ -113,7 +113,7 @@ LIMIT :pageOffset, :pageAmount;`
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO chat_history(chat_room_id, user_id, type, msg, subData) VALUES(:roomId, :userId, :type, :msg, :sub)'
+        'INSERT INTO chat_history(chat_room_id, user_id, type, msg, sub_data) VALUES(:roomId, :userId, :type, :msg, :sub)'
       const value = { userId, roomId, msg, type, sub }
       const [result] = await connection.query(sql, value)
 
@@ -265,6 +265,40 @@ LIMIT 50`
       }
 
       return rows as ChatHistoryModel[]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getReadInfo = async (roomId: number): Promise<number[]> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT read_id FROM chat_user WHERE chat_room_id = :roomId`
+
+      const value = { roomId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows.map((row) => row.read_id)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getUnreadCount = async (roomId: number, userId: number): Promise<number> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT COUNT(*) AS unreadCount FROM chat_user u
+JOIN chat_history h ON (u.read_id IS NULL OR u.read_id < h.chat_id) AND u.chat_room_id = h.chat_room_id
+WHERE u.chat_room_id = :roomId AND u.user_id = :userId;`
+
+      const value = { roomId, userId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows[0].unreadCount
     } catch (e) {
       throw e
     } finally {

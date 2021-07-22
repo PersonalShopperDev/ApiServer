@@ -6,6 +6,7 @@ export interface ChatRoomData {
 export interface ChatRoomDetail {
   roomId: number
   targetUser: ChatUserProfile
+  unreadCount: number
   lastChat: string
   lastChatTime: Date
 }

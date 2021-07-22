@@ -93,6 +93,9 @@ path:
                           description: 채팅방 ID
                         targetUser:
                           $ref: "#/components/profile"
+                        unreadCount:
+                          type: number
+                          description: 읽지 않은 대화 개수
                         lastChat:
                           type: string
                           description: 마지막 대화
