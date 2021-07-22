@@ -22,7 +22,7 @@ export default class ChatModel {
   getChatRoom = async (roomId: number): Promise<ChatRoomData> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT user_id FROM chat_user WHERE chat_room_id=:roomId;`
+      const sql = `SELECT user_id FROM room_user WHERE room_id=:roomId;`
 
       const value = { roomId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
@@ -41,10 +41,10 @@ export default class ChatModel {
   getChatRooms = async (userId: number): Promise<ChatRoomData[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT a.chat_room_id as roomId, json_arrayagg(b.user_id) AS users FROM chat_user a
-RIGHT JOIN chat_user b ON a.chat_room_id = b.chat_room_id
+      const sql = `SELECT a.room_id as roomId, json_arrayagg(b.user_id) AS users FROM room_user a
+RIGHT JOIN room_user b ON a.room_id = b.room_id
 WHERE a.user_id = :userId
-GROUP BY a.chat_room_id;`
+GROUP BY a.room_id;`
 
       const value = { userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
@@ -75,12 +75,12 @@ GROUP BY a.chat_room_id;`
   > => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT cu.chat_room_id as roomId, json_arrayagg(cu2.user_id) as users, h.msg, h.create_time FROM chat_user cu
-RIGHT JOIN chat_user cu2 ON cu.chat_room_id = cu2.chat_room_id
-RIGHT JOIN (SELECT chat_room_id, MAX(chat_id) AS lastChatId FROM chat_history GROUP BY chat_room_id) l ON l.chat_room_id = cu.chat_room_id
+      const sql = `SELECT cu.room_id as roomId, json_arrayagg(cu2.user_id) as users, h.msg, h.create_time FROM room_user cu
+RIGHT JOIN room_user cu2 ON cu.room_id = cu2.room_id
+RIGHT JOIN (SELECT room_id, MAX(chat_id) AS lastChatId FROM chat_history GROUP BY room_id) l ON l.room_id = cu.room_id
 LEFT JOIN chat_history h ON h.chat_id = l.lastChatId
 WHERE cu.user_id=:userId
-GROUP BY cu.chat_room_id
+GROUP BY cu.room_id
 ORDER BY h.create_time DESC
 LIMIT :pageOffset, :pageAmount;`
 
@@ -113,7 +113,7 @@ LIMIT :pageOffset, :pageAmount;`
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO chat_history(chat_room_id, user_id, type, msg, sub_data) VALUES(:roomId, :userId, :type, :msg, :sub)'
+        'INSERT INTO chat_history(room_id, user_id, type, msg, sub_data) VALUES(:roomId, :userId, :type, :msg, :sub)'
       const value = { userId, roomId, msg, type, sub }
       const [result] = await connection.query(sql, value)
 
@@ -134,7 +134,7 @@ LIMIT :pageOffset, :pageAmount;`
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO estimates(chat_room_id, price, account, bank, status) VALUES(:roomId, :price, :account, :bank, 0)'
+        'INSERT INTO estimates(room_id, price, account, bank, status) VALUES(:roomId, :price, :account, :bank, 0)'
       const value = { roomId, account, bank, price }
       const [result] = await connection.query(sql, value)
 
@@ -166,13 +166,13 @@ LIMIT :pageOffset, :pageAmount;`
   ): Promise<number | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT d.chat_room_id FROM chat_user d
-INNER JOIN (SELECT chat_room_id FROM chat_user WHERE user_id=:supplierId AND user_type='S') s ON d.chat_room_id = s.chat_room_id
+      const sql = `SELECT d.room_id FROM room_user d
+INNER JOIN (SELECT room_id FROM room_user WHERE user_id=:supplierId AND user_type='S') s ON d.room_id = s.room_id
 WHERE user_id=:demanderId AND user_type='D'`
       const value = { demanderId, supplierId }
       const [rows] = await connection.query(sql, value)
 
-      if (rows[0] != null) return rows[0].chat_room_id
+      if (rows[0] != null) return rows[0].room_id
 
       return null
     } catch (e) {
@@ -187,8 +187,8 @@ WHERE user_id=:demanderId AND user_type='D'`
   ): Promise<{ roomId: number; demanderId: number } | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT e.chat_room_id as roomId, r.user_id as demanderId FROM estimates e 
-LEFT JOIN (SELECT chat_room_id, user_id FROM chat_user WHERE user_type='D') r on e.chat_room_id = r.chat_room_id 
+      const sql = `SELECT e.room_id as roomId, r.user_id as demanderId FROM estimates e 
+LEFT JOIN (SELECT room_id, user_id FROM room_user WHERE user_type='D') r on e.room_id = r.room_id 
 WHERE estimate_id = :estimateId;`
       const value = { estimateId }
       const [rows] = await connection.query(sql, value)
@@ -211,9 +211,9 @@ WHERE estimate_id = :estimateId;`
     try {
       await connection.beginTransaction()
 
-      const [result] = await connection.query('INSERT INTO chat_rooms VALUES()')
+      const [result] = await connection.query('INSERT INTO rooms VALUES()')
 
-      const sql = `INSERT INTO chat_user(chat_room_id, user_id, user_type) VALUES
+      const sql = `INSERT INTO room_user(room_id, user_id, user_type) VALUES
   (LAST_INSERT_ID(), :supplierId, 'S'),
   (LAST_INSERT_ID(), :demanderId, 'D');`
       await connection.query(sql, { demanderId, supplierId })
@@ -252,7 +252,7 @@ WHERE estimate_id = :estimateId;`
     try {
       const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type, c.msg, e.price, e.status, c.create_time as createTime FROM chat_history c
 LEFT JOIN estimates e ON c.sub_data = e.estimate_id
-WHERE c.chat_room_id = :roomId 
+WHERE c.room_id = :roomId 
 ${olderChatId != undefined ? 'AND c.chat_id < :olderChatId' : ''}
 ORDER BY c.chat_id DESC
 LIMIT 50`
@@ -275,7 +275,7 @@ LIMIT 50`
   getReadInfo = async (roomId: number): Promise<number[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT read_id FROM chat_user WHERE chat_room_id = :roomId`
+      const sql = `SELECT read_id FROM room_user WHERE room_id = :roomId`
 
       const value = { roomId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
@@ -291,9 +291,9 @@ LIMIT 50`
   getUnreadCount = async (roomId: number, userId: number): Promise<number> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT COUNT(*) AS unreadCount FROM chat_user u
-JOIN chat_history h ON (u.read_id IS NULL OR u.read_id < h.chat_id) AND u.chat_room_id = h.chat_room_id
-WHERE u.chat_room_id = :roomId AND u.user_id = :userId;`
+      const sql = `SELECT COUNT(*) AS unreadCount FROM room_user u
+JOIN chat_history h ON (u.read_id IS NULL OR u.read_id < h.chat_id) AND u.room_id = h.room_id
+WHERE u.room_id = :roomId AND u.user_id = :userId;`
 
       const value = { roomId, userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
@@ -309,7 +309,7 @@ WHERE u.chat_room_id = :roomId AND u.user_id = :userId;`
   readMsg = async (roomId: number, userId: number): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `UPDATE chat_user SET read_id = (SELECT max(chat_id) FROM chat_history WHERE chat_room_id = :roomId) WHERE chat_room_id = :roomId AND user_id = :userId;`
+      const sql = `UPDATE room_user SET read_id = (SELECT max(chat_id) FROM chat_history WHERE room_id = :roomId) WHERE room_id = :roomId AND user_id = :userId;`
       const value = { roomId, userId }
 
       await connection.query(sql, value)
