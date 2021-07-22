@@ -305,4 +305,18 @@ WHERE u.chat_room_id = :roomId AND u.user_id = :userId;`
       connection.release()
     }
   }
+
+  readMsg = async (roomId: number, userId: number): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `UPDATE chat_user SET read_id = (SELECT max(chat_id) FROM chat_history WHERE chat_room_id = :roomId) WHERE chat_room_id = :roomId AND user_id = :userId;`
+      const value = { roomId, userId }
+
+      await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
 }

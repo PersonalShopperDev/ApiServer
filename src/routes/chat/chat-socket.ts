@@ -1,8 +1,10 @@
-import { Namespace, Server, Socket } from 'socket.io'
-import { checkAuthorization, JwtPayload } from '../../config/auth-check'
+import { Namespace, Socket } from 'socket.io'
+import { checkAuthorization } from '../../config/auth-check'
 import ChatModel from './chat-model'
+
 export default class ChatSocket {
   private static instance: ChatSocket
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor(io: Namespace) {
     this.io = io
@@ -63,6 +65,10 @@ export default class ChatSocket {
     socket.on('responseEstimate', async (data) => {
       await this.onResponseEstimate(socket, userId, data)
     })
+
+    socket.on('readMsg', async (data) => {
+      await this.onReadMsg(socket, userId, data)
+    })
   }
 
   private onSendMsg = async (socket: Socket, userId: number, data) => {
@@ -81,6 +87,8 @@ export default class ChatSocket {
 
       const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
 
+      await this.model.readMsg(roomId, userId)
+
       socket.to(roomId.toString()).emit('receiveMsg', {
         roomId,
         chatId,
@@ -92,6 +100,7 @@ export default class ChatSocket {
       socket.emit('error', 500)
     }
   }
+
   private onSendEstimate = async (socket: Socket, userId: number, data) => {
     try {
       const { roomId, msg, price, account, bank } = data
@@ -126,6 +135,8 @@ export default class ChatSocket {
         msg,
         estimateId,
       )
+
+      await this.model.readMsg(roomId, userId)
 
       socket.to(roomId.toString()).emit('receiveMsg', {
         roomId,
@@ -162,6 +173,28 @@ export default class ChatSocket {
       socket
         .to(roomId.toString())
         .emit('responseEstimate', { roomId, estimateId, value })
+    } catch (e) {
+      socket.emit('error', 500)
+    }
+  }
+
+  private onReadMsg = async (socket: Socket, userId: number, data) => {
+    try {
+      const { roomId } = data
+
+      if (isNaN(Number(roomId))) {
+        socket.emit('error', 422)
+        return
+      }
+
+      if (!socket.rooms.has(roomId.toString())) {
+        socket.emit('error', 400)
+        return
+      }
+
+      await this.model.readMsg(roomId, userId)
+
+      socket.to(roomId.toString()).emit('readMsg', { roomId })
     } catch (e) {
       socket.emit('error', 500)
     }
