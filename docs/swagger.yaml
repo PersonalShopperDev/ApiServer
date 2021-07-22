@@ -25,6 +25,8 @@ tags:
     description: Supplier 관련 정보
   - name: Chat
     description: Chat 관련 정보
+  - name: Coord
+    description: Coordination의 약자, 코디 관련
   - name: Review
     description: Review 관련 정보
 
