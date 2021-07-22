@@ -44,7 +44,7 @@ export default class ChatController {
       const targetId = await this.service.checkRoom(roomId, userId)
 
       if (targetId == null) {
-        res.sendStatus(400)
+        res.sendStatus(403)
         return
       }
 
