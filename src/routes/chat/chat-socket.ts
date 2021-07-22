@@ -81,7 +81,7 @@ export default class ChatSocket {
       }
 
       if (!socket.rooms.has(roomId.toString())) {
-        socket.emit('error', 400)
+        socket.emit('error', 403)
         return
       }
 
@@ -117,7 +117,7 @@ export default class ChatSocket {
       }
 
       if (!socket.rooms.has(roomId.toString())) {
-        socket.emit('error', 400)
+        socket.emit('error', 403)
         return
       }
 
@@ -162,7 +162,7 @@ export default class ChatSocket {
 
       const roomData = await this.model.getChatRoomIdWithEstimate(estimateId)
       if (roomData == null || roomData.demanderId != userId) {
-        socket.emit('error', 400)
+        socket.emit('error', 403)
         return
       }
 
@@ -188,7 +188,7 @@ export default class ChatSocket {
       }
 
       if (!socket.rooms.has(roomId.toString())) {
-        socket.emit('error', 400)
+        socket.emit('error', 403)
         return
       }
 
