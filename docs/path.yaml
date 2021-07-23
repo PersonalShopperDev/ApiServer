@@ -62,3 +62,5 @@
 
 /coord:
   $ref: 'coord.yaml#/path/~1coord'
+/coord/cloth:
+  $ref: 'coord.yaml#/path/~1coord~1cloth'

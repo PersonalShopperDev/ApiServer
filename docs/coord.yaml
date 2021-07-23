@@ -58,8 +58,8 @@ path:
                   - clothes
 
     post:
-      summary: 코디 보내기
-      description: Demander에게 코디를 보냅니다. requestBody는 같은 이름의 필드를 여러개 보내면 됩니다. 각 Array를 순서를 지켜야 합니다.
+      summary: 코디 저장하기
+      description: Demander에게 보낼 코디를 저장합니다. 이 API 로 Coord를 생성한 뒤, 옷 정보를 따로 보내주셔야합니다.
       tags: [ Coord ]
       security:
         - bearerAuth: [ ]
@@ -75,6 +75,7 @@ path:
                 mainImg:
                   type: binary
                   description: 코디 보드 이미지
+                  maximum: 500kb
                 title:
                   type: string
                   description: 코디 제목
@@ -83,39 +84,63 @@ path:
                   type: string
                   description: 코디 설명
                   maxLength: 700
-                clothImg:
-                  type: array
-                  description: 옷 이미지
-                  minimum: 1
-                  items:
-                    type: binary
-                clothName:
-                  type: array
-                  description: 옷 이름
-                  minimum: 1
-                  maxLength: 50
-                  items:
-                    type: string
-                clothPrice:
-                  type: array
-                  description: 옷 가격
-                  minimum: 1
-                  items:
-                    type: number
-                clothPurchaseUrl:
-                  type: array
-                  description: 옷 구매 링크
-                  minimum: 1
-                  maxLength: 150
-                  items:
-                    type: string
               required:
                 - demanderId
                 - mainImg
                 - title
                 - comment
-                - clothImg
-                - clothName
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  coordId:
+                    type: number
+                    description: 생성된 coord ID
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '422':
+          description: Request parameters missing or invalid
+
+  /coord/cloth:
+    post:
+      summary: 코디 옷 저장하기
+      description: 코디의 옷 정보를 저장합니다.
+      tags: [ Coord ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                coordId:
+                  type: number
+                  description: POST /coord에서 얻어온 Coord Id
+                img:
+                  type: binary
+                  description: 옷 이미지
+                  maximum: 100kb
+                name:
+                  type: string
+                  description: 옷 이름
+                  maxLength: 50
+                price:
+                  type: number
+                  description: 옷 가격
+                p urchaseUrl:
+                  type: string
+                  description: 옷 구매 링크
+                  maxLength: 150
+              required:
+                - coordId
+                - Img
+                - Name
 
       responses:
         '200':

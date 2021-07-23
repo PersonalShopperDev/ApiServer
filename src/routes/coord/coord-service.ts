@@ -2,7 +2,7 @@ import CoordModel from './coord-model'
 import { ImgFile } from '../../types/upload'
 import DIContainer from '../../config/inversify.config'
 import S3 from '../../config/s3'
-import { ClothData, CoordData } from './coord-type'
+import { ClothData, ClothDataWithFile, CoordData } from './coord-type'
 import ResourcePath from '../resource/resource-path'
 
 export default class CoordService {
@@ -52,28 +52,28 @@ export default class CoordService {
     await this.model.updateCoordImg(coorId, key)
   }
 
-  saveClothImg = async (
+  addCloth = async (
     coorId: number,
-    imgList: ImgFile[],
-    nameList: string[],
-    price: number[],
-    purchaseUrl: string[],
-  ): Promise<void> => {
-    const dataList: ClothData[] = []
+    userId: number,
+    cloth: ClothDataWithFile,
+  ): Promise<void | null> => {
+    const clothNum = await this.model.checkCoordId(coorId, userId)
 
-    for (const index in imgList) {
-      const file = imgList[index]
-      const key = `${Date.now()}${Number(index) + 1}${coorId}`
-      await this.s3.upload(`coord/${key}`, file.mimetype, file.buffer)
-
-      dataList.push({
-        name: nameList[index],
-        price: price[index],
-        purchaseUrl: purchaseUrl[index],
-        img: key,
-      })
+    if (clothNum == null) {
+      // 권한 없음
+      return null
     }
+    const { name, img, price, purchaseUrl } = cloth
 
-    await this.model.insertCloth(coorId, dataList)
+    const file = img
+    const key = `${Date.now()}${clothNum}${coorId}`
+    await this.s3.upload(`coord/${key}`, file.mimetype, file.buffer)
+
+    await this.model.insertCloth(coorId, {
+      name,
+      price,
+      purchaseUrl,
+      img: key,
+    })
   }
 }

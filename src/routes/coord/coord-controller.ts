@@ -29,13 +29,9 @@ export default class CoordController {
   }
 
   newCoord = async (req: Request, res: Response): Promise<void> => {
-    const { mainImg, clothImg } = req['files']
+    const { mainImg } = req['file']
 
-    if (
-      !validationResult(req).isEmpty() ||
-      mainImg == null ||
-      clothImg == null
-    ) {
+    if (!validationResult(req).isEmpty() || mainImg == null) {
       res.sendStatus(422)
       return
     }
@@ -47,14 +43,7 @@ export default class CoordController {
       return
     }
 
-    const {
-      demanderId,
-      clothName,
-      clothPrice,
-      clothPurchaseUrl,
-      title,
-      comment,
-    } = req.body
+    const { demanderId, title, comment } = req.body
 
     try {
       const coordId = await this.service.newCoord(
@@ -70,15 +59,39 @@ export default class CoordController {
       }
 
       await this.service.saveMainImg(coordId, mainImg[0])
-      await this.service.saveClothImg(
-        coordId,
-        clothImg,
-        clothName,
-        clothPrice,
-        clothPurchaseUrl,
-      )
 
       res.status(200).send({ coordId })
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  addCloth = async (req: Request, res: Response): Promise<void> => {
+    const { img } = req['file']
+
+    if (!validationResult(req).isEmpty() || img == null) {
+      res.sendStatus(422)
+      return
+    }
+
+    const { userId, userType } = req['auth']
+
+    if (userType != 'S') {
+      res.sendStatus(403)
+      return
+    }
+
+    try {
+      const { coordId, name, price, purchaseUrl } = req.body
+      const cloth = { img, name, price, purchaseUrl }
+      const result = await this.service.addCloth(coordId, userId, cloth)
+
+      if (result == null) {
+        res.sendStatus(403)
+        return
+      }
+
+      res.sendStatus(200)
     } catch (e) {
       res.sendStatus(500)
     }

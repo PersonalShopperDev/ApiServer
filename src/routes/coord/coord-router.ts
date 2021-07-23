@@ -12,18 +12,23 @@ const upload = multer()
 router.get('/', query('coordId').isInt(), AuthRequire, controller.getCoord)
 router.post(
   '/',
-  upload.fields([{ name: 'mainImg' }, { name: 'clothImg' }]),
+  upload.single('mainImg'),
   body('demanderId').isInt(),
   body('title').isString().isLength({ max: 50 }),
   body('comment').isString().isLength({ max: 700 }),
-  body('clothName').isArray(),
-  body('clothName.*').isString().isLength({ max: 50 }),
-  body('clothPrice').isArray(),
-  body('clothPrice.*').isString().isLength({ max: 50 }),
-  body('clothPurchaseUrl').isArray(),
-  body('clothPurchaseUrl.*').isString().isLength({ max: 150 }),
   AuthRequire,
   controller.newCoord,
+)
+
+router.post(
+  '/cloth',
+  upload.single('img'),
+  body('coordId').isInt(),
+  body('name').isString().isLength({ max: 50 }),
+  // body('price').isInt(),
+  // body('purchaseUrl').isString().isLength({ max: 150 }),
+  AuthRequire,
+  controller.addCloth,
 )
 
 export default router

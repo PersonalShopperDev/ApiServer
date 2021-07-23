@@ -1,5 +1,6 @@
 import db from '../../config/db'
 import { ClothData } from './coord-type'
+import { RowDataPacket } from 'mysql2'
 
 export default class CoordModel {
   getCoordBase = async (
@@ -74,6 +75,32 @@ RIGHT JOIN (
     }
   }
 
+  checkCoordId = async (
+    coordId: number,
+    userId: number,
+  ): Promise<number | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT c.coord_id, cc.name FROM coords c
+LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN room_user r ON r.room_id = e.room_id
+LEFT JOIN coord_clothes cc ON cc.coord_id = c.coord_id
+WHERE c.coord_id=:coordId AND r.user_id = :userId;
+`
+      const value = { userId, coordId }
+
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      if (rows[0] == null) return null
+
+      return rows[0].name == null ? 0 : rows.length
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
   newCoord = async (
     estimateId: number,
     title: string,
@@ -110,16 +137,14 @@ RIGHT JOIN (
     }
   }
 
-  insertCloth = async (coordId: number, data: ClothData[]): Promise<void> => {
+  insertCloth = async (coordId: number, item: ClothData): Promise<void> => {
     const connection = await db.getConnection()
     try {
       const sql = `INSERT INTO coord_clothes(coord_id, img, name, price, purchase_url) VALUES :value`
 
-      const value = data.map((item) => {
-        return [coordId, item.img, item.name, item.price, item.purchaseUrl]
+      await connection.query(sql, {
+        value: [coordId, item.img, item.name, item.price, item.purchaseUrl],
       })
-
-      await connection.query(sql, { value })
     } catch (e) {
       throw e
     } finally {
