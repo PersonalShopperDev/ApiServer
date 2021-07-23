@@ -27,8 +27,9 @@ export default class HomeModel {
     }
   }
 
-  getSupplierWithStyle = async (
+  getSupplierWithLogin = async (
     userId: number,
+    gender: string | null,
   ): Promise<Array<Supplier> | null> => {
     const connection = await db.getConnection()
     try {
@@ -48,11 +49,14 @@ LEFT JOIN (
     INNER JOIN (SELECT user_id FROM suppliers) c ON a.user_id = c.user_id
     GROUP BY a.user_id
 ) tf ON s.user_id = tf.user_id
-WHERE u.img IS NOT NULL
+WHERE supplyGender & :gender = :gender 
 ORDER BY ISNULL(img) ASC, typeCount DESC, s.popular DESC
 LIMIT 6;`
 
-      const value = { userId }
+      const value = {
+        userId,
+        gender: gender == 'M' ? 1 : gender == 'F' ? 2 : 3,
+      }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
       return rows.map((row) => {

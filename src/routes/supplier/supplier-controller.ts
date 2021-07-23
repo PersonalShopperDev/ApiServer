@@ -13,7 +13,7 @@ export default class SupplierController {
   service = new SupplierService()
 
   getList = async (req: Request, res: Response): Promise<void> => {
-    const { userId } = req['auth']
+    const { userId, gender } = req['auth']
     const { page, sort, supplierType }: Query = req.query as never
 
     if (!validationResult(req).isEmpty()) {
@@ -24,6 +24,7 @@ export default class SupplierController {
     try {
       const result = await this.service.getList(
         userId,
+        gender,
         page,
         sort,
         supplierType,
@@ -42,6 +43,7 @@ export default class SupplierController {
 
   getSearchList = async (req: Request, res: Response): Promise<void> => {
     const { page, sort, styleType, supplierType }: Query = req.query as never
+    const { gender } = req['auth']
 
     if (!validationResult(req).isEmpty() || styleType == null) {
       res.sendStatus(422)
@@ -51,6 +53,7 @@ export default class SupplierController {
     try {
       const result = await this.service.getSearchList(
         styleType,
+        gender,
         page,
         sort,
         supplierType,

@@ -6,6 +6,7 @@ export default class SupplierService {
 
   getList = async (
     userId: number,
+    gender: string,
     page: number | undefined,
     sort: string | undefined,
     supplierType: number | number[] | undefined,
@@ -18,6 +19,7 @@ export default class SupplierService {
 
     return await this.model.getSupplierList(
       typeList,
+      gender,
       page ?? 0,
       sort ?? 'recommend',
       supplierType,
@@ -26,12 +28,14 @@ export default class SupplierService {
 
   getSearchList = async (
     typeList: number | number[],
+    gender: string | undefined,
     page: number | undefined,
     sort: string | undefined,
     supplierType: number | number[] | undefined,
   ): Promise<Supplier[] | null> => {
     return await this.model.getSupplierList(
       typeList,
+      gender,
       page ?? 0,
       sort ?? 'recommend',
       supplierType,

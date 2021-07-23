@@ -23,6 +23,7 @@ export default class SupplierModel {
 
   getSupplierList = async (
     styleType: number | number[],
+    gender: string | undefined,
     page: number,
     sort: string,
     supplierType: number | number[] | undefined,
@@ -62,7 +63,8 @@ LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
 ) t ON s.user_id = t.user_id
-WHERE ${supplierType != null ? 's.status in (:supplierType)' : 's.status > 0'}
+WHERE supplyGender & :gender = :gender 
+AND ${supplierType != null ? 's.status in (:supplierType)' : 's.status > 0'}
 ${filter ? ` AND typeCount >= 0 ` : ''}
 ORDER BY ISNULL(img) ASC, ${sortOption}
 LIMIT :pageOffset, :pageAmount;
@@ -73,6 +75,7 @@ LIMIT :pageOffset, :pageAmount;
       pageAmount,
       supplierType,
       pageOffset: page * pageAmount,
+      gender: gender == 'M' ? 1 : gender == 'F' ? 2 : 3,
     }
     const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 

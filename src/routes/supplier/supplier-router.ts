@@ -1,6 +1,6 @@
 import express from 'express'
 import { oneOf, query } from 'express-validator'
-import { AuthRequire } from '../../config/auth-check'
+import { AuthCheck, AuthRequire } from '../../config/auth-check'
 import SupplierController from './supplier-controller'
 
 const router = express.Router()
@@ -21,6 +21,7 @@ router.get(
   '/search',
   oneOf([query('styleType').isArray(), query('styleType').isInt()]),
   supplierTypeValidation(),
+  AuthCheck,
   controller.getSearchList,
 )
 
