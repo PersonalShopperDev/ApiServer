@@ -76,9 +76,11 @@ export default class ProfileModel {
   }> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coords c
-      LEFT JOIN coordination_reviews cr ON cr.coord_id = c.coord_id
-      WHERE supplier_id = :userId GROUP BY supplier_id;`
+      const sql = `SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coords c
+  LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+  LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
+  LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
+  GROUP BY r.user_id;`
 
       const value = { userId }
 
@@ -212,14 +214,16 @@ export default class ProfileModel {
 
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coordination_reviews r
+      const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coord_reviews r
 LEFT JOIN coords c ON c.coord_id = r.coord_id
+LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN room_user room ON room.room_id = c.room_id
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
 ) t ON c.demander_id = t.user_id
 LEFT JOIN users u ON c.demander_id = u.user_id
-WHERE c.supplier_id=:supplierId
+WHERE room.user_id=:supplierId and room.user_type='S'
 LIMIT :pageOffset, :pageAmount;`
 
       const value = { supplierId, pageAmount, pageOffset: page * pageAmount }
@@ -239,7 +243,7 @@ LIMIT :pageOffset, :pageAmount;`
   ): Promise<Array<{ img: string; type: string }>> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT img, type FROM coordination_review_imgs WHERE coord_id = :id`
+      const sql = `SELECT img, type FROM coord_review_imgs WHERE coord_id = :id`
 
       const value = { id }
 

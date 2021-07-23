@@ -11,7 +11,7 @@ export default class ReviewService {
   model = new ReviewModel()
   s3 = new S3()
   isOwnerReview = async (userId: number, coordId: number): Promise<boolean> => {
-    const id = await this.model.getCoordinationUserId(coordId)
+    const id = await this.model.getcoordUserId(coordId)
     console.log(id)
     return id != null && userId == id
   }

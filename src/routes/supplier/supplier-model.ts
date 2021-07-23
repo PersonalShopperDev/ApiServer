@@ -47,9 +47,12 @@ export default class SupplierModel {
     const sql = `SELECT s.user_id, name, img, hireCount, reviewCount, price, type, rating FROM suppliers s
 LEFT JOIN users u ON s.user_id = u.user_id
 LEFT JOIN (
-    SELECT supplier_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coords c
-    LEFT JOIN coordination_reviews cr ON cr.coord_id = c.coord_id
-) cnt ON s.user_id=cnt.supplier_id
+    SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coords c
+    LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+    LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
+    LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
+    GROUP BY r.user_id
+) cnt ON s.user_id=cnt.user_id
 LEFT JOIN (
     SELECT user_id, COUNT(*) as typeCount FROM user_style
     WHERE style_id IN (:styleType)

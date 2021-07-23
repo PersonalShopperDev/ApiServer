@@ -29,9 +29,10 @@ export default class CoordController {
   }
 
   newCoord = async (req: Request, res: Response): Promise<void> => {
-    const { mainImg } = req['file']
+    const mainImg = req['file']
 
     if (!validationResult(req).isEmpty() || mainImg == null) {
+      console.log(validationResult(req))
       res.sendStatus(422)
       return
     }
@@ -58,16 +59,17 @@ export default class CoordController {
         return
       }
 
-      await this.service.saveMainImg(coordId, mainImg[0])
+      await this.service.saveMainImg(coordId, mainImg)
 
       res.status(200).send({ coordId })
     } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }
 
   addCloth = async (req: Request, res: Response): Promise<void> => {
-    const { img } = req['file']
+    const img = req['file']
 
     if (!validationResult(req).isEmpty() || img == null) {
       res.sendStatus(422)

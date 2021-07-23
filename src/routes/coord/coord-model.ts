@@ -14,8 +14,9 @@ export default class CoordModel {
     const connection = await db.getConnection()
     try {
       const sql = `SELECT c.img as mainImg, c.title, c.comment FROM coords c
-JOIN room_user r ON r.room_id = c.room_id AND r.user_id=:userId
-WHERE coord_id=:coordId`
+JOIN estimates e ON e.estimate_id = c.estimate_id
+JOIN room_user r ON r.room_id = e.room_id
+WHERE coord_id=:coordId AND r.user_id=:userId`
 
       const value = { userId, coordId }
 
@@ -49,13 +50,16 @@ WHERE coord_id=:coordId`
   findEstimate = async (
     demanderId: number,
     supplierId: number,
-  ): Promise<number | null> => {
+  ): Promise<{
+    estimateId: number
+    status: number
+  } | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT max(estimate_id) AS id FROM estimates e
+      const sql = `SELECT max(e.estimate_id) AS id, e.status FROM estimates e
 RIGHT JOIN (
   SELECT room_id, COUNT(*) as cnt FROM room_user
-  WHERE (user_id=166 AND user_type='D') OR (user_id=54 AND user_type='S')
+  WHERE (user_id=:demanderId AND user_type='D') OR (user_id=:supplierId AND user_type='S')
   GROUP BY room_id
   HAVING cnt >= 2
 ) r ON r.room_id = e.room_id
@@ -67,7 +71,7 @@ RIGHT JOIN (
 
       if (rows[0] == null) return null
 
-      return rows[0].id
+      return rows[0]
     } catch (e) {
       throw e
     } finally {

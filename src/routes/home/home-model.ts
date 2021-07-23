@@ -36,9 +36,12 @@ export default class HomeModel {
 SELECT s.user_id, name, img, hireCount, reviewCount, tf.typeCount FROM suppliers s
 LEFT JOIN users u ON s.user_id = u.user_id
 LEFT JOIN (
-    SELECT supplier_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount FROM coords c
-    LEFT JOIN coordination_reviews cr ON cr.coord_id = c.coord_id
-) cnt ON s.user_id=cnt.supplier_id
+  SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount  FROM coords c
+  LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+  LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
+  LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
+  GROUP BY r.user_id
+) cnt ON s.user_id=cnt.user_id
 LEFT JOIN (
     SELECT a.user_id, COUNT(*) as typeCount FROM user_style a
     RIGHT JOIN (SELECT style_id FROM user_style WHERE user_id = :userId) b ON a.style_id = b.style_id
@@ -73,8 +76,13 @@ LIMIT 6;`
     try {
       const sql = `SELECT a.user_id, name, img, price, hireCount, reviewCount FROM suppliers a
 LEFT JOIN users u ON a.user_id = u.user_id 
-LEFT JOIN ( SELECT supplier_id, COUNT(*) AS hireCount FROM coords GROUP BY supplier_id) h ON h.supplier_id = a.user_id
-LEFT JOIN ( SELECT supplier_id, COUNT(*) AS reviewCount FROM coordination_reviews cr JOIN coords c ON cr.coord_id = c.coord_id GROUP BY supplier_id) r ON r.supplier_id = a.user_id
+LEFT JOIN (
+  SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount  FROM coords c
+  LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+  LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
+  LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
+  GROUP BY r.user_id
+) cnt ON a.user_id=cnt.user_id
 ORDER BY ISNULL(img) ASC, a.popular DESC
 LIMIT 6;`
 
@@ -99,19 +107,21 @@ LIMIT 6;`
   getReviews = async (): Promise<Array<Review> | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT r.coord_id as id, c.supplier_id as supplierId, title FROM coordination_reviews r JOIN coords c on c.coord_id = r.coord_id LIMIT 5;`
+      // const sql = `SELECT r.coord_id as id, c.supplier_id as supplierId, r.title FROM coord_reviews r JOIN coords c on c.coord_id = r.coord_id LIMIT 5;`
+      //
+      // const [rows] = (await connection.query(sql)) as RowDataPacket[]
+      //
+      // return rows.map((row) => {
+      //   return {
+      //     id: row.id,
+      //     supplierId: row.supplierId,
+      //     title: row.title,
+      //     beforeImg: '',
+      //     afterImg: '',
+      //   }
+      // })
 
-      const [rows] = (await connection.query(sql)) as RowDataPacket[]
-
-      return rows.map((row) => {
-        return {
-          id: row.id,
-          supplierId: row.supplierId,
-          title: row.title,
-          beforeImg: '',
-          afterImg: '',
-        }
-      })
+      return []
     } catch (e) {
       return null
     } finally {

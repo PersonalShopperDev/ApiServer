@@ -2,10 +2,13 @@ import db from '../../config/db'
 import { ReviewContent } from './review-type'
 
 export default class ReviewModel {
-  getCoordinationUserId = async (coordId: number): Promise<number | null> => {
+  getcoordUserId = async (coordId: number): Promise<number | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = 'SELECT demander_id as id FROM coords WHERE coord_id=:coordId'
+      const sql = `SELECT r.user_id FROM coords c
+LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='D'
+WHERE c.coord_id=:coordId`
 
       const [result] = await connection.query(sql, { coordId })
 
@@ -22,7 +25,7 @@ export default class ReviewModel {
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO coordination_reviews(coord_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
+        'INSERT INTO coord_reviews(coord_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
 
       const { content, rating, publicBody } = data
 
@@ -51,7 +54,7 @@ export default class ReviewModel {
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO coordination_review_imgs(coord_id, img, type) VALUES :value'
+        'INSERT INTO coord_review_imgs(coord_id, img, type) VALUES :value'
 
       const value = keyList.map((key) => {
         return [coordId, key, type]
