@@ -1,5 +1,10 @@
 import ChatModel from './chat-model'
-import { ChatHistoryData, ChatRoomDetail, ChatUserProfile } from './chat-type'
+import {
+  ChatHistoryData,
+  ChatRoomDetail,
+  ChatUserProfile,
+  Estimate,
+} from './chat-type'
 import ResourcePath from '../resource/resource-path'
 import ChatSocket from './chat-socket'
 
@@ -14,7 +19,7 @@ export default class ChatService {
     const result = [] as ChatRoomDetail[]
 
     for (const room of roomList) {
-      const { roomId, users, lastChat, lastChatTime } = room
+      const { roomId, users, lastChat, lastChatType, lastChatTime } = room
       const targetId = users.filter((u) => u != userId)[0]
       const targetUser = await this.model.getChatProfile(targetId)
       targetUser.profileImg = ResourcePath.profileImg(targetUser.profileImg)
@@ -26,6 +31,7 @@ export default class ChatService {
         unreadCount,
         targetUser,
         lastChat,
+        lastChatType,
         lastChatTime,
       }
 
@@ -143,5 +149,9 @@ export default class ChatService {
     }
 
     return result
+  }
+
+  getLatestEstimate = async (roomId: number): Promise<Estimate | null> => {
+    return await this.model.getLatestEstimate(roomId)
   }
 }

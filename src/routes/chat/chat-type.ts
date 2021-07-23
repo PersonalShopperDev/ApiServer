@@ -8,6 +8,7 @@ export interface ChatRoomDetail {
   targetUser: ChatUserProfile
   unreadCount: number
   lastChat: string
+  lastChatType: number
   lastChatTime: Date
 }
 
@@ -38,15 +39,18 @@ interface ChatBase {
   isRead: boolean
 }
 
+export interface Estimate {
+  estimateId: number
+  price: number
+  status: number
+}
+
 export interface ChatSimpleMsg extends ChatBase {
   msg: string
 }
 
-export interface ChatEstimate extends ChatBase {
+export interface ChatEstimate extends ChatBase, Estimate {
   msg: string
-  estimateId: number
-  price: number
-  status: number
 }
 
 export interface ChatCoord extends ChatBase {

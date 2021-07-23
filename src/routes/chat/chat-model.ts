@@ -1,6 +1,11 @@
 import db from '../../config/db'
 import { RowDataPacket } from 'mysql2'
-import { ChatHistoryModel, ChatRoomData, ChatUserProfile } from './chat-type'
+import {
+  ChatHistoryModel,
+  ChatRoomData,
+  ChatUserProfile,
+  Estimate,
+} from './chat-type'
 
 export default class ChatModel {
   checkSupplier = async (supplierId: number): Promise<boolean> => {
@@ -70,12 +75,13 @@ GROUP BY a.room_id;`
       roomId: number
       users: Array<number>
       lastChat: string
+      lastChatType: number
       lastChatTime: Date
     }[]
   > => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT cu.room_id as roomId, json_arrayagg(cu2.user_id) as users, h.msg, h.create_time FROM room_user cu
+      const sql = `SELECT cu.room_id as roomId, json_arrayagg(cu2.user_id) as users, h.msg, h.type as chatType, h.create_time as chatTime FROM room_user cu
 RIGHT JOIN room_user cu2 ON cu.room_id = cu2.room_id
 RIGHT JOIN (SELECT room_id, MAX(chat_id) AS lastChatId FROM chat_history GROUP BY room_id) l ON l.room_id = cu.room_id
 LEFT JOIN chat_history h ON h.chat_id = l.lastChatId
@@ -93,7 +99,8 @@ LIMIT :pageOffset, :pageAmount;`
           roomId: row.roomId,
           users: row.users,
           lastChat: row.msg,
-          lastChatTime: new Date(row.create_time),
+          lastChatType: row.chatType,
+          lastChatTime: new Date(row.chatTime),
         }
       })
     } catch (e) {
@@ -314,6 +321,22 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
       const value = { roomId, userId }
 
       await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getLatestEstimate = async (roomId: number): Promise<Estimate | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT estimate_id as estimateId, price, status FROM estimates WHERE room_id=:roomId`
+      const value = { roomId }
+
+      const [rows] = await connection.query(sql, value)
+
+      return rows[0]
     } catch (e) {
       throw e
     } finally {

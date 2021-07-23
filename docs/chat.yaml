@@ -12,6 +12,26 @@ components:
       name:
         type: sring
         description: 상대방 유저 이름
+  estimate:
+    type: object
+    properties:
+      estimateId:
+        type: nubmer
+        description: 견적서 ID
+      price:
+        type: number
+        description: 견적서에 함께 적힌 가격, chatType 1 일 때만 존재
+      status:
+        type: number
+        description: |
+          견적서의 상태, chatType 1 일 때만 존재
+
+          0: 미응답
+          1: 거절
+          2: 수락
+          3: 입금(결제) 확인
+          4: 코디 완료
+
   chat:
     base:
       type: object
@@ -50,24 +70,7 @@ components:
       type: object
       allOf:
         - $ref: "#/components/chat/base"
-        - type: object
-          properties:
-            estimateId:
-              type: nubmer
-              description: 견적서 ID
-            price:
-              type: number
-              description: 견적서에 함께 적힌 가격, chatType 1 일 때만 존재
-            status:
-              type: number
-              description: |
-                견적서의 상태, chatType 1 일 때만 존재
-
-                0: 미응답
-                1: 거절
-                2: 수락
-                3: 입금(결제) 확인
-                4: 코디 완료
+        - $ref: "#/components/estimate"
     coord:
       type: object
       allOf:
@@ -184,6 +187,9 @@ path:
                 properties:
                   targetUser:
                     $ref: "#/components/profile"
+                  latestEstimate:
+                    description: 가장 최근의 견적서 정보
+                    $ref: "#/components/estimate"
                   chatList:
                     type: array
                     items:
@@ -191,3 +197,6 @@ path:
                         - $ref: "#/components/chat/msg"
                         - $ref: "#/components/chat/estimate"
                         - $ref: "#/components/chat/coord"
+                required:
+                  - targetUser
+                  - chatList
