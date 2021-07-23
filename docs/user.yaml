@@ -1,0 +1,128 @@
+components:
+  userData:
+    type: object
+    properties:
+      id:
+        type: number
+        description: User Id
+      img:
+        type: string
+        description: User 프로필 사진 URL
+      name:
+        type: string
+        description: User 이름
+      styleTypeList:
+        $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+
+  supplierData:
+    application/json:
+      schema:
+        type: object
+        properties:
+          list:
+            type: array
+            items:
+              allOf:
+                - $ref: '#/components/userData'
+                - type: object
+                  properties:
+                    price:
+                      type: number
+                      description: 코디 가격
+                    rating:
+                      type: number
+                      description: 리뷰 평점
+                    hireCount:
+                      type: number
+                      description: 고용된 횟수
+                    reviewCount:
+                      type: number
+                      description: 리뷰 개수
+  supplierSort:
+    name: sort
+    in: 'query'
+    description: 정렬 기준
+    schema:
+      type: string
+      enum: [ recommend, hireCount, priceLow ]
+      default: recommend
+
+  supplierType:
+    name: supplierType
+    in: 'query'
+    description: |
+      Supplier 경력 종류 (온보딩에서 입력한 값), 여러개를 넘겨줘도 됍니다.
+
+      0: 일반인, 1: SNS 스타, 2: 전문 스타일리스트
+    schema:
+      type: array
+      items:
+        type: number
+        minmum: 0
+        maxmum: 2
+
+path:
+  /user/supplier:
+    get:
+      summary: Supplier 전체 목록
+      description: 사용자 맞춤 추천 Supplier 목록을 반환 합니다. Paging 처리가 되어 있습니다.
+      tags: [ User ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: './swagger.yaml#/components/Request/page'
+        - $ref: '#/components/supplierSort'
+        - $ref: '#/components/supplierType'
+      responses:
+        '200':
+          description: OK
+          content:
+            $ref: '#/components/supplierData'
+  /user/supplier/filter:
+    get:
+      summary: Search Supplier
+      description: Style 종류로 Supplier 필터링
+      tags: [ User ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: './swagger.yaml#/components/Request/page'
+        - $ref: '#/components/supplierSort'
+        - $ref: '#/components/supplierType'
+        - name: styleType
+          in: 'query'
+          description: 검색하고자 하는 style Type ID. 여러개를 넘겨줘도 됍니다.
+          example: 12&type=62
+          schema:
+            type: array
+            items:
+              type: number
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            $ref: '#/components/supplierData'
+
+  /user/demander:
+    get:
+      summary: Demander 전체 목록
+      description: 최근 가입한 순으로 Demander 목록을 반환 합니다. Paging 처리가 되어 있습니다.
+      tags: [ User ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: gender
+          in: 'query'
+          description: 받아오고자 하는 성별입니다. 없는 경우 모든 성별을 받아옵니다.
+          schema:
+            type: string
+          required: true
+        - $ref: './swagger.yaml#/components/Request/page'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/userData'

@@ -1,10 +1,10 @@
 import express from 'express'
 import { oneOf, query } from 'express-validator'
 import { AuthCheck, AuthRequire } from '../../config/auth-check'
-import SupplierController from './supplier-controller'
+import UserController from './user-controller'
 
 const router = express.Router()
-const controller = new SupplierController()
+const controller = new UserController()
 
 const supplierTypeValidation = () =>
   oneOf([
@@ -16,13 +16,20 @@ const supplierTypeValidation = () =>
     query('supplierType').isInt({ min: 0, max: 2 }),
   ])
 
-router.get('/', supplierTypeValidation(), AuthRequire, controller.getList)
 router.get(
-  '/search',
+  '/supplier',
+  supplierTypeValidation(),
+  AuthRequire,
+  controller.getSupplier,
+)
+router.get(
+  '/supplier/filter',
   oneOf([query('styleType').isArray(), query('styleType').isInt()]),
   supplierTypeValidation(),
   AuthCheck,
-  controller.getSearchList,
+  controller.getSupplierListFilter,
 )
+
+router.get('/demander', AuthRequire, controller.getDemander)
 
 export default router

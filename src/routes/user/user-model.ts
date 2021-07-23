@@ -1,11 +1,11 @@
 import db from '../../config/db'
-import { Supplier } from './supplier-type'
+import { Supplier } from './user-type'
 import { RowDataPacket } from 'mysql2'
 import StyleModel from '../style/style-model'
 import ResourcePath from '../resource/resource-path'
 import Data from '../../data/data'
 
-export default class SupplierModel {
+export default class UserModel {
   getStyleTypeId = async (userId: number): Promise<number[] | null> => {
     const connection = await db.getConnection()
     try {
@@ -115,5 +115,49 @@ LIMIT :pageOffset, :pageAmount;
     } finally {
       connection.release()
     }
+  }
+
+  getDemanderList = async (
+    styleType: number | number[],
+    gender: string | undefined,
+    page: number,
+  ): Promise<Array<Supplier>> => {
+    const pageAmount = 20
+
+    const connection = await db.getConnection()
+    const sql = `SELECT u.user_id, u.img, u.name, t.type FROM users u
+LEFT JOIN (
+    SELECT user_id, COUNT(*) as typeCount FROM user_style
+    WHERE style_id IN (:styleType)
+    GROUP BY user_id
+) tf ON u.user_id = tf.user_id
+LEFT JOIN (
+    SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
+    GROUP BY user_id
+) t ON u.user_id = t.user_id
+WHERE NOT EXISTS (SELECT user_id FROM suppliers WHERE user_id = u.user_id)
+${gender != null ? 'AND u.gender = :gender' : ''}
+ORDER BY typeCount DESC, u.user_id DESC 
+LIMIT :pageOffset, :pageAmount;
+`
+
+    const value = {
+      styleType,
+      pageAmount,
+      pageOffset: page * pageAmount,
+      gender: gender == 'M' ? 1 : gender == 'F' ? 2 : 3,
+    }
+    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+    connection.release()
+
+    return rows.map((row) => {
+      return {
+        id: row.user_id,
+        img: ResourcePath.profileImg(row.img),
+        name: row.name,
+        styleType: row.type == null ? [] : Data.getStyleItemList(row.type),
+      }
+    })
   }
 }

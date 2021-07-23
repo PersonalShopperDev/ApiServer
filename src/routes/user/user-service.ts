@@ -1,10 +1,10 @@
-import { Supplier } from './supplier-type'
-import SupplierModel from './supplier-model'
+import { Supplier } from './user-type'
+import UserModel from './user-model'
 
-export default class SupplierService {
-  model = new SupplierModel()
+export default class UserService {
+  model = new UserModel()
 
-  getList = async (
+  getSupplierList = async (
     userId: number,
     gender: string,
     page: number | undefined,
@@ -26,7 +26,7 @@ export default class SupplierService {
     )
   }
 
-  getSearchList = async (
+  getSupplierListFilter = async (
     typeList: number | number[],
     gender: string | undefined,
     page: number | undefined,
@@ -41,5 +41,19 @@ export default class SupplierService {
       supplierType,
       true,
     )
+  }
+
+  getDemanderList = async (
+    userId: number,
+    gender: string,
+    page: number | undefined,
+  ): Promise<Supplier[] | null> => {
+    const typeList = await this.model.getStyleTypeId(userId)
+
+    if (typeList == null) {
+      return null
+    }
+
+    return await this.model.getDemanderList(typeList, gender, page ?? 0)
   }
 }

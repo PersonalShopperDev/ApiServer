@@ -12,12 +12,12 @@
 /home:
   $ref: 'home.yaml#/path/~1home'
 
-/supplier:
-  $ref: 'supplier.yaml#/path/~1supplier'
-#/supplier/{id}:
-#  $ref: 'supplier.yaml#/path/~1supplier~1{id}'
-/supplier/search:
-  $ref: 'supplier.yaml#/path/~1supplier~1search'
+/user/supplier:
+  $ref: 'user.yaml#/path/~1user~1supplier'
+/user/supplier/filter:
+  $ref: 'user.yaml#/path/~1user~1supplier~1filter'
+/user/demander:
+  $ref: 'user.yaml#/path/~1user~1demander'
 
 /onboard:
   $ref: 'onboard.yaml#/path/~1onboard'

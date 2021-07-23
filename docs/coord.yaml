@@ -133,7 +133,7 @@ path:
                 price:
                   type: number
                   description: 옷 가격
-                p urchaseUrl:
+                purchaseUrl:
                   type: string
                   description: 옷 구매 링크
                   maxLength: 150

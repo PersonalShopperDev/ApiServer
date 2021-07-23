@@ -179,6 +179,7 @@ export default class ChatSocket {
         chatTime: new Date(),
         msg,
         price,
+        status: 0,
         chatType: 1,
       })
     } catch (e) {
