@@ -38,11 +38,11 @@ export default class CoordService {
     title: string,
     comment: string,
   ): Promise<number | null> => {
-    const roomId = await this.model.findRoom(demanderId, supplierId)
+    const estimate = await this.model.findEstimate(demanderId, supplierId)
 
-    if (roomId == null) return null
+    if (estimate == null) return null
 
-    return await this.model.newCoord(roomId, title, comment)
+    return await this.model.newCoord(estimate, title, comment)
   }
 
   saveMainImg = async (coorId: number, file: ImgFile): Promise<void> => {

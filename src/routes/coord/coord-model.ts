@@ -45,16 +45,20 @@ WHERE coord_id=:coordId`
     }
   }
 
-  findRoom = async (
+  findEstimate = async (
     demanderId: number,
     supplierId: number,
   ): Promise<number | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT room_id, COUNT(*) as cnt FROM room_user
- WHERE (user_id=:demanderId AND user_type='D') OR (user_id=:supplierId AND user_type='S')
- GROUP BY room_id
- HAVING cnt >= 2;`
+      const sql = `SELECT max(estimate_id) AS id FROM estimates e
+RIGHT JOIN (
+  SELECT room_id, COUNT(*) as cnt FROM room_user
+  WHERE (user_id=166 AND user_type='D') OR (user_id=54 AND user_type='S')
+  GROUP BY room_id
+  HAVING cnt >= 2
+) r ON r.room_id = e.room_id
+`
 
       const value = { demanderId, supplierId }
 
@@ -62,7 +66,7 @@ WHERE coord_id=:coordId`
 
       if (rows[0] == null) return null
 
-      return rows[0].room_id
+      return rows[0].id
     } catch (e) {
       throw e
     } finally {
@@ -71,15 +75,15 @@ WHERE coord_id=:coordId`
   }
 
   newCoord = async (
-    roomId: number,
+    estimateId: number,
     title: string,
     comment: string,
   ): Promise<number> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO coords(room_id, title, comment) VALUES(:roomId, :title, :comment)`
+      const sql = `INSERT INTO coords(estimate_id, title, comment) VALUES(:estimateId, :title, :comment)`
 
-      const value = { roomId, title, comment }
+      const value = { estimateId, title, comment }
 
       const [result] = await connection.query(sql, value)
 
