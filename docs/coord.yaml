@@ -111,6 +111,14 @@ path:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  coordId:
+                    type: number
+                    description: 생성된 coord ID
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
         '422':

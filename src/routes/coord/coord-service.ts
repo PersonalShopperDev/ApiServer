@@ -2,11 +2,35 @@ import CoordModel from './coord-model'
 import { ImgFile } from '../../types/upload'
 import DIContainer from '../../config/inversify.config'
 import S3 from '../../config/s3'
-import { ClothData } from './coord-type'
+import { ClothData, CoordData } from './coord-type'
+import ResourcePath from '../resource/resource-path'
 
 export default class CoordService {
   model = new CoordModel()
   s3 = DIContainer.get(S3)
+
+  getCoord = async (
+    userId: number,
+    coordId: number,
+  ): Promise<CoordData | null> => {
+    const base = await this.model.getCoordBase(userId, coordId)
+
+    if (base == null) {
+      return null
+    }
+
+    const clothes = await this.model.getClothes(coordId)
+
+    for (const c of clothes) {
+      c.img = ResourcePath.coordImg(base.img)
+    }
+
+    return {
+      mainImg: ResourcePath.coordImg(base.img),
+      comment: base.comment,
+      clothes,
+    }
+  }
 
   newCoord = async (
     demanderId: number,

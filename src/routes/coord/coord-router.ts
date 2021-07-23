@@ -9,6 +9,7 @@ const router = express.Router()
 const controller = new CoordController()
 const upload = multer()
 
+router.get('/', query('coordId').isInt(), AuthRequire, controller.getCoord)
 router.post(
   '/',
   upload.fields([{ name: 'mainImg' }, { name: 'clothImg' }]),

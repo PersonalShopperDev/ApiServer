@@ -5,6 +5,29 @@ import { validationResult } from 'express-validator'
 export default class CoordController {
   service = new CoordService()
 
+  getCoord = async (req: Request, res: Response): Promise<void> => {
+    if (!validationResult(req).isEmpty()) {
+      res.sendStatus(422)
+      return
+    }
+
+    try {
+      const { userId } = req['auth']
+      const { coordId } = req.query as any
+
+      const result = await this.service.getCoord(userId, coordId)
+
+      if (result == null) {
+        res.sendStatus(403)
+        return
+      }
+
+      res.status(200).send(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
   newCoord = async (req: Request, res: Response): Promise<void> => {
     const { mainImg, clothImg } = req['files']
 
@@ -49,7 +72,7 @@ export default class CoordController {
         clothPurchaseUrl,
       )
 
-      res.sendStatus(200)
+      res.status(200).send({ coordId })
     } catch (e) {
       res.sendStatus(500)
     }

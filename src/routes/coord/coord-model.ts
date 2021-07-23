@@ -2,6 +2,48 @@ import db from '../../config/db'
 import { ClothData } from './coord-type'
 
 export default class CoordModel {
+  getCoordBase = async (
+    userId: number,
+    coordId: number,
+  ): Promise<{
+    img: string
+    comment: string
+  } | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT img, comment FROM coords c
+JOIN room_user r ON r.room_id = c.room_id AND r.user_id=:userId
+WHERE coord_id=:coordId`
+
+      const value = { userId, coordId }
+
+      const [rows] = await connection.query(sql, value)
+
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getClothes = async (coordId: number): Promise<ClothData[]> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT img, name, price, purchase_url as purchaseUrl FROM coord_clothes WHERE coord_id=:coordId`
+
+      const value = { coordId }
+
+      const [rows] = await connection.query(sql, value)
+
+      return rows as ClothData[]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
   findRoom = async (
     demanderId: number,
     supplierId: number,
