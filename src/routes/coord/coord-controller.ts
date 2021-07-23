@@ -52,11 +52,17 @@ export default class CoordController {
       clothName,
       clothPrice,
       clothPurchaseUrl,
+      title,
       comment,
     } = req.body
 
     try {
-      const coordId = await this.service.newCoord(demanderId, userId, comment)
+      const coordId = await this.service.newCoord(
+        demanderId,
+        userId,
+        title,
+        comment,
+      )
 
       if (coordId == null) {
         res.sendStatus(403)

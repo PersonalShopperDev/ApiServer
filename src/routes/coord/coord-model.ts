@@ -6,12 +6,13 @@ export default class CoordModel {
     userId: number,
     coordId: number,
   ): Promise<{
-    img: string
+    mainImg: string
+    title: string
     comment: string
   } | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT img, comment FROM coords c
+      const sql = `SELECT c.img as mainImg, c.title, c.comment FROM coords c
 JOIN room_user r ON r.room_id = c.room_id AND r.user_id=:userId
 WHERE coord_id=:coordId`
 
@@ -69,12 +70,16 @@ WHERE coord_id=:coordId`
     }
   }
 
-  newCoord = async (roomId: number, comment: string): Promise<number> => {
+  newCoord = async (
+    roomId: number,
+    title: string,
+    comment: string,
+  ): Promise<number> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO coords(room_id, comment) VALUES(:roomId, :comment)`
+      const sql = `INSERT INTO coords(room_id, title, comment) VALUES(:roomId, :title, :comment)`
 
-      const value = { roomId, comment }
+      const value = { roomId, title, comment }
 
       const [result] = await connection.query(sql, value)
 

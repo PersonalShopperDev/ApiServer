@@ -24,6 +24,9 @@ path:
                   mainImg:
                     type: string
                     description: 코디 Img Url
+                  title:
+                    type: string
+                    description: 코디 제목
                   comment:
                     type: string
                     description: 스타일링 팁
@@ -50,6 +53,7 @@ path:
                         - name
                 required:
                   - mainImg
+                  - title
                   - comment
                   - clothes
 
@@ -71,6 +75,10 @@ path:
                 mainImg:
                   type: binary
                   description: 코디 보드 이미지
+                title:
+                  type: string
+                  description: 코디 제목
+                  maxLength: 50
                 comment:
                   type: string
                   description: 코디 설명
@@ -104,6 +112,7 @@ path:
               required:
                 - demanderId
                 - mainImg
+                - title
                 - comment
                 - clothImg
                 - clothName

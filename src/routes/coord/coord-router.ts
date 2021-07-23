@@ -14,6 +14,7 @@ router.post(
   '/',
   upload.fields([{ name: 'mainImg' }, { name: 'clothImg' }]),
   body('demanderId').isInt(),
+  body('title').isString().isLength({ max: 50 }),
   body('comment').isString().isLength({ max: 700 }),
   body('clothName').isArray(),
   body('clothName.*').isString().isLength({ max: 50 }),

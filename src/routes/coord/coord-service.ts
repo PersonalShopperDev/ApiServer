@@ -22,12 +22,12 @@ export default class CoordService {
     const clothes = await this.model.getClothes(coordId)
 
     for (const c of clothes) {
-      c.img = ResourcePath.coordImg(base.img)
+      c.img = ResourcePath.coordImg(c.img)
     }
+    base.mainImg = ResourcePath.coordImg(base.mainImg)
 
     return {
-      mainImg: ResourcePath.coordImg(base.img),
-      comment: base.comment,
+      ...base,
       clothes,
     }
   }
@@ -35,13 +35,14 @@ export default class CoordService {
   newCoord = async (
     demanderId: number,
     supplierId: number,
+    title: string,
     comment: string,
   ): Promise<number | null> => {
     const roomId = await this.model.findRoom(demanderId, supplierId)
 
     if (roomId == null) return null
 
-    return await this.model.newCoord(roomId, comment)
+    return await this.model.newCoord(roomId, title, comment)
   }
 
   saveMainImg = async (coorId: number, file: ImgFile): Promise<void> => {
