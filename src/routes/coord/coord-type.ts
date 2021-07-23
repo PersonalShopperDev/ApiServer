@@ -19,3 +19,10 @@ export interface ClothDataWithFile {
   purchaseUrl: string
   img: ImgFile
 }
+
+export interface CoordIdData {
+  coordId: number
+  estimateId: number
+  estimateStatus: number
+  roomId: number
+}

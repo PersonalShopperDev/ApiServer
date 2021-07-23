@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import CoordService from './coord-service'
 import { validationResult } from 'express-validator'
+import ChatSocket from '../chat/chat-socket'
+import ResourcePath from '../resource/resource-path'
 
 export default class CoordController {
   service = new CoordService()
@@ -32,7 +34,6 @@ export default class CoordController {
     const mainImg = req['file']
 
     if (!validationResult(req).isEmpty() || mainImg == null) {
-      console.log(validationResult(req))
       res.sendStatus(422)
       return
     }
@@ -47,23 +48,32 @@ export default class CoordController {
     const { demanderId, title, comment } = req.body
 
     try {
-      const coordId = await this.service.newCoord(
+      const data = await this.service.newCoord(
         demanderId,
         userId,
         title,
         comment,
       )
 
-      if (coordId == null) {
+      if (data == null) {
         res.sendStatus(403)
         return
       }
 
-      await this.service.saveMainImg(coordId, mainImg)
+      const { coordId, roomId } = data
+
+      const imgUrl = await this.service.saveMainImg(coordId, mainImg)
+
+      ChatSocket.getInstance().sendCoord(
+        roomId,
+        userId,
+        coordId,
+        title,
+        ResourcePath.coordImg(imgUrl),
+      )
 
       res.status(200).send({ coordId })
     } catch (e) {
-      console.log(e)
       res.sendStatus(500)
     }
   }
@@ -88,7 +98,7 @@ export default class CoordController {
       const cloth = { img, name, price, purchaseUrl }
       const result = await this.service.addCloth(coordId, userId, cloth)
 
-      if (result == null) {
+      if (!result) {
         res.sendStatus(403)
         return
       }

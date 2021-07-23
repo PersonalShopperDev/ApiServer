@@ -1,5 +1,5 @@
 import db from '../../config/db'
-import { ClothData } from './coord-type'
+import { ClothData, CoordIdData } from './coord-type'
 import { RowDataPacket } from 'mysql2'
 
 export default class CoordModel {
@@ -50,19 +50,17 @@ WHERE coord_id=:coordId AND r.user_id=:userId`
   findEstimate = async (
     demanderId: number,
     supplierId: number,
-  ): Promise<{
-    estimateId: number
-    status: number
-  } | null> => {
+  ): Promise<CoordIdData | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT max(e.estimate_id) AS id, e.status FROM estimates e
+      const sql = `SELECT e.estimate_id AS estimateId, e.status, e.room_id as roomId FROM estimates e
 RIGHT JOIN (
   SELECT room_id, COUNT(*) as cnt FROM room_user
   WHERE (user_id=:demanderId AND user_type='D') OR (user_id=:supplierId AND user_type='S')
   GROUP BY room_id
   HAVING cnt >= 2
 ) r ON r.room_id = e.room_id
+WHERE status = 3
 `
 
       const value = { demanderId, supplierId }
@@ -144,11 +142,11 @@ WHERE c.coord_id=:coordId AND r.user_id = :userId;
   insertCloth = async (coordId: number, item: ClothData): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO coord_clothes(coord_id, img, name, price, purchase_url) VALUES :value`
+      const sql = `INSERT INTO coord_clothes(coord_id, img, name, price, purchase_url) 
+VALUES (:coordId, :img, :name, :price, :purchaseUrl)`
+      const value = { coordId, ...item }
 
-      await connection.query(sql, {
-        value: [coordId, item.img, item.name, item.price, item.purchaseUrl],
-      })
+      await connection.query(sql, value)
     } catch (e) {
       throw e
     } finally {

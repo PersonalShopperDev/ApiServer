@@ -2,7 +2,7 @@ import CoordModel from './coord-model'
 import { ImgFile } from '../../types/upload'
 import DIContainer from '../../config/inversify.config'
 import S3 from '../../config/s3'
-import { ClothDataWithFile, CoordData } from './coord-type'
+import { ClothDataWithFile, CoordData, CoordIdData } from './coord-type'
 import ResourcePath from '../resource/resource-path'
 
 export default class CoordService {
@@ -37,33 +37,34 @@ export default class CoordService {
     supplierId: number,
     title: string,
     comment: string,
-  ): Promise<number | null> => {
-    const estimate = await this.model.findEstimate(demanderId, supplierId)
+  ): Promise<CoordIdData | null> => {
+    const data = await this.model.findEstimate(demanderId, supplierId)
 
-    if (estimate == null || estimate.status < 3)
-      // TODO: 견적서 상태에 따라 에러 처리
-      return null
+    if (data == null) return null
 
-    return await this.model.newCoord(estimate.estimateId, title, comment)
+    data.coordId = await this.model.newCoord(data.estimateId, title, comment)
+    return data
   }
 
-  saveMainImg = async (coorId: number, file: ImgFile): Promise<void> => {
+  saveMainImg = async (coorId: number, file: ImgFile): Promise<string> => {
     const key = `${Date.now()}0${coorId}`
 
     await this.s3.upload(`coord/${key}`, file.mimetype, file.buffer)
     await this.model.updateCoordImg(coorId, key)
+
+    return key
   }
 
   addCloth = async (
     coorId: number,
     userId: number,
     cloth: ClothDataWithFile,
-  ): Promise<void | null> => {
+  ): Promise<boolean> => {
     const clothNum = await this.model.checkCoordId(coorId, userId)
 
     if (clothNum == null) {
       // 권한 없음
-      return null
+      return false
     }
     const { name, img, price, purchaseUrl } = cloth
 
@@ -77,5 +78,7 @@ export default class CoordService {
       purchaseUrl,
       img: key,
     })
+
+    return true
   }
 }

@@ -1,6 +1,8 @@
 import { Namespace, Socket } from 'socket.io'
 import { checkAuthorization } from '../../config/auth-check'
 import ChatModel from './chat-model'
+import CoordModel from '../coord/coord-model'
+import ResourcePath from '../resource/resource-path'
 
 export default class ChatSocket {
   private static instance: ChatSocket
@@ -22,6 +24,7 @@ export default class ChatSocket {
   }
 
   private model = new ChatModel()
+  private coordModel = new CoordModel()
 
   newChat = (userIds: number[], roomId: number) => {
     const socketIds = userIds.map((id) => this.userSocketMap[id])
@@ -30,6 +33,33 @@ export default class ChatSocket {
         socket[1].join(roomId.toString())
       }
     }
+  }
+
+  sendCoord = async (
+    roomId: number,
+    userId: number,
+    coordId: number,
+    coordTitle: string,
+    coordImg: string,
+  ) => {
+    const chatId = await this.model.saveMsg(
+      roomId,
+      userId,
+      2,
+      coordTitle,
+      coordId,
+    )
+
+    this.io.to(roomId.toString()).emit('receiveMsg', {
+      roomId,
+      chatId,
+      userId,
+      chatTime: new Date(),
+      chatType: 2,
+      coordId,
+      coordTitle,
+      coordImg,
+    })
   }
 
   connect = async (socket: Socket) => {
@@ -60,7 +90,9 @@ export default class ChatSocket {
       await this.onSendEstimate(socket, userId, data)
     })
 
-    socket.on('sendCoord', this.onSendCoord)
+    socket.on('sendCoord', async (data) => {
+      await this.onSendCoord(socket, userId, data)
+    })
 
     socket.on('responseEstimate', async (data) => {
       await this.onResponseEstimate(socket, userId, data)
@@ -92,6 +124,7 @@ export default class ChatSocket {
       socket.to(roomId.toString()).emit('receiveMsg', {
         roomId,
         chatId,
+        userId,
         chatTime: new Date(),
         msg,
         chatType: 0,
@@ -141,6 +174,7 @@ export default class ChatSocket {
       socket.to(roomId.toString()).emit('receiveMsg', {
         roomId,
         chatId,
+        userId,
         chatTime: new Date(),
         msg,
         price,
@@ -150,7 +184,51 @@ export default class ChatSocket {
       socket.emit('error', 500)
     }
   }
-  private onSendCoord = async (data) => {}
+
+  private onSendCoord = async (socket: Socket, userId: number, data) => {
+    try {
+      const { roomId, coordId } = data
+      if (isNaN(Number(roomId)) || isNaN(Number(coordId))) {
+        socket.emit('error', 422)
+        return
+      }
+
+      if (!socket.rooms.has(roomId.toString())) {
+        socket.emit('error', 403)
+        return
+      }
+
+      const coordData = await this.coordModel.getCoordBase(userId, coordId)
+
+      if (coordData == null) {
+        socket.emit('error', 403)
+        return
+      }
+
+      const coordTitle = coordData.title
+      const coordImg = ResourcePath.coordImg(coordData.mainImg)
+      const chatId = await this.model.saveMsg(
+        roomId,
+        userId,
+        2,
+        coordTitle,
+        coordId,
+      )
+
+      socket.to(roomId.toString()).emit('receiveMsg', {
+        roomId,
+        chatId,
+        userId,
+        chatTime: new Date(),
+        chatType: 2,
+        coordId,
+        coordTitle,
+        coordImg,
+      })
+    } catch (e) {
+      socket.emit('error', 500)
+    }
+  }
 
   private onResponseEstimate = async (socket: Socket, userId: number, data) => {
     try {
