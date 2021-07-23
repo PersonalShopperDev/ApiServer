@@ -175,6 +175,7 @@ export default class ChatSocket {
         roomId,
         chatId,
         userId,
+        estimateId,
         chatTime: new Date(),
         msg,
         price,

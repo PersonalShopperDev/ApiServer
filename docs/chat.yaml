@@ -52,6 +52,9 @@ components:
         - $ref: "#/components/chat/base"
         - type: object
           properties:
+            estimateId:
+              type: nubmer
+              description: 견적서 ID
             price:
               type: number
               description: 견적서에 함께 적힌 가격, chatType 1 일 때만 존재
@@ -65,6 +68,21 @@ components:
                 2: 수락
                 3: 입금(결제) 확인
                 4: 코디 완료
+    coord:
+      type: object
+      allOf:
+        - $ref: "#/components/chat/base"
+        - type: object
+          properties:
+            coordId:
+              type: nubmer
+              description: 코디 ID
+            coordTitle:
+              type: string
+              description: 코디 제목
+            coordImg:
+              type: string
+              description: 코디 보드 이미지 URL
 
 
 path:
@@ -172,3 +190,4 @@ path:
                       oneOf:
                         - $ref: "#/components/chat/msg"
                         - $ref: "#/components/chat/estimate"
+                        - $ref: "#/components/chat/coord"

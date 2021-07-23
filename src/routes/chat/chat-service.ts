@@ -110,22 +110,23 @@ export default class ChatService {
             isRead,
             chatTime: createTime,
             chatType: type,
+            estimateId: item.subData,
             msg: item.msg,
             price: item.price,
             status: item.status,
           })
           break
         case 2:
-          // TODO : Coord
-          // result.push({
-          //   chatId,
-          //   userId,
-          //   isRead,
-          //   chatTime: createTime,
-          //   chatType: type,
-          //   coordTitle: item.msg,
-          //   coordImg: ResourcePath.coordImg(item.subData),
-          // })
+          result.push({
+            chatId,
+            userId,
+            isRead,
+            chatTime: createTime,
+            chatType: type,
+            coordId: item.subData,
+            coordTitle: item.msg,
+            coordImg: ResourcePath.coordImg(item.coordImg),
+          })
           break
         case 0:
         default:

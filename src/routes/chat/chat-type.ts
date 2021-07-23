@@ -22,8 +22,11 @@ export interface ChatHistoryModel {
   userId: number
   type: number
   msg: string
+  subData: number
   price: number
   status: number
+  coordTitle: string
+  coordImg: string
   createTime: Date
 }
 
@@ -41,11 +44,13 @@ export interface ChatSimpleMsg extends ChatBase {
 
 export interface ChatEstimate extends ChatBase {
   msg: string
+  estimateId: number
   price: number
   status: number
 }
 
 export interface ChatCoord extends ChatBase {
+  coordId: number
   coordTitle: string
   coordImg: string
 }
