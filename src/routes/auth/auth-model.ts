@@ -149,7 +149,7 @@ export class TokenManager {
 
       const { onboard, gender, status, email } = rows[0]
       const userType =
-        onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
+        onboard == null ? 'N' : status == null ? 'D' : status == -1 ? 'W' : 'S'
 
       return jwt.sign(
         { userId, gender, userType, email },
@@ -207,7 +207,7 @@ export class UserManager {
 
       const { onboard, status } = rows[0]
       const userType =
-        onboard == null ? 'N' : status == null ? 'D' : status == 0 ? 'W' : 'S'
+        onboard == null ? 'N' : status == null ? 'D' : status == -1 ? 'W' : 'S'
       return userType
     } catch (e) {
       throw e
