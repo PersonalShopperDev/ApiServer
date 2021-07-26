@@ -6,7 +6,7 @@ interface Query {
   page: number | undefined
   sort: string | undefined
   supplierType: number | number[] | undefined
-  styleType: number | number[]
+  styleType: number[]
 }
 
 export default class UserController {

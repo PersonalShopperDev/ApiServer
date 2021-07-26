@@ -27,7 +27,7 @@ export default class UserService {
   }
 
   getSupplierListFilter = async (
-    typeList: number | number[],
+    typeList: number[],
     gender: string | undefined,
     page: number | undefined,
     sort: string | undefined,

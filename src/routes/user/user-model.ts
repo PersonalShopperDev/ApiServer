@@ -22,7 +22,7 @@ export default class UserModel {
   }
 
   getSupplierList = async (
-    styleType: number | number[],
+    styleType: number[],
     gender: string | undefined,
     page: number,
     sort: string,
@@ -56,7 +56,7 @@ LEFT JOIN (
 ) cnt ON s.user_id=cnt.user_id
 LEFT JOIN (
     SELECT user_id, COUNT(*) as typeCount FROM user_style
-    WHERE style_id IN (:styleType)
+    ${styleType.length > 0 ? 'WHERE style_id IN (:styleType)' : ''}
     GROUP BY user_id
 ) tf ON s.user_id = tf.user_id
 LEFT JOIN (
@@ -118,7 +118,7 @@ LIMIT :pageOffset, :pageAmount;
   }
 
   getDemanderList = async (
-    styleType: number | number[],
+    styleType: number[],
     gender: string | undefined,
     page: number,
   ): Promise<Array<Supplier>> => {
@@ -128,7 +128,7 @@ LIMIT :pageOffset, :pageAmount;
     const sql = `SELECT u.user_id, u.img, u.name, t.type FROM users u
 LEFT JOIN (
     SELECT user_id, COUNT(*) as typeCount FROM user_style
-    WHERE style_id IN (:styleType)
+    ${styleType.length > 0 ? 'WHERE style_id IN (:styleType)' : ''}
     GROUP BY user_id
 ) tf ON u.user_id = tf.user_id
 LEFT JOIN (
@@ -145,7 +145,7 @@ LIMIT :pageOffset, :pageAmount;
       styleType,
       pageAmount,
       pageOffset: page * pageAmount,
-      gender: gender == 'M' ? 1 : gender == 'F' ? 2 : 3,
+      gender,
     }
     const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
