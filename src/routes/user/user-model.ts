@@ -64,7 +64,7 @@ LEFT JOIN (
     GROUP BY user_id
 ) t ON s.user_id = t.user_id
 WHERE supplyGender & :gender = :gender 
-AND ${supplierType != null ? 's.status in (:supplierType)' : 's.status > 0'}
+AND ${supplierType != null ? 's.status in (:supplierType)' : 's.status >= 0'}
 ${filter ? ` AND typeCount >= 0 ` : ''}
 ORDER BY ISNULL(img) ASC, ${sortOption}
 LIMIT :pageOffset, :pageAmount;
