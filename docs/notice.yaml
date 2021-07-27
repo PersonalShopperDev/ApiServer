@@ -5,13 +5,36 @@ path:
       description: 공지 전체 목록, 페이징 처리
       tags: [ Notice ]
       parameters:
-        - name: gender
-          in: 'query'
-          description: 받아오고자 하는 성별입니다. 없는 경우 모든 성별을 받아옵니다.
-          schema:
-            type: string
-          required: true
         - $ref: './swagger.yaml#/components/Request/page'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                    description: 공지 ID
+                  title:
+                    type: string
+                    description: 공지 제목
+                  date:
+                    type: string
+                    description: 공지 날짜
+  /notice/:noticeId:
+    get:
+      summary: 공지 데이터
+      description: 공지 하나의 데이터를 불러옵니다.
+      tags: [ Notice ]
+      parameters:
+        - name: noticeId
+          in: 'query'
+          description: 받아오고자 공지 ID 입니다.
+          schema:
+            type: number
+          required: true
       responses:
         '200':
           description: OK

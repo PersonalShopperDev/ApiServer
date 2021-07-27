@@ -1,6 +1,6 @@
 export interface Notice {
   id: number
   title: string
-  content: string
+  content: string | undefined
   date: Date
 }

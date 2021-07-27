@@ -75,3 +75,5 @@
 
 /notice:
   $ref: 'notice.yaml#/path/~1notice'
+/notice/:noticeId:
+  $ref: 'notice.yaml#/path/~1notice~1:noticeId'

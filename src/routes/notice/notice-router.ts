@@ -7,5 +7,6 @@ const router = express.Router()
 const controller = new NoticeController()
 
 router.get('/', AuthCheck, controller.getNoticeList)
+router.get('/:noticeId', AuthCheck, controller.getNotice)
 
 export default router

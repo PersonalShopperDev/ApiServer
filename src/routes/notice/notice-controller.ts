@@ -5,6 +5,22 @@ import NoticeService from './notice-service'
 export default class NoticeController {
   service = new NoticeService()
 
+  getNotice = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userType } = req['auth']
+      const { noticeId } = req.query as any
+      const result = await this.service.getNotice(userType, noticeId)
+
+      if (result == null) {
+        res.sendStatus(404)
+      } else {
+        res.status(200).json(result)
+      }
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
   getNoticeList = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userType } = req['auth']
