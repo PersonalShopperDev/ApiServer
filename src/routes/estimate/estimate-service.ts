@@ -1,8 +1,31 @@
 import ChatModel from './estimate-model'
 import ChatSocket from '../chat/chat-socket'
+import { EstimateHistory, UserData } from './estimate-type'
+import ResourcePath from '../resource/resource-path'
 
 export default class EstimateService {
   model = new ChatModel()
+
+  getList = async (userId: number): Promise<EstimateHistory[]> => {
+    const rawData = await this.model.getList(userId)
+
+    return rawData.map((item) => {
+      const { paymentTime, price, status, estimateId } = item
+      const { userId, name, img } = item
+      const targetUser: UserData = {
+        userId,
+        name,
+        img: ResourcePath.profileImg(img),
+      }
+      return {
+        estimateId,
+        paymentTime,
+        price,
+        status,
+        targetUser,
+      }
+    })
+  }
 
   setPayer = async (
     userId: number,

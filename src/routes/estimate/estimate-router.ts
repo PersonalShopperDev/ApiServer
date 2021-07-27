@@ -6,6 +6,8 @@ import { body } from 'express-validator'
 const router = express.Router()
 const controller = new EstimateController()
 
+router.get('/', AuthRequire, controller.getList)
+
 router.put(
   '/:estimateId/payer',
   body('name').isString(),

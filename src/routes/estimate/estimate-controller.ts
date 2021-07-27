@@ -6,6 +6,22 @@ import ChatSocket from '../chat/chat-socket'
 export default class EstimateController {
   service = new EstimateService()
 
+  getList = async (req: Request, res: Response): Promise<void> => {
+    const { userId, userType } = req['auth']
+
+    try {
+      const result = await this.service.getList(userId)
+
+      if (!result) {
+        res.sendStatus(400)
+        return
+      }
+      res.status(200).json(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
   setPayer = async (req: Request, res: Response): Promise<void> => {
     if (!validationResult(req).isEmpty()) {
       res.sendStatus(422)

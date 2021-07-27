@@ -1,4 +1,68 @@
 path:
+  /estimate:
+    get:
+      summary: 견적서 목록
+      description: 결제 처리 된 견적서 목록을 보여줍니다.
+      tags: [ Estimate ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - $ref: './swagger.yaml#/components/Request/page'
+
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        estimateId:
+                          type: number
+                          description: 견적서 ID
+                        paymentTime:
+                          type: Date
+                          description: 결제 날짜
+                        price:
+                          type: number
+                          description: 견적서 금액
+                        status:
+                          type: number
+                          description: |
+                            견적서 Status
+
+                            0: 초기 상태
+                            1: 거절
+                            2: 입금 요청(수락)
+                            3: 입금 확인 중(입금자 명 입력)
+                            4: 코디 진행(입금 확인)
+                            5: 리뷰 작성(완료)
+                        targetUser:
+                          type: object
+                          description: (코디 해준/받은) 상대방 정보
+                          properties:
+                            userId:
+                              type: number
+                              description: 상대 사용자 ID
+                            name:
+                              type: string
+                              description: 이름
+                            img:
+                              type: string
+                              description: 프로필 이미지
+
+                      requried:
+
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+
+
+
   /estimate/:estimateId/payer:
     put:
       summary: 입금자명 입력

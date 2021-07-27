@@ -25,6 +25,38 @@ WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
     }
   }
 
+  getList = async (
+    userId: number,
+  ): Promise<
+    {
+      estimateId: number
+      status: number
+      price: number
+      paymentTime: Date
+      userId: number
+      name: string
+      img: string
+    }[]
+  > => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT e.estimate_id AS estimateId, e.status, e.price, e.pay_time AS paymentTime, u.user_id as userId, u.name, u.img FROM estimates e
+LEFT JOIN room_user r ON e.room_id = r.room_id
+LEFT JOIN room_user tr ON tr.room_id = r.room_id
+LEFT JOIN users u ON u.user_id = tr.user_id
+WHERE r.user_id = :userId AND tr.user_id != :userId;
+`
+      const value = { userId }
+      const [rows] = await connection.query(sql, value)
+
+      return rows as any
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
   setPayer = async (
     estimateId: number,
     userId: number,
