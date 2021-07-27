@@ -3,7 +3,7 @@ path:
     put:
       summary: 입금자명 입력
       description: 입금자 이름을 입력합니다.
-      tags: [ Estimate ] 
+      tags: [ Estimate ]
       security:
         - bearerAuth: [ ]
 
@@ -14,79 +14,71 @@ path:
           schema:
             type: string
           required: true
+
       requestBody:
-        requestBody:
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                    description: 입금자 명
-                    required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 입금자 명
+              required: -name
       responses:
         '200':
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
         '403':
-          description: 해당 경적서에 관련된 권한이 없음
+          description: 해당 견적서에 관련된 권한이 없음
         '422':
           description: Request parameters missing or invalid
 
-    /estimate/:estimateId/pay:
-      put:
-        summary: 입금 처리
-        description: 입금 처리를 한다. 관리자만 가능합니다.
-        tags: [ Estimate ] 
-        security:
-          - bearerAuth: [ ]
-        requestBody:
-          requestBody:
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    estimateId:
-                      type: number
-                      description: 견적서 ID
-                      required: true
-        responses:
-          '200':
-            description: OK
-          '401':
-            $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-          '403':
-            description: 해당 경적서에 관련된 권한이 없음
-          '422':
-            description: Request parameters missing or invalid
+  /estimate/:estimateId/pay:
+    put:
+      summary: 입금 처리
+      description: 입금 처리를 한다. 관리자만 가능합니다.
+      tags: [ Estimate ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: estimateId
+          in: path
+          description: 견적서 ID
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '403':
+          description: 해당 견적서에 관련된 권한이 없음 / Admin이 아님
+        '422':
+          description: Request parameters missing or invalid
 
-    /estimate/:estimateId/confirm:
-      put:
-        summary: 코디 확정
-        description: 코디 확정
-        tags: [ Estimate ] 
-        security:
-          - bearerAuth: [ ]
-        requestBody:
-          requestBody:
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    estimateId:
-                      type: number
-                      description: 견적서 ID
-                      required: true
-        responses:
-          '200':
-            description: OK
-          '401':
-            $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-          '403':
-            description: 해당 경적서에 관련된 권한이 없음
-          '422':
-            description: Request parameters missing or invalid
+  /estimate/:estimateId/confirm:
+    put:
+      summary: 코디 확정
+      description: 코디 확정 처리
+      tags: [ Estimate ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: estimateId
+          in: path
+          description: 견적서 ID
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '403':
+          description: 해당 견적서에 관련된 권한이 없음
+        '422':
+          description: Request parameters missing or invalid

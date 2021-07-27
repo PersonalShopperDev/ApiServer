@@ -62,6 +62,10 @@
 
 /estimate/:estimateId/payer:
   $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1payer'
+/estimate/:estimateId/pay:
+  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1pay'
+/estimate/:estimateId/confirm:
+  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1confirm'
 
 /coord:
   $ref: 'coord.yaml#/path/~1coord'
