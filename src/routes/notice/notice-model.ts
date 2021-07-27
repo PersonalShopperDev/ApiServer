@@ -17,7 +17,7 @@ ORDER BY notice_id ASC
 LIMIT :pageOffset, :pageAmount;`
 
       const value = {
-        userType,
+        userType: userType == 'W' ? 'S' : userType,
         pageAmount,
         pageOffset: page * pageAmount,
       }
