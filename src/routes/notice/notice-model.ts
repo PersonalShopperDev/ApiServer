@@ -10,7 +10,7 @@ export default class NoticeModel {
     const connection = await db.getConnection()
     const pageAmount = 20
     try {
-      const sql = `SELECT notice_id as id, title, content FROM notices
+      const sql = `SELECT notice_id as id, title, content, update_time as date FROM notices
 WHERE status = 1
 ${userType != null ? "AND (user_type=:userType OR user_type='A')" : ''}
 ORDER BY notice_id ASC
