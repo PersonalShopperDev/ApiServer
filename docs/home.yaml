@@ -22,6 +22,19 @@ path:
                         img:
                           type: string
                           description: 배너 이미지 URL
+                        action:
+                          oneOf:
+                          - type: object
+                            description: 배너를 클릭 했을 때 처리 해야할 행동
+                            properties:
+                              type:
+                                type: string
+                                enum: [notice]
+                                description: Notice 를 열어줘야합니다.
+                                example: notice
+                              id:
+                                type: number
+                                description: 열어야 할 공지 ID
                   suppliers:
                     type: array
                     items:

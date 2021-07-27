@@ -6,6 +6,7 @@ export interface HomeData {
 
 export interface Banner {
   img: string
+  action: { type: string; id: number }
 }
 
 export interface Supplier {

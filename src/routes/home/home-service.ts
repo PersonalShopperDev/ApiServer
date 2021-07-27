@@ -1,5 +1,6 @@
 import { Banner, HomeData, Review, Supplier } from './home-type'
 import HomeModel from './home-model'
+import ResourcePath from '../resource/resource-path'
 
 export default class HomeService {
   model = new HomeModel()
@@ -8,7 +9,15 @@ export default class HomeService {
     userId: number,
     gender: string | null,
   ): Promise<HomeData | null> => {
-    const banners = await this.model.getBanners()
+    const banners = (await this.model.getBanners()).map((item) => {
+      return {
+        img: ResourcePath.bannerImg(item.img),
+        action: {
+          type: item.actionType,
+          id: item.actionArgId,
+        },
+      } as Banner
+    })
     const suppliers =
       userId == null
         ? await this.model.getSupplier()

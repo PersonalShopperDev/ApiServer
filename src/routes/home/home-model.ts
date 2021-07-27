@@ -7,19 +7,21 @@ import { RowDataPacket } from 'mysql2'
 import ResourcePath from '../resource/resource-path'
 
 export default class HomeModel {
-  getBanners = async (): Promise<Array<Banner> | null> => {
+  getBanners = async (): Promise<
+    {
+      img: string
+      actionType: string
+      actionArgId: number
+    }[]
+  > => {
     const connection = await db.getConnection()
     try {
       const sql =
-        'SELECT img_path as img FROM banners WHERE (start_date IS NULL OR DATE(start_date) < NOW()) AND (end_date IS NULL OR DATE(end_date) > NOW());'
+        'SELECT img_path as img, action_type as actionType, action_arg_id as actionArgId  FROM banners WHERE (start_date IS NULL OR DATE(start_date) < NOW()) AND (end_date IS NULL OR DATE(end_date) > NOW());'
 
-      const [rows] = (await connection.query(sql)) as RowDataPacket[]
+      const [rows] = await connection.query(sql)
 
-      return rows.map((e) => {
-        return {
-          img: ResourcePath.bannerImg(e.img),
-        }
-      })
+      return rows as any
     } catch (e) {
       throw e
     } finally {
