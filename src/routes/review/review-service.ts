@@ -1,19 +1,22 @@
 import ReviewModel from './review-model'
 import { ReviewContent, ReviewCoord } from './review-type'
 import S3 from '../../config/s3'
-import StyleModel from '../style/style-model'
-import { UserManager } from '../auth/auth-model'
-import ResourceModel from '../resource/resource-model'
 import ResourcePath from '../resource/resource-path'
 import Data from '../../data/data'
 
 export default class ReviewService {
   model = new ReviewModel()
   s3 = new S3()
-  isOwnerReview = async (userId: number, coordId: number): Promise<boolean> => {
-    const id = await this.model.getcoordUserId(coordId)
-    console.log(id)
-    return id != null && userId == id
+  getCoordId = async (
+    userId: number,
+    estimateId: number,
+  ): Promise<number | null> => {
+    const result = await this.model.getCoordId(estimateId)
+    if (result == null || result.userId != userId) {
+      return null
+    }
+
+    return result.coordId
   }
 
   saveReview = async (coordId: number, data: ReviewContent): Promise<void> => {
@@ -56,7 +59,7 @@ export default class ReviewService {
       profile: ResourcePath.profileImg(profile),
       img: ResourcePath.coordImg(img),
       title: `${name} 스타일리스트의 코디`,
-      styleTypeList: Data.getStyleItemList(type),
+      styleTypeList: type == null ? [] : Data.getStyleItemList(type),
     }
   }
 }

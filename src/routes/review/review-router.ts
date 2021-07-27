@@ -10,7 +10,7 @@ const controller = new ReviewController()
 const upload = multer()
 
 router.put(
-  '/:id',
+  '/:estimateId',
   AuthRequire,
   upload.fields([{ name: 'beforeImg' }, { name: 'afterImg' }]),
   body('rating').isInt({ min: 1, max: 5 }),
@@ -19,6 +19,6 @@ router.put(
   controller.saveReview,
 )
 
-router.get('/:id/coord', AuthRequire, controller.getCoordInfo)
+router.get('/:estimateId/coord', AuthRequire, controller.getCoordInfo)
 
 export default router

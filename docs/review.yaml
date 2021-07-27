@@ -12,14 +12,14 @@ components:
 
 
 path:
-  /review/{id}:
+  /review/:estimateId:
 #    get:
 #      summary: 리뷰 불러오기
 #      description: |
 #        작성된 리뷰 내용을 불러옵니다
 #      tags: [ Review ]
 #      parameters:
-#        - name: id
+#        - name: estimateId
 #          in: 'path'
 #          description: 보고자 하는 리뷰(코디) ID. 리뷰 ID = 코디 ID는 동일하다.
 #          schema:
@@ -44,9 +44,9 @@ path:
       security:
         - bearerAuth: [ ]
       parameters:
-        - name: id
+        - name: estimateId
           in: 'path'
-          description: 리뷰하고자 하는 코디 ID
+          description: 리뷰하고자 하는 견적서 ID
           schema:
             type: number
 
@@ -86,16 +86,16 @@ path:
           description: 이미 다른 리뷰가 존재합니다.
         422:
           $ref: './swagger.yaml#/components/Errors/ParameterError'
-  /review/{id}/coord:
+  /review/:estimateId/coord:
     get:
       summary: 코디 정보 가져오기 for Review
       description: |
         리뷰 작성에 필요한 간단한 코디 내용을 가져옵니다.
       tags: [ Review ]
       parameters:
-        - name: id
+        - name: estimateId
           in: 'path'
-          description: 리뷰하고자 하는 코디 ID
+          description: 리뷰하고자 하는 견적서 ID
           schema:
             type: number
       responses:

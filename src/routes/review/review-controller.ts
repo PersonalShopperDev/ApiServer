@@ -13,13 +13,11 @@ export default class ReviewController {
 
     const { userId } = req['auth']
 
-    const coordId = Number(req.params.id)
-
+    const { estimateId } = req.params as any
+    const coordId = await this.service.getCoordId(userId, estimateId)
     try {
-      const isOwner = await this.service.isOwnerReview(userId, coordId)
-
-      if (!isOwner) {
-        res.sendStatus(403)
+      if (coordId == null) {
+        res.sendStatus(404)
         return
       }
 
@@ -42,13 +40,11 @@ export default class ReviewController {
   getCoordInfo = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
 
-    const coordId = Number(req.params.id)
-
+    const { estimateId } = req.params as any
+    const coordId = await this.service.getCoordId(userId, estimateId)
     try {
-      const isOwner = await this.service.isOwnerReview(userId, coordId)
-
-      if (!isOwner) {
-        res.sendStatus(403)
+      if (coordId == null) {
+        res.sendStatus(404)
         return
       }
 

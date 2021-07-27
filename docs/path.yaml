@@ -49,10 +49,10 @@
   $ref: 'profile.yaml#/path/~1profile~1closet'
 
 
-/review/{id}:
-  $ref: 'review.yaml#/path/~1review~1{id}'
-/review/{id}/coord:
-  $ref: 'review.yaml#/path/~1review~1{id}~1coord'
+/review/:estimateId:
+  $ref: 'review.yaml#/path/~1review~1:estimateId'
+/review/:estimateId/coord:
+  $ref: 'review.yaml#/path/~1review~1:estimateId~1coord'
 
 
 /chat:
