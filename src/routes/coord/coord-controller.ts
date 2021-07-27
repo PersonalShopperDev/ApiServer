@@ -108,4 +108,32 @@ export default class CoordController {
       res.sendStatus(500)
     }
   }
+
+  setPayer = async (req: Request, res: Response): Promise<void> => {
+    if (!validationResult(req).isEmpty()) {
+      res.sendStatus(422)
+      return
+    }
+
+    const { userId, userType } = req['auth']
+
+    if (userType != 'D') {
+      res.sendStatus(403)
+      return
+    }
+
+    try {
+      const { estimateId, name } = req.body
+      const result = await this.service.setPayer(userId, estimateId, name)
+
+      if (!result) {
+        res.sendStatus(403)
+        return
+      }
+
+      res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
 }

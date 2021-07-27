@@ -153,4 +153,48 @@ VALUES (:coordId, :img, :name, :price, :purchaseUrl)`
       connection.release()
     }
   }
+
+  checkEstiamte = async (
+    userId: number,
+    estimateId: number,
+  ): Promise<boolean> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT * FROM estimates e 
+LEFT JOIN room_user r ON r.room_id = e.room_id 
+WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
+
+      const value = { userId, estimateId }
+
+      const [rows] = await connection.query(sql, value)
+
+      if (rows[0] == null) return false
+      return true
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  setPayer = async (estimateId: number, name: string): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      connection.beginTransaction()
+      const value = { estimateId, name }
+      await connection.query(
+        `UPDATE estimates SET payer=:name WHERE estimate_id = :estimateId `,
+        value,
+      )
+      await connection.query(
+        `UPDATE estimates SET status=3 WHERE estimate_id = :estimateId AND status <= 3`,
+        value,
+      )
+      connection.commit()
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
 }

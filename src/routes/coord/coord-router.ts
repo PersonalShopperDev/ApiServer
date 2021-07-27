@@ -31,4 +31,12 @@ router.post(
   controller.addCloth,
 )
 
+router.put(
+  '/payer',
+  body('estimateId').isInt(),
+  body('name').isString(),
+  AuthRequire,
+  controller.setPayer,
+)
+
 export default router
