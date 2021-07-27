@@ -54,15 +54,15 @@ export default class ProfileService {
     const styles = await StyleModel.getUserStyleOnlyValue(userId)
     const closetList = await this.model.getClosetList(userId)
 
-    const additionalBodyStat = { body: Data.getBodyItem(onboard['body']) }
+    const additionalBodyStat = Data.getBodyItem(onboard['body'])
     if (profile == null) {
-      profile = { bodyStat: additionalBodyStat }
+      profile = { bodyStat: { body: additionalBodyStat } }
     } else if (profile['bodyStat'] == null) {
       profile['bodyStat'] = additionalBodyStat
-    } else if (profile.bodyStat.public != true) {
+    } else if (profile.bodyStat.isPublic != true) {
       profile['bodyStat'] = additionalBodyStat
     } else {
-      profile['bodyStat'].push(additionalBodyStat)
+      profile['bodyStat']['body'] = additionalBodyStat
     }
 
     return {

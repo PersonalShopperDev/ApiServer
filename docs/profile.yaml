@@ -184,8 +184,11 @@ components:
         type: object
         description: 신체 정보
         allOf:
+          - type: object
+            properties:
+              body:
+                $ref: '#/components/scheme/demander/body'
           - $ref: '#/components/scheme/demander/bodyStat'
-          - $ref: '#/components/scheme/demander/body'
       body:
         type: object
         description: 사용자의 체형
