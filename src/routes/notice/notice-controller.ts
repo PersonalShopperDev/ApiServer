@@ -8,7 +8,7 @@ export default class NoticeController {
   getNotice = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userType } = req['auth']
-      const { noticeId } = req.query as any
+      const { noticeId } = req.params as any
       const result = await this.service.getNotice(userType, noticeId)
 
       if (result == null) {
