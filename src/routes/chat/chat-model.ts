@@ -112,7 +112,7 @@ LIMIT :pageOffset, :pageAmount;`
 
   saveMsg = async (
     roomId: number,
-    userId: number,
+    userId: number | null,
     type: number,
     msg: string,
     sub: number | null,
@@ -352,7 +352,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
   ): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `UPDATE estimate SET status=:status WHERE estimateId=:estimateId`
+      const sql = `UPDATE estimates SET status=:status WHERE estimate_id=:estimateId`
       const value = { estimateId, status }
 
       await connection.query(sql, value)

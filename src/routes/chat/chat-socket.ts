@@ -285,7 +285,7 @@ export default class ChatSocket {
     newStatus: number,
   ): Promise<boolean> => {
     try {
-      const estimate = await this.model.getLatestEstimate(estimateId)
+      const estimate = await this.model.getEstimate(estimateId)
       if (estimate == null) {
         return false
       }
@@ -318,7 +318,17 @@ export default class ChatSocket {
           break
       }
 
-      //TODO : MSG ALARM
+      switch (newStatus) {
+        case 1:
+          await this.sendNotice(roomId, 3, '거절되었습니다.')
+          break
+        case 2:
+          await this.sendNotice(roomId, 3, '수락되었습니다.')
+          break
+        case 4:
+          await this.sendNotice(roomId, 5, '입금 확인 완료!')
+          break
+      }
 
       await this.model.setEstimateStatus(estimateId, newStatus)
 
@@ -331,5 +341,21 @@ export default class ChatSocket {
       return false
     }
     return true
+  }
+
+  private sendNotice = async (
+    roomId: number,
+    chatType: number,
+    msg: string,
+  ): Promise<void> => {
+    const chatId = await this.model.saveMsg(roomId, null, chatType, msg, null)
+
+    this.io.to(roomId.toString()).emit('receiveMsg', {
+      roomId,
+      chatId,
+      chatType,
+      msg,
+      chatTime: new Date(),
+    })
   }
 }

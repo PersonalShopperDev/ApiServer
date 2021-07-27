@@ -61,7 +61,7 @@ RIGHT JOIN (
   GROUP BY room_id
   HAVING cnt >= 2
 ) r ON r.room_id = e.room_id
-WHERE status = 3
+WHERE status = 4
 `
 
       const value = { demanderId, supplierId }
