@@ -29,6 +29,8 @@ tags:
     description: Coordination의 약자, 코디 관련
   - name: Review
     description: Review 관련 정보
+  - name: Notice
+    description: 공지 관련 API
 
 
 components:

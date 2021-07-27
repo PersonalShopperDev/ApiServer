@@ -1,0 +1,32 @@
+path:
+  /notice:
+    get:
+      summary: 공지 전체 목록
+      description: 공지 전체 목록, 페이징 처리
+      tags: [ Notice ]
+      parameters:
+        - name: gender
+          in: 'query'
+          description: 받아오고자 하는 성별입니다. 없는 경우 모든 성별을 받아옵니다.
+          schema:
+            type: string
+          required: true
+        - $ref: './swagger.yaml#/components/Request/page'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                    description: 공지 ID
+                  title:
+                    type: string
+                    description: 공지 제목
+                  content:
+                    type: string
+                    description: 공지 내용, HTML 형식으로 보내줌, Root Component는 없음.
+                    example: "<p>안녕하세요 퍼스널쇼퍼입니다.</p>\r\n<p>고객센터에 연락할 일이 생기셨나요?</p>\r\n<p><a href=\"mailto:personalshopper.helpme@gmail.com\" rel=\"noreferrer\" target=\"_blank\">personalshopper.helpme@gmail.com</a>로 메일 주시면 빠르게 답변 보내드리겠습니다.</p>"
