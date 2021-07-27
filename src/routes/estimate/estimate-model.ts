@@ -98,4 +98,31 @@ WHERE r.user_id = :userId AND tr.user_id != :userId;
       connection.release()
     }
   }
+
+  confirmCoord = async (
+    userId: number,
+    estimateId: number,
+  ): Promise<boolean> => {
+    const connection = await db.getConnection()
+    try {
+      if (
+        !(await ChatSocket.getInstance().changeStatus(estimateId, userId, 5))
+      ) {
+        return false
+      }
+
+      const sql = `UPDATE coords c, 
+(SELECT MAX(coord_id) AS coord_id FROM coords WHERE estimate_id=:estimateId GROUP BY estimate_id) AS cc 
+SET c.status=1
+WHERE c.coord_id = cc.coord_id`
+
+      const value = { estimateId }
+      await connection.query(sql, value)
+      return true
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
 }

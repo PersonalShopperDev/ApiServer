@@ -53,10 +53,6 @@ export default class EstimateService {
       return 403
     }
 
-    if (!(await ChatSocket.getInstance().changeStatus(estimateId, userId, 5))) {
-      return 400
-    }
-
-    return 200
+    return (await this.model.confirmCoord(userId, estimateId)) ? 200 : 400
   }
 }
