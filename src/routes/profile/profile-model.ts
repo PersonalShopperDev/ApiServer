@@ -217,13 +217,14 @@ export default class ProfileModel {
       const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coord_reviews r
 LEFT JOIN coords c ON c.coord_id = r.coord_id
 LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
-LEFT JOIN room_user room ON room.room_id = c.room_id
+LEFT JOIN room_user rd ON rd.room_id = e.room_id AND rd.user_type='D'
+LEFT JOIN room_user rs ON rs.room_id = e.room_id AND rs.user_type='S'
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
-) t ON c.demander_id = t.user_id
-LEFT JOIN users u ON c.demander_id = u.user_id
-WHERE room.user_id=:supplierId and room.user_type='S'
+) t ON rd.user_id = t.user_id
+LEFT JOIN users u ON rd.user_id = u.user_id
+WHERE rs.user_id=:supplierId
 LIMIT :pageOffset, :pageAmount;`
 
       const value = { supplierId, pageAmount, pageOffset: page * pageAmount }
