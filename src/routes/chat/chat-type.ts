@@ -41,6 +41,7 @@ interface ChatBase {
 
 export interface Estimate {
   estimateId: number
+  roomId: number
   price: number
   status: number
 }

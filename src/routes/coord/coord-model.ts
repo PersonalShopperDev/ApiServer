@@ -1,6 +1,7 @@
 import db from '../../config/db'
 import { ClothData, CoordIdData } from './coord-type'
 import { RowDataPacket } from 'mysql2'
+import ChatSocket from '../chat/chat-socket'
 
 export default class CoordModel {
   getCoordBase = async (
@@ -180,17 +181,13 @@ WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
   setPayer = async (estimateId: number, name: string): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      connection.beginTransaction()
+      if (!(await ChatSocket.getInstance().onChangeStatus(estimateId, 3))) {
+        return
+      }
+
+      const sql = `UPDATE estimates SET payer=:name WHERE estimate_id = :estimateId`
       const value = { estimateId, name }
-      await connection.query(
-        `UPDATE estimates SET payer=:name WHERE estimate_id = :estimateId `,
-        value,
-      )
-      await connection.query(
-        `UPDATE estimates SET status=3 WHERE estimate_id = :estimateId AND status <= 3`,
-        value,
-      )
-      connection.commit()
+      await connection.query(sql, value)
     } catch (e) {
       throw e
     } finally {

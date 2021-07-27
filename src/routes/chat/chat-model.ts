@@ -153,20 +153,6 @@ LIMIT :pageOffset, :pageAmount;`
     }
   }
 
-  saveEstimate = async (estimateId: number, status: number): Promise<void> => {
-    const connection = await db.getConnection()
-    try {
-      const sql =
-        'UPDATE estimates SET status=:status WHERE estimate_id=:estimateId'
-      const value = { estimateId, status }
-      await connection.query(sql, value)
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
-  }
-
   getChatRoomId = async (
     demanderId: number,
     supplierId: number,
@@ -328,6 +314,22 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
     }
   }
 
+  getEstimate = async (estimateId: number): Promise<Estimate | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT estimate_id as estimateId, room_id as roomId, price, status FROM estimates WHERE estimate_id=:estimateId`
+      const value = { estimateId }
+
+      const [rows] = await connection.query(sql, value)
+
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
   getLatestEstimate = async (roomId: number): Promise<Estimate | null> => {
     const connection = await db.getConnection()
     try {
@@ -337,6 +339,23 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
       const [rows] = await connection.query(sql, value)
 
       return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  setEstimateStatus = async (
+    estimateId: number,
+    status: number,
+  ): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `UPDATE estimate SET status=:status WHERE estimateId=:estimateId`
+      const value = { estimateId, status }
+
+      await connection.query(sql, value)
     } catch (e) {
       throw e
     } finally {

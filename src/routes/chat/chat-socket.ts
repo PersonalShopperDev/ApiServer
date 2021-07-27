@@ -246,7 +246,7 @@ export default class ChatSocket {
         return
       }
 
-      await this.model.saveEstimate(estimateId, value ? 2 : 1)
+      await this.onChangeStatus(estimateId, value ? 2 : 1)
 
       const { roomId } = roomData
 
@@ -278,5 +278,58 @@ export default class ChatSocket {
     } catch (e) {
       socket.emit('error', 500)
     }
+  }
+
+  onChangeStatus = async (
+    estimateId: number,
+    newStatus: number,
+  ): Promise<boolean> => {
+    try {
+      const estimate = await this.model.getLatestEstimate(estimateId)
+      if (estimate == null) {
+        return false
+      }
+
+      const { roomId, status } = estimate
+
+      switch (status) {
+        case 1:
+        case 5:
+          return false
+        case 0: // 초기 상태
+          if (!(newStatus == 1 || newStatus == 2)) {
+            return false
+          }
+          break
+        case 2: // 입금 요청 - 수락 상태
+          if (newStatus != 3) {
+            return false
+          }
+          break
+        case 3: // 입금 확인 중 - 입금자 입력 이후
+          if (!(newStatus == 3 || newStatus == 4)) {
+            return false
+          }
+          break
+        case 4: // 코디 진행 - 입금자 확인
+          if (newStatus != 5) {
+            return false
+          }
+          break
+      }
+
+      //TODO : MSG ALARM
+
+      await this.model.setEstimateStatus(estimateId, newStatus)
+
+      this.io.to(roomId.toString()).emit('onChangeEstimateStatus', {
+        roomId,
+        estimateId,
+        status: newStatus,
+      })
+    } catch (e) {
+      return false
+    }
+    return true
   }
 }
