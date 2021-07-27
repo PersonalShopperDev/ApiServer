@@ -14,7 +14,7 @@ export default class EstimateService {
       return false
     }
 
-    return await this.model.setPayer(estimateId, name)
+    return await this.model.setPayer(estimateId, userId, name)
   }
 
   setPayment = async (estimateId: number): Promise<boolean> => {
@@ -30,7 +30,7 @@ export default class EstimateService {
       return 403
     }
 
-    if (!(await ChatSocket.getInstance().changeStatus(estimateId, 5))) {
+    if (!(await ChatSocket.getInstance().changeStatus(estimateId, userId, 5))) {
       return 400
     }
 

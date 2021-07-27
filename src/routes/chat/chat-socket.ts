@@ -117,9 +117,9 @@ export default class ChatSocket {
         return
       }
 
-      const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
-
       await this.model.readMsg(roomId, userId)
+
+      const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
 
       socket.to(roomId.toString()).emit('receiveMsg', {
         roomId,
@@ -246,7 +246,7 @@ export default class ChatSocket {
         return
       }
 
-      await this.changeStatus(estimateId, value ? 2 : 1)
+      await this.changeStatus(estimateId, userId, value ? 2 : 1)
 
       const { roomId } = roomData
 
@@ -282,6 +282,7 @@ export default class ChatSocket {
 
   changeStatus = async (
     estimateId: number,
+    userId: number | null,
     newStatus: number,
   ): Promise<boolean> => {
     try {
@@ -320,10 +321,10 @@ export default class ChatSocket {
 
       switch (newStatus) {
         case 1:
-          await this.sendNotice(roomId, 3, '거절되었습니다.')
+          await this.sendMsg(roomId, userId!, '거절되었습니다.')
           break
         case 2:
-          await this.sendNotice(roomId, 3, '수락되었습니다.')
+          await this.sendMsg(roomId, userId!, '거절되었습니다.')
           break
         case 4:
           await this.sendNotice(roomId, 5, '입금 확인 완료!')
@@ -343,6 +344,22 @@ export default class ChatSocket {
     return true
   }
 
+  private sendMsg = async (
+    roomId: number,
+    userId: number,
+    msg: string,
+  ): Promise<void> => {
+    const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
+
+    this.io.to(roomId.toString()).emit('receiveMsg', {
+      roomId,
+      userId,
+      chatId,
+      msg,
+      chatType: 0,
+      chatTime: new Date(),
+    })
+  }
   private sendNotice = async (
     roomId: number,
     chatType: number,

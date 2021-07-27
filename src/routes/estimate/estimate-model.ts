@@ -25,10 +25,16 @@ WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
     }
   }
 
-  setPayer = async (estimateId: number, name: string): Promise<boolean> => {
+  setPayer = async (
+    estimateId: number,
+    userId: number,
+    name: string,
+  ): Promise<boolean> => {
     const connection = await db.getConnection()
     try {
-      if (!(await ChatSocket.getInstance().changeStatus(estimateId, 3))) {
+      if (
+        !(await ChatSocket.getInstance().changeStatus(estimateId, userId, 3))
+      ) {
         return false
       }
 
@@ -46,7 +52,7 @@ WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
   setPayment = async (estimateId: number): Promise<boolean> => {
     const connection = await db.getConnection()
     try {
-      if (!(await ChatSocket.getInstance().changeStatus(estimateId, 4))) {
+      if (!(await ChatSocket.getInstance().changeStatus(estimateId, null, 4))) {
         return false
       }
 
