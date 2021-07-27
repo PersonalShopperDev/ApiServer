@@ -33,4 +33,22 @@ export default class EstimateController {
       res.sendStatus(500)
     }
   }
+
+  confirmEstimate = async (req: Request, res: Response): Promise<void> => {
+    const { userId, userType } = req['auth']
+
+    if (userType != 'D') {
+      res.sendStatus(403)
+      return
+    }
+
+    try {
+      const { estimateId } = req.params as any
+      const result = await this.service.confirmEstimate(userId, estimateId)
+
+      res.sendStatus(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
 }

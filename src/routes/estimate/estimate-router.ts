@@ -22,10 +22,10 @@ router.put(
 )
 
 router.put(
-  '/:estimateId/payer',
+  '/:estimateId/confirm',
   body('estimateId').isInt(),
   body('name').isString(),
   AuthRequire,
-  controller.setPayer,
+  controller.confirmEstimate,
 )
 export default router
