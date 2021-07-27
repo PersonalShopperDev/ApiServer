@@ -6,6 +6,7 @@ import {
   ChatUserProfile,
   Estimate,
 } from './chat-type'
+import ChatSocket from './chat-socket'
 
 export default class ChatModel {
   checkSupplier = async (supplierId: number): Promise<boolean> => {

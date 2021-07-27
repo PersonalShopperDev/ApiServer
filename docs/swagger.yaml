@@ -25,6 +25,8 @@ tags:
     description: Style Type 관련
   - name: Chat
     description: Chat 관련 정보
+  - name: Estimate
+    description: 견적 관련 정보
   - name: Coord
     description: Coordination의 약자, 코디 관련
   - name: Review

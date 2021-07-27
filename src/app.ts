@@ -17,6 +17,7 @@ import reviewRouter from './routes/review/review-router'
 import chatRouter from './routes/chat/chat-router'
 import coordRouter from './routes/coord/coord-router'
 import noticeRouter from './routes/notice/notice-router'
+import estimateRouter from './routes/estimate/estimate-router'
 import { updateSupplierPopular } from './config/cron'
 
 const corsUrl =
@@ -65,6 +66,7 @@ app.use('/v1/style', styleRouter)
 app.use('/v1/profile', profileRouter)
 app.use('/v1/review', reviewRouter)
 app.use('/v1/chat', chatRouter)
+app.use('/v1/estimate', estimateRouter)
 app.use('/v1/coord', coordRouter)
 app.use('/v1/notice', noticeRouter)
 

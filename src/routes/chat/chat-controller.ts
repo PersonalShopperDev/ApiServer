@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import ChatService from './chat-service'
+import { validationResult } from 'express-validator'
 
 export default class ChatController {
   service = new ChatService()

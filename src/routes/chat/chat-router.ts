@@ -16,4 +16,5 @@ router.get(
   AuthRequire,
   controller.getChatHistory,
 )
+
 export default router

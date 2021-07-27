@@ -82,21 +82,4 @@ export default class CoordService {
 
     return true
   }
-
-  setPayer = async (
-    userId: number,
-    estimateId: number,
-    name: string,
-  ): Promise<boolean> => {
-    const clothNum = await this.model.checkEstiamte(userId, estimateId)
-
-    if (clothNum == null) {
-      // 권한 없음
-      return false
-    }
-
-    await this.model.setPayer(estimateId, name)
-
-    return true
-  }
 }

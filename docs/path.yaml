@@ -60,8 +60,9 @@
 /chat/history:
   $ref: 'chat.yaml#/path/~1chat~1history'
 
-/coord/payer:
-  $ref: 'coord.yaml#/path/~1coord~1payer'
+/estimate/:estimateId/payer:
+  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1payer'
+
 /coord:
   $ref: 'coord.yaml#/path/~1coord'
 /coord/cloth:
