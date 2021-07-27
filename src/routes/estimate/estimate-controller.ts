@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import EstimateService from './estimate-service'
 import { validationResult } from 'express-validator'
+import ChatSocket from '../chat/chat-socket'
 
 export default class EstimateController {
   service = new EstimateService()
@@ -27,8 +28,28 @@ export default class EstimateController {
         res.sendStatus(403)
         return
       }
-
       res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  setPayment = async (req: Request, res: Response): Promise<void> => {
+    const { isAdmin } = req['auth']
+
+    if (!isAdmin) {
+      res.sendStatus(401)
+      return
+    }
+
+    try {
+      const { estimateId } = req.params as any
+
+      if (await this.service.setPayment(estimateId)) {
+        res.sendStatus(200)
+        return
+      }
+      res.sendStatus(400)
     } catch (e) {
       res.sendStatus(500)
     }

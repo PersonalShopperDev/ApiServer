@@ -1,5 +1,5 @@
 import express from 'express'
-import { AuthRequire } from '../../config/auth-check'
+import { AuthAdmin, AuthRequire } from '../../config/auth-check'
 import EstimateController from './estimate-controller'
 import { body } from 'express-validator'
 
@@ -14,11 +14,11 @@ router.put(
 )
 
 router.put(
-  '/:estimateId/confirm',
+  '/:estimateId/payment',
   body('estimateId').isInt(),
   body('name').isString(),
-  AuthRequire,
-  controller.setPayer,
+  AuthAdmin,
+  controller.setPayment,
 )
 
 router.put(

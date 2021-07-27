@@ -1,6 +1,19 @@
 import jwt from 'jsonwebtoken'
 import { NextFunction, Request, Response } from 'express'
 
+export const AuthAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (checkHeader(req)) {
+    if (process.env.ADMIN?.split(',').includes(req['auth'].userId.toString())) {
+      req['auth']['isAdmin'] = true
+      next()
+      return
+    }
+  }
+  res.sendStatus(401)
+  next(401)
+  return
+}
+
 export const AuthRequire = (
   req: Request,
   res: Response,

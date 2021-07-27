@@ -246,7 +246,7 @@ export default class ChatSocket {
         return
       }
 
-      await this.onChangeStatus(estimateId, value ? 2 : 1)
+      await this.changeStatus(estimateId, value ? 2 : 1)
 
       const { roomId } = roomData
 
@@ -280,7 +280,7 @@ export default class ChatSocket {
     }
   }
 
-  onChangeStatus = async (
+  changeStatus = async (
     estimateId: number,
     newStatus: number,
   ): Promise<boolean> => {

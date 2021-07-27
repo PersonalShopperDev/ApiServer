@@ -62,8 +62,8 @@
 
 /estimate/:estimateId/payer:
   $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1payer'
-/estimate/:estimateId/pay:
-  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1pay'
+/estimate/:estimateId/payment:
+  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1payment'
 /estimate/:estimateId/confirm:
   $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1confirm'
 
