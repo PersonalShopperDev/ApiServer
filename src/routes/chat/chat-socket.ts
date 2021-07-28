@@ -324,10 +324,13 @@ export default class ChatSocket {
           await this.sendMsg(roomId, userId!, '거절되었습니다.')
           break
         case 2:
-          await this.sendMsg(roomId, userId!, '거절되었습니다.')
+          await this.sendMsg(roomId, userId!, '수락되었습니다.')
           break
         case 4:
           await this.sendNotice(roomId, 5, '입금 확인 완료!')
+          break
+        case 5:
+          await this.sendNotice(roomId, 5, '코디가 확정 되었습니다!')
           break
       }
 
