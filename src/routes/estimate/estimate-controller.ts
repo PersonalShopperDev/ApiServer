@@ -8,9 +8,10 @@ export default class EstimateController {
 
   getList = async (req: Request, res: Response): Promise<void> => {
     const { userId, userType } = req['auth']
+    const { page } = req.query as any
 
     try {
-      const result = await this.service.getList(userId)
+      const result = await this.service.getList(userId, page ?? 0)
 
       if (!result) {
         res.sendStatus(400)

@@ -6,8 +6,11 @@ import ResourcePath from '../resource/resource-path'
 export default class EstimateService {
   model = new ChatModel()
 
-  getList = async (userId: number): Promise<EstimateHistory[]> => {
-    const rawData = await this.model.getList(userId)
+  getList = async (
+    userId: number,
+    page: number,
+  ): Promise<EstimateHistory[]> => {
+    const rawData = await this.model.getList(userId, page)
 
     return rawData.map((item) => {
       const { paymentTime, price, status, estimateId } = item

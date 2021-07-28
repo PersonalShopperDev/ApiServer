@@ -27,6 +27,7 @@ WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
 
   getList = async (
     userId: number,
+    page: number,
   ): Promise<
     {
       estimateId: number
@@ -39,14 +40,18 @@ WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
     }[]
   > => {
     const connection = await db.getConnection()
+    const pageAmount = 20
+
     try {
       const sql = `SELECT e.estimate_id AS estimateId, e.status, e.price, e.pay_time AS paymentTime, u.user_id as userId, u.name, u.img FROM estimates e
 LEFT JOIN room_user r ON e.room_id = r.room_id
 LEFT JOIN room_user tr ON tr.room_id = r.room_id
 LEFT JOIN users u ON u.user_id = tr.user_id
-WHERE r.user_id = :userId AND tr.user_id != :userId AND e.status >= 4;
+WHERE r.user_id = :userId AND tr.user_id != :userId AND e.status >= 4
+ORDER BY e.update_time DESC
+LIMIT :pageOffset, :pageAmount;
 `
-      const value = { userId }
+      const value = { userId, pageAmount, pageOffset: page * pageAmount }
       const [rows] = await connection.query(sql, value)
 
       return rows as any
