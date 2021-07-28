@@ -116,6 +116,10 @@ export default class ProfileService {
     const closetList = await this.model.getClosetList(userId)
     const reviewList = await this.model.getReviewListDemander(userId)
 
+    for (const item of reviewList) {
+      item.img = ResourcePath.coordImg(item.img)
+    }
+
     return {
       userType: 'D',
       name,

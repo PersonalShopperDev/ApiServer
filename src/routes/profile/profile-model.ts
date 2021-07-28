@@ -209,10 +209,11 @@ GROUP BY r.user_id;`
   getReviewListDemander = async (demanderId: number): Promise<Review[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT r.coord_id AS id, c.img, 1 as status  FROM coord_reviews r
+      const sql = `SELECT r.coord_id AS reviewId, c.img, rs.user_id AS supplierId, 1 as status  FROM coord_reviews r
 LEFT JOIN coords c ON c.coord_id = r.coord_id
 LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
 LEFT JOIN room_user rd ON rd.room_id = e.room_id AND rd.user_type='D'
+LEFT JOIN room_user rs ON rs.room_id = e.room_id AND rs.user_type='S'
 WHERE rd.user_id=:demanderId
 LIMIT 3`
 

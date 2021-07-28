@@ -220,9 +220,12 @@ components:
         items:
           type: object
           properties:
-            id:
+            reviewId:
               type: number
               description: 리뷰 ID
+            supplierId:
+              type: number
+              description: 공급자 ID
             status:
               type: number
               description: |

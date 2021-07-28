@@ -51,7 +51,8 @@ interface Career {
 }
 
 export interface Review {
-  id: number
+  reviewId: number
+  supplierId: number
   img: string
   status: number
 }
