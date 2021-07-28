@@ -21,7 +21,7 @@ export default class ReviewController {
         return
       }
 
-      await this.service.saveReview(coordId, req.body)
+      await this.service.saveReview(estimateId, coordId, req.body)
 
       const { beforeImg, afterImg } = req['files']
 

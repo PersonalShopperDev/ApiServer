@@ -1,3 +1,18 @@
+components:
+  estimateStatus:
+    type: number
+    description: |
+      견적서 Status
+
+      0: 초기 상태
+      1: 거절
+      2: 입금 요청(수락)
+      3: 입금 확인 중(입금자 명 입력)
+      4: 코디 진행(입금 확인)
+      5: 리뷰 작성 요청(코디 완료)
+      6: 리뷰 작성 완료
+
+
 path:
   /estimate:
     get:
@@ -32,16 +47,7 @@ path:
                           type: number
                           description: 견적서 금액
                         status:
-                          type: number
-                          description: |
-                            견적서 Status
-
-                            0: 초기 상태
-                            1: 거절
-                            2: 입금 요청(수락)
-                            3: 입금 확인 중(입금자 명 입력)
-                            4: 코디 진행(입금 확인)
-                            5: 리뷰 작성(완료)
+                          $ref: "#/components/estimateStatus"
                         targetUser:
                           type: object
                           description: (코디 해준/받은) 상대방 정보

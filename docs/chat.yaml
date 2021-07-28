@@ -22,18 +22,20 @@ components:
         type: number
         description: 견적서에 함께 적힌 가격, chatType 1 일 때만 존재
       status:
-        type: number
-        description: |
-          견적서의 상태, chatType 1 일 때만 존재
-
-          0: 초기 상태
-          1: 거절
-          2: 입금 요청(수락)
-          3: 입금 확인 중(입금자 명 입력)
-          4: 코디 진행(입금 확인)
-          5: 리뷰 작성(완료)
-
+        $ref: 'estimate.yaml#/components/estimateStatus'
   chat:
+    chatType:
+      type: number
+      description: |
+        채팅의 종류
+
+        0: 일반 메시지
+        1: 견적서
+        2: 코디 결과
+        3: 알림 (내가 보낸 형태)
+        4: 알림(상대가 보낸 형태)
+        5: 알림 (전체 공지)
+
     base:
       type: object
       properties:
@@ -44,16 +46,7 @@ components:
           type: number
           description: 보낸 사람 ID
         chatType:
-          type: number
-          description: |
-            채팅의 종류
-
-            0: 일반 메시지
-            1: 견적서
-            2: 코디 결과
-            3: 알림 (내가 보낸 형태)
-            4: 알림(상대가 보낸 형태)
-            5: 알림 (전체 공지)
+          $ref: "#/components/chat/chatType"
         isRead:
           type: boolean
           description: 메시지 읽음 처리
@@ -97,16 +90,7 @@ components:
           type: number
           description: 채팅 메시지 ID
         chatType:
-          type: number
-          description: |
-            채팅의 종류
-
-            0: 일반 메시지
-            1: 견적서
-            2: 코디 결과
-            3: 알림 (내가 보낸 형태)
-            4: 알림(상대가 보낸 형태)
-            5: 알림 (전체 공지)
+          $ref: "#/components/chat/chatType"
         isRead:
           type: boolean
           description: 메시지 읽음 처리

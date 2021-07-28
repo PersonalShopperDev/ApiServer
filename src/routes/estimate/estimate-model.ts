@@ -44,7 +44,7 @@ WHERE e.estimate_id = :estimateId AND r.user_id = :userId`
 LEFT JOIN room_user r ON e.room_id = r.room_id
 LEFT JOIN room_user tr ON tr.room_id = r.room_id
 LEFT JOIN users u ON u.user_id = tr.user_id
-WHERE r.user_id = :userId AND tr.user_id != :userId;
+WHERE r.user_id = :userId AND tr.user_id != :userId AND e.status >= 4;
 `
       const value = { userId }
       const [rows] = await connection.query(sql, value)

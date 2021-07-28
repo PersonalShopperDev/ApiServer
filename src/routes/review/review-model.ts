@@ -1,5 +1,6 @@
 import db from '../../config/db'
 import { ReviewContent } from './review-type'
+import ChatSocket from '../chat/chat-socket'
 
 export default class ReviewModel {
   getCoordId = async (
@@ -32,9 +33,14 @@ AND r.user_type='D'`
     }
   }
 
-  saveReview = async (coordId: number, data: ReviewContent): Promise<void> => {
+  saveReview = async (
+    estimateId: number,
+    coordId: number,
+    data: ReviewContent,
+  ): Promise<void> => {
     const connection = await db.getConnection()
     try {
+      await ChatSocket.getInstance().changeStatus(estimateId, null, 6)
       const sql =
         'INSERT INTO coord_reviews(coord_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
 

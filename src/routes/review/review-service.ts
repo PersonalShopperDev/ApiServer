@@ -19,8 +19,12 @@ export default class ReviewService {
     return result.coordId
   }
 
-  saveReview = async (coordId: number, data: ReviewContent): Promise<void> => {
-    await this.model.saveReview(coordId, data)
+  saveReview = async (
+    estimateId: number,
+    coordId: number,
+    data: ReviewContent,
+  ): Promise<void> => {
+    await this.model.saveReview(estimateId, coordId, data)
   }
 
   saveBeforeImage = async (userId, coordId, files) => {

@@ -317,6 +317,13 @@ export default class ChatSocket {
             return false
           }
           break
+        case 6:
+          if (newStatus != 5) {
+            return false
+          }
+          break
+        default:
+          return false
       }
 
       switch (newStatus) {
