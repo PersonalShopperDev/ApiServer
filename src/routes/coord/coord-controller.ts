@@ -64,7 +64,7 @@ export default class CoordController {
 
       const imgUrl = await this.service.saveMainImg(coordId, mainImg)
 
-      ChatSocket.getInstance().sendCoord(
+      await ChatSocket.getInstance().sendCoord(
         roomId,
         userId,
         coordId,
