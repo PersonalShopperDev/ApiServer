@@ -88,7 +88,10 @@ export default class ProfileController {
     const { page } = req.query as any
 
     try {
-      const result = await this.service.getReview(id, page == null ? 0 : page)
+      const result = await this.service.getSupplierReview(
+        id,
+        page == null ? 0 : page,
+      )
       res.status(200).send(result)
     } catch (e) {
       res.sendStatus(500)

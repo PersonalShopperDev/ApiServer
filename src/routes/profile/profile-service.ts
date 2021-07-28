@@ -114,6 +114,7 @@ export default class ProfileService {
     const styles = await StyleModel.getUserStyleOnlyValue(userId)
 
     const closetList = await this.model.getClosetList(userId)
+    const reviewList = await this.model.getReviewListDemander(userId)
 
     return {
       userType: 'D',
@@ -123,6 +124,7 @@ export default class ProfileService {
       ...profile,
       styles,
       closet: closetList,
+      reviewList,
     } as ProfileDemanderGet
   }
 
@@ -178,7 +180,7 @@ export default class ProfileService {
     }
   }
 
-  getReview = async (
+  getSupplierReview = async (
     supplierId: number,
     page: number,
   ): Promise<{
@@ -186,7 +188,7 @@ export default class ProfileService {
     totalCount: number
     list: ReviewData[]
   }> => {
-    const base = await this.model.getReviewList(supplierId, page)
+    const base = await this.model.getReviewListSupplier(supplierId, page)
     const { reviewCount, rating } = await this.model.getSupplierPoint(
       supplierId,
     )
@@ -228,7 +230,7 @@ export default class ProfileService {
         profileImg: ResourcePath.profileImg(profileImg),
         date: `${year}-${month}-${day}`,
         body: Data.getBodyItem(onboard['body']),
-        styleTypeList: Data.getStyleItemList(type),
+        styleTypeList: type == null ? [] : Data.getStyleItemList(type),
         weight: undefined,
         height: undefined,
       }

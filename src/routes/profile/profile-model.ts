@@ -1,6 +1,6 @@
 import db from '../../config/db'
 import { RowDataPacket } from 'mysql2'
-import { Img, ReviewModelData } from './profile-type'
+import { Img, Review, ReviewModelData } from './profile-type'
 import ResourcePath from '../resource/resource-path'
 
 export default class ProfileModel {
@@ -77,10 +77,10 @@ export default class ProfileModel {
     const connection = await db.getConnection()
     try {
       const sql = `SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coords c
-  LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
-  LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
-  LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
-  GROUP BY r.user_id;`
+LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
+LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
+GROUP BY r.user_id;`
 
       const value = { userId }
 
@@ -206,7 +206,29 @@ export default class ProfileModel {
     }
   }
 
-  getReviewList = async (
+  getReviewListDemander = async (demanderId: number): Promise<Review[]> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT r.coord_id AS id, c.img, 1 as status  FROM coord_reviews r
+LEFT JOIN coords c ON c.coord_id = r.coord_id
+LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN room_user rd ON rd.room_id = e.room_id AND rd.user_type='D'
+WHERE rd.user_id=:demanderId
+LIMIT 3`
+
+      const value = { demanderId }
+
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows as Review[]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getReviewListSupplier = async (
     supplierId: number,
     page: number,
   ): Promise<ReviewModelData[]> => {

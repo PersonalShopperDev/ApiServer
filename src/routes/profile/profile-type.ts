@@ -50,7 +50,7 @@ interface Career {
   value: string
 }
 
-interface Review {
+export interface Review {
   id: number
   img: string
   status: number
