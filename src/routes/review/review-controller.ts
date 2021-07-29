@@ -5,6 +5,23 @@ import { validationResult } from 'express-validator'
 export default class ReviewController {
   service = new ReviewService()
 
+  getReview = async (req: Request, res: Response): Promise<void> => {
+    const { estimateId } = req.params as any
+    const reviewId = await this.service.getReviewId(estimateId)
+    try {
+      if (reviewId == null) {
+        res.sendStatus(404)
+        return
+      }
+
+      // TODO: Get Review Data
+
+      res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
   saveReview = async (req: Request, res: Response): Promise<void> => {
     if (!validationResult(req).isEmpty()) {
       res.sendStatus(422)

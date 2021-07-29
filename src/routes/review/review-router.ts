@@ -9,6 +9,8 @@ const controller = new ReviewController()
 
 const upload = multer()
 
+router.get('/:estimateId', controller.getReview)
+
 router.put(
   '/:estimateId',
   AuthRequire,

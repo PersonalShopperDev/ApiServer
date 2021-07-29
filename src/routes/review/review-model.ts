@@ -3,6 +3,26 @@ import { ReviewContent } from './review-type'
 import ChatSocket from '../chat/chat-socket'
 
 export default class ReviewModel {
+  getReviewId = async (estimateId: number): Promise<number | null> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT r.coord_id FROM estimates e
+LEFT JOIN coords c on c.estimate_id = e.estimate_id
+LEFT JOIN coord_reviews r ON r.coord_id = c.coord_id
+WHERE e.estimate_id=:estimateId
+AND c.status=1`
+
+      const [rows] = await connection.query(sql, { estimateId })
+
+      if (rows[0] == null) return null
+      return rows[0].coord_id
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
   getCoordId = async (
     estimateId: number,
   ): Promise<{

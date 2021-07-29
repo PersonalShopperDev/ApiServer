@@ -7,6 +7,11 @@ import Data from '../../data/data'
 export default class ReviewService {
   model = new ReviewModel()
   s3 = new S3()
+
+  getReviewId = async (estimateId: number): Promise<number | null> => {
+    return await this.model.getReviewId(estimateId)
+  }
+
   getCoordId = async (
     userId: number,
     estimateId: number,

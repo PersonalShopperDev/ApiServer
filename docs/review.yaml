@@ -13,20 +13,22 @@ components:
 
 path:
   /review/:estimateId:
-#    get:
-#      summary: 리뷰 불러오기
-#      description: |
-#        작성된 리뷰 내용을 불러옵니다
-#      tags: [ Review ]
-#      parameters:
-#        - name: estimateId
-#          in: 'path'
-#          description: 보고자 하는 리뷰(코디) ID. 리뷰 ID = 코디 ID는 동일하다.
-#          schema:
-#            type: number
-#      responses:
-#        '200':
-#          description: OK
+    get:
+      summary: 리뷰 불러오기
+      description: |
+        작성된 리뷰 내용을 불러옵니다
+      tags: [ Review ]
+      parameters:
+        - name: estimateId
+          in: 'path'
+          description: 보고자 하는 리뷰(코디) ID. 리뷰 ID = 코디 ID는 동일하다.
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 현재는 200만 반환 합니다.
+        '404':
+          description: 리뷰가 존재 하지 않음.
 #          content:
 #            application/json:
 #              schema:
