@@ -2,7 +2,6 @@ import { Namespace, Socket } from 'socket.io'
 import { checkAuthorization } from '../../config/auth-check'
 import ChatModel from './chat-model'
 import CoordModel from '../coord/coord-model'
-import ResourcePath from '../resource/resource-path'
 
 export default class ChatSocket {
   private static instance: ChatSocket
@@ -24,7 +23,6 @@ export default class ChatSocket {
   }
 
   private model = new ChatModel()
-  private coordModel = new CoordModel()
 
   newChat = (userIds: number[], roomId: number) => {
     const socketIds = userIds.map((id) => this.userSocketMap[id])
@@ -59,6 +57,18 @@ export default class ChatSocket {
       coordId,
       coordTitle,
       coordImg,
+    })
+  }
+
+  sendImg = async (roomId: number, userId: number, img: string) => {
+    const chatId = await this.model.saveMsg(roomId, userId, 6, img, null)
+    this.io.to(roomId.toString()).emit('receiveMsg', {
+      roomId,
+      userId,
+      chatId,
+      msg: img,
+      chatType: 6,
+      chatTime: new Date(),
     })
   }
 
@@ -331,6 +341,7 @@ export default class ChatSocket {
       chatTime: new Date(),
     })
   }
+
   private sendNotice = async (
     roomId: number,
     chatType: number,

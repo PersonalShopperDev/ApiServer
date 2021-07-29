@@ -30,11 +30,18 @@ components:
         채팅의 종류
 
         0: 일반 메시지
+
         1: 견적서
+
         2: 코디 결과
+
         3: 알림 (내가 보낸 형태)
+
         4: 알림(상대가 보낸 형태)
+
         5: 알림 (전체 공지)
+
+        6: 사진
 
     base:
       type: object
@@ -136,6 +143,8 @@ path:
                         lastChat:
                           type: string
                           description: 마지막 대화
+                        lastChatType:
+                          $ref: "#/components/chat/chatType"
                         lastChatTime:
                           type: string
                           description: 마지막 대화 시간
@@ -167,7 +176,38 @@ path:
                     type: number
                     description: 생성된 채팅방 ID
 
-  /chat/history:
+  /chat/:roomId/img:
+    post:
+      summary: 채팅 사진 업로드
+      description: 채팅에 올릴 사진을 업로드 합니다. 양측에 소켓이 자동으로 전송 됩니다.
+      tags: [ Chat ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: roomId
+          in: 'path'
+          description: 사진을 전송하고자 하는 Room Id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                img:
+                  type: binary
+                roomId:
+                  type: number
+              required:
+                - img
+                - roomId
+      responses:
+        '200':
+          description: OK
+
+  /chat/:roomId:
     get:
       summary: 채팅 기록
       description: 사용자가 여태 연락한 채팅방 목록, 페이징 처리 (좀 다르게 되어 있음)
@@ -176,7 +216,7 @@ path:
         - bearerAuth: [ ]
       parameters:
         - name: roomId
-          in: 'query'
+          in: 'path'
           description: 불러오고자 하는 RoomId
           required: true
           schema:

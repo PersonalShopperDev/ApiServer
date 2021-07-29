@@ -7,9 +7,13 @@ import {
 } from './chat-type'
 import ResourcePath from '../resource/resource-path'
 import ChatSocket from './chat-socket'
+import { ImgFile } from '../../types/upload'
+import DIContainer from '../../config/inversify.config'
+import S3 from '../../config/s3'
 
 export default class ChatService {
   model = new ChatModel()
+  s3 = DIContainer.get(S3)
 
   getChatList = async (
     userId: number,
@@ -153,5 +157,20 @@ export default class ChatService {
 
   getLatestEstimate = async (roomId: number): Promise<Estimate | null> => {
     return await this.model.getLatestEstimate(roomId)
+  }
+
+  sendImg = async (
+    roomId: number,
+    userId: number,
+    img: ImgFile,
+  ): Promise<void> => {
+    const key = `${Date.now()}${userId}${roomId}`
+    await this.s3.upload(`chat/${key}`, img.mimetype, img.buffer)
+
+    await ChatSocket.getInstance().sendImg(
+      roomId,
+      userId,
+      ResourcePath.chatImg(key),
+    )
   }
 }

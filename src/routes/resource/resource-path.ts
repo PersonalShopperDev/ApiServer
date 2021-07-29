@@ -36,4 +36,8 @@ export default class ResourcePath {
   static styleImg = (file: string): string => {
     return `${ResourcePath.baseURL}style/${file}`
   }
+
+  static chatImg = (file: string): string => {
+    return `${ResourcePath.baseURL}chat/${file}`
+  }
 }

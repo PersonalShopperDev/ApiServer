@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import ChatService from './chat-service'
 import { validationResult } from 'express-validator'
+import { ImgFile } from '../../types/upload'
 
 export default class ChatController {
   service = new ChatService()
@@ -40,7 +41,8 @@ export default class ChatController {
   getChatHistory = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req['auth']
-      const { roomId, olderChatId } = req.query as any
+      const roomId = Number(req.params.roomId)
+      const { olderChatId } = req.query as any
 
       const targetId = await this.service.checkRoom(roomId, userId)
 
@@ -62,6 +64,31 @@ export default class ChatController {
         latestEstimate,
         targetUser,
       })
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  postImg = async (req: Request, res: Response): Promise<void> => {
+    const img: ImgFile = req['file']
+    if (!validationResult(req).isEmpty() || img == null) {
+      res.sendStatus(422)
+      return
+    }
+
+    try {
+      const { userId } = req['auth']
+      const roomId = Number(req.params.roomId)
+
+      const targetId = await this.service.checkRoom(roomId, userId)
+
+      if (targetId == null) {
+        res.sendStatus(403)
+        return
+      }
+
+      await this.service.sendImg(roomId, userId, img)
+      res.sendStatus(200)
     } catch (e) {
       res.sendStatus(500)
     }

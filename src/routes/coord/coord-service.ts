@@ -4,7 +4,6 @@ import DIContainer from '../../config/inversify.config'
 import S3 from '../../config/s3'
 import { ClothDataWithFile, CoordData, CoordIdData } from './coord-type'
 import ResourcePath from '../resource/resource-path'
-import ChatSocket from '../chat/chat-socket'
 
 export default class CoordService {
   model = new CoordModel()
