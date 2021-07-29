@@ -89,7 +89,7 @@ LEFT JOIN (
   LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
   GROUP BY r.user_id
 ) cnt ON a.user_id=cnt.user_id
-ORDER BY ISNULL(img) ASC, a.popular DESC
+ORDER BY isHome DESC, ISNULL(img) ASC, a.popular DESC
 LIMIT 6;`
 
       const [rows] = (await connection.query(sql)) as RowDataPacket[]
