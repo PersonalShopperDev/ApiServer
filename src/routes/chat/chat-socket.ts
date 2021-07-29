@@ -256,14 +256,13 @@ export default class ChatSocket {
       const { roomId, status } = estimate
 
       switch (status) {
-        case 1:
-        case 5:
-          return false
         case 0: // 초기 상태
           if (!(newStatus == 1 || newStatus == 2)) {
             return false
           }
           break
+        case 1:
+          return false
         case 2: // 입금 요청 - 수락 상태
           if (newStatus != 3) {
             return false
@@ -279,8 +278,8 @@ export default class ChatSocket {
             return false
           }
           break
-        case 6:
-          if (newStatus != 5) {
+        case 5: // 코디 완료 - 리뷰 작성 필요
+          if (newStatus != 6) {
             return false
           }
           break
