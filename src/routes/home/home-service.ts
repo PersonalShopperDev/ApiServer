@@ -1,4 +1,4 @@
-import { Banner, HomeData, Review, Supplier } from './home-type'
+import { Banner, Demander, HomeData, Review, Supplier } from './home-type'
 import HomeModel from './home-model'
 import ResourcePath from '../resource/resource-path'
 
@@ -31,5 +31,14 @@ export default class HomeService {
       suppliers,
       reviews,
     }
+  }
+
+  getDemanderList = async (userId: number): Promise<Demander[]> => {
+    const result = await this.model.getDemanderWithLogin(userId)
+
+    for (const item of result) {
+      item.img = ResourcePath.profileImg(item.img)
+    }
+    return result
   }
 }

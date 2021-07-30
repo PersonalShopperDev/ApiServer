@@ -1,8 +1,5 @@
-import { id, injectable } from 'inversify'
-import axios from 'axios'
 import db from '../../config/db'
-import { Banner, Review, Supplier } from './home-type'
-import S3 from '../../config/s3'
+import { Demander, Review, Supplier } from './home-type'
 import { RowDataPacket } from 'mysql2'
 import ResourcePath from '../resource/resource-path'
 
@@ -103,6 +100,30 @@ LIMIT 6;`
           reviewCount: row.reviewCount ? row.reviewCount : 0,
         }
       })
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getDemanderWithLogin = async (userId: number): Promise<Array<Demander>> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `
+SELECT u.user_id AS id, u.img, u.name, t.type AS styles FROM users u
+LEFT JOIN (
+    SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
+    GROUP BY user_id
+) t ON u.user_id = t.user_id
+WHERE NOT EXISTS (SELECT user_id FROM suppliers WHERE user_id = u.user_id)
+ORDER BY u.user_id DESC 
+LIMIT 6;`
+
+      const value = { userId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows as any
     } catch (e) {
       throw e
     } finally {

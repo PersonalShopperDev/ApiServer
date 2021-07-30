@@ -7,14 +7,18 @@ export default class HomeController {
 
   getHomeData = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { userId, gender } = req['auth']
+      const { userId, userType, gender } = req['auth']
       const result = await this.service.getHomeData(userId, gender)
 
       if (result == null) {
         res.sendStatus(400)
-      } else {
-        res.status(200).json(result)
+        return
       }
+
+      if (userType == 'S' || userType == 'W') {
+        result['demanders'] = await this.service.getDemanderList(userId)
+      }
+      res.status(200).json(result)
     } catch (e) {
       res.sendStatus(500)
     }

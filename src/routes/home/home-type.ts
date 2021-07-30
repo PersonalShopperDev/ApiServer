@@ -24,3 +24,10 @@ export interface Review {
   afterImg: string
   title: string
 }
+
+export interface Demander {
+  id: number
+  img: string
+  name: string
+  styles: string[]
+}
