@@ -63,13 +63,14 @@ LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
 ) t ON s.user_id = t.user_id
-WHERE supplyGender & :gender = :gender 
+WHERE 1=1
 AND u.name IS NOT NULL
 AND ${supplierType != null ? 's.status in (:supplierType)' : 's.status >= 0'}
 ${filter ? ` AND typeCount >= 0 ` : ''}
 ORDER BY ISNULL(img) ASC, ${sortOption}
 LIMIT :pageOffset, :pageAmount;
 `
+    // AND supplyGender & :gender = :gender
 
     const value = {
       styleType,
