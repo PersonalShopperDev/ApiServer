@@ -71,6 +71,7 @@ export const checkAuthorization = (
 
 export interface JwtPayload {
   userId: number
+  userType: string | undefined
   gender: string | undefined
   email: string | undefined
 }

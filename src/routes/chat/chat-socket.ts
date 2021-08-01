@@ -1,7 +1,7 @@
 import { Namespace, Socket } from 'socket.io'
 import { checkAuthorization } from '../../config/auth-check'
 import ChatModel from './chat-model'
-import CoordModel from '../coord/coord-model'
+import { logger } from '../../config/logger'
 
 export default class ChatSocket {
   private static instance: ChatSocket
@@ -81,7 +81,7 @@ export default class ChatSocket {
       return
     }
 
-    const { userId } = jwt
+    const { userId, userType } = jwt
 
     this.userSocketMap[userId] = socket.id
     socket.on('disconnect', () => {
@@ -91,6 +91,13 @@ export default class ChatSocket {
     const chatRoomList = await this.model.getChatRooms(jwt.userId)
 
     socket.join(chatRoomList.map((item) => item.roomId.toString()))
+
+    socket.use(([event, data], next) => {
+      logger.info(
+        `${new Date().toISOString()}|${userId}|${userType}|` +
+          `SOCKET ${event}|${JSON.stringify(data)}`,
+      )
+    })
 
     socket.on('sendMsg', async (data) => {
       await this.onSendMsg(socket, userId, data)
