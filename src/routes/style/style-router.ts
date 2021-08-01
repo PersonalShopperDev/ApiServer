@@ -13,7 +13,7 @@ router.get('/img', AuthCheck, controller.getStyleImg)
 router.put('/', body('list').isArray(), AuthRequire, controller.putStyle)
 router.put(
   '/img',
-  body('list').isArray(),
+  body('list').isArray({ max: 3 }),
   AuthRequire,
   controller.putStyleByImg,
 )

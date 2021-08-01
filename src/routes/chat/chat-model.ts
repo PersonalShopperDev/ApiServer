@@ -333,7 +333,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
   getLatestEstimate = async (roomId: number): Promise<Estimate | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT estimate_id as estimateId, price, status FROM estimates WHERE room_id=:roomId`
+      const sql = `SELECT estimate_id as estimateId, price, status FROM estimates WHERE room_id=:roomId ORDER BY estimate_id DESC LIMIT 1`
       const value = { roomId }
 
       const [rows] = await connection.query(sql, value)

@@ -49,6 +49,7 @@ LEFT JOIN (
     GROUP BY a.user_id
 ) tf ON s.user_id = tf.user_id
 WHERE supplyGender & :gender = :gender 
+AND s.status >= 0
 ORDER BY ISNULL(img) ASC, typeCount DESC, s.popular DESC
 LIMIT 6;`
 
@@ -85,7 +86,8 @@ LEFT JOIN (
   LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
   LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
   GROUP BY r.user_id
-) cnt ON a.user_id=cnt.user_id
+) cnt ON a.user_id=cnt.user_id 
+WHERE a.status >= 0
 ORDER BY isHome DESC, ISNULL(img) ASC, a.popular DESC
 LIMIT 6;`
 
