@@ -1,7 +1,8 @@
 import express from 'express'
 import { createServer } from 'http'
 import bodyParser from 'body-parser'
-import logger from 'morgan'
+import morgan from 'morgan'
+import { logger, stream } from './config/logger'
 import cors from 'cors'
 import { Server, Socket } from 'socket.io'
 import docController from './routes/docs'
@@ -47,7 +48,15 @@ const ioOption = {
 const io = new Server(httpServer, ioOption)
 
 app.set('port', process.env.PORT || 3000)
-if (process.env.NODE_MODE === 'development') app.use(logger('dev'))
+if (process.env.NODE_MODE === 'production') {
+  app.use(
+    morgan('combined', {
+      stream,
+    }),
+  )
+} else {
+  app.use(morgan('dev'))
+}
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors(corsOptions))
