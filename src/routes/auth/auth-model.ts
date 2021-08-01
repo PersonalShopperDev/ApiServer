@@ -155,7 +155,7 @@ export class TokenManager {
         { userId, gender, userType, email },
         process.env.JWT_KEY,
         {
-          expiresIn: 30 * 60 * 1000,
+          expiresIn: 60 * 60,
         },
       )
     } catch (e) {
