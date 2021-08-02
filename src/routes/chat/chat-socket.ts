@@ -97,6 +97,7 @@ export default class ChatSocket {
         `${new Date().toISOString()}|${userId}|${userType}|` +
           `SOCKET ${event}|${JSON.stringify(data)}`,
       )
+      next()
     })
 
     socket.on('sendMsg', async (data) => {

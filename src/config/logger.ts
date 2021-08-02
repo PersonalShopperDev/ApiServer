@@ -47,8 +47,13 @@ morgan.token('user-type', (req, res) => {
 })
 
 const logModule = morgan(
-  ':date[iso]|:user-id|:user-type|:method :http-version :url|:status|:remote-addr|:referrer|:user-agent',
-  { stream },
+  ':date[iso]|:user-id|:user-type|:method :http-version :url|:status|:remote-addr|:remote-user|:referrer|:user-agent',
+  {
+    skip: (req, res) => {
+      return req.baseUrl == '/health'
+    },
+    stream,
+  },
 )
 
 export { logModule, logger }
