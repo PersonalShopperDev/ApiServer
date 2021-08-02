@@ -70,11 +70,6 @@ app.use('/v1/estimate', estimateRouter)
 app.use('/v1/coord', coordRouter)
 app.use('/v1/notice', noticeRouter)
 
-app.use('/test', (req: express.Request, res: express.Response) => {
-  console.log(io.engine)
-  res.sendStatus(200)
-})
-
 const chatIo = io.of('/chat')
 
 chatIo.on('connect', ChatSocket.createInstance(chatIo).connect)
