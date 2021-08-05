@@ -81,6 +81,7 @@ export default class ProfileModel {
 LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
 LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
 LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
+WHERE r.user_id=:userId
 GROUP BY r.user_id;`
 
       const value = { userId }
