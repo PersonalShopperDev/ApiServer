@@ -21,7 +21,12 @@ export default class ProfileModel {
       )
         return
 
-      const data = { name, introduction, phone, profile }
+      const data = {
+        name,
+        introduction,
+        profile,
+        phone: phone?.replace?.(/-/gi, '')?.replace(/ /gi, ''),
+      }
       let fields = ''
       for (const key in data) {
         if (data[key] != null) fields += `${key}=:${key},`

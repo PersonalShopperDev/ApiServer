@@ -367,13 +367,14 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
     userId: number[],
   ): Promise<
     {
+      userId: number
       time: Date | null
       phone: string
     }[]
   > => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT notification_time as time, phone FROM users WHERE user_id IN (:userId)`
+      const sql = `SELECT user_id as userId, notification_time as time, phone FROM users WHERE user_id IN (:userId)`
       const value = { userId }
 
       const [rows] = await connection.query(sql, value)

@@ -61,7 +61,11 @@ export default class ChatSocket {
       coordImg,
     })
 
-    await this.notification([userId], '코디가 도착했어요!\n확인하러 가볼까요?')
+    await this.notification(
+      roomId,
+      [userId],
+      '코디가 도착했어요!\n확인하러 가볼까요?',
+    )
   }
 
   sendImg = async (roomId: number, userId: number, img: string) => {
@@ -75,10 +79,7 @@ export default class ChatSocket {
       chatTime: new Date(),
     })
 
-    await this.notification(
-      [userId],
-      '코디 관련 메시지가 왔습니다\n원활한 코디를 위해 빠르게 답장해주세요!',
-    )
+    await this.notification(roomId, [userId], '코디 관련 메시지가 왔습니다')
   }
 
   connect = async (socket: Socket) => {
@@ -178,6 +179,7 @@ export default class ChatSocket {
         case 2:
           await this.sendMsg(roomId, userId!, '수락되었습니다.')
           await this.notification(
+            roomId,
             [userId!],
             '견적서가 수락되었습니다\n코디하러 가볼까요?',
           )
@@ -186,7 +188,11 @@ export default class ChatSocket {
           await this.sendNotice(roomId, 5, '입금 확인 완료!')
           const rooms = await this.model.getChatRoom(roomId)
 
-          await this.notification(rooms.users, '입금 확인이 완료되었습니다')
+          await this.notification(
+            roomId,
+            rooms.users,
+            '입금 확인이 완료되었습니다',
+          )
           break
         case 5:
           await this.sendNotice(roomId, 5, '코디가 확정 되었습니다!')
@@ -220,7 +226,20 @@ export default class ChatSocket {
         return
       }
 
-      await this.sendMsg(roomId, userId, msg)
+      const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
+
+      socket.to(roomId.toString()).emit('receiveMsg', {
+        roomId,
+        userId,
+        chatId,
+        msg,
+        chatType: 0,
+        chatTime: new Date(),
+      })
+
+      await this.notification(roomId, [userId], '코디 관련 메시지가 왔습니다')
+
+      // await this.sendMsg(roomId, userId, msg)
       await this.model.readMsg(roomId, userId)
     } catch (e) {
       socket.emit('error', 500)
@@ -356,6 +375,7 @@ export default class ChatSocket {
     })
 
     await this.notification(
+      roomId,
       [userId],
       '코디 관련 메시지가 왔습니다\n원활한 코디를 위해 빠르게 답장해주세요! ',
     )
@@ -377,19 +397,29 @@ export default class ChatSocket {
     })
   }
 
-  private notification = async (userId: number[], msg: string) => {
+  private notification = async (
+    roomId: number,
+    exclusiveId: number[],
+    msg: string,
+  ) => {
     msg = `[퍼스널쇼퍼]\n${msg}\nwww.yourpersonalshoppers.com`
-    const dataList = await this.model.getNotificationData(userId)
+    const roomData = await this.model.getChatRoom(roomId)
+    const dataList = await this.model.getNotificationData(
+      roomData.users.filter((id) => !exclusiveId.includes(id)),
+    )
     const messages: { to: string }[] = []
+    const sendId: number[] = []
 
     for (const item of dataList) {
-      const { time, phone } = item
+      const { userId, time, phone } = item
+      if (this.userSocketMap.hasOwnProperty(userId)) continue
       if (
         phone != null &&
         (time == null ||
           new Date().getTime() >= time.getTime() + 10 * 60 * 1000)
       ) {
-        messages.push({ to: phone })
+        messages.push({ to: phone.replace(/-/gi, '').replace(/ /gi, '') })
+        sendId.push(userId)
       }
     }
 
@@ -428,21 +458,20 @@ export default class ChatSocket {
     const hash = hmac.finalize()
     const signature = hash.toString(crypto.enc.Base64)
 
-    const result = await axios.post(
-      `https://sens.apigw.ntruss.com${url}`,
-      body,
-      {
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'x-ncp-apigw-timestamp': date,
-          'x-ncp-iam-access-key': accessKey,
-          'x-ncp-apigw-signature-v2': signature,
+    try {
+      const result = await axios.post(
+        `https://sens.apigw.ntruss.com${url}`,
+        body,
+        {
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'x-ncp-apigw-timestamp': date,
+            'x-ncp-iam-access-key': accessKey,
+            'x-ncp-apigw-signature-v2': signature,
+          },
         },
-      },
-    )
-
-    await this.model.refreshNotificationTime(
-      messages.map((item) => Number(item.to)),
-    )
+      )
+      await this.model.refreshNotificationTime(sendId)
+    } catch (e) {}
   }
 }
