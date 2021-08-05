@@ -141,6 +141,7 @@ export default class ProfileService {
     const {
       name,
       introduction,
+      phone,
       hopeToSupplier,
       bodyStat,
     } = this.dataOverlap(oldData, data, ['hopeToSupplier', 'bodyStat'])
@@ -150,6 +151,7 @@ export default class ProfileService {
     await this.model.saveProfile(
       userId,
       name,
+      phone,
       introduction,
       JSON.stringify(profile),
     )
@@ -160,7 +162,7 @@ export default class ProfileService {
     data: ProfileUser & ProfileSupplierPatch,
   ) => {
     const baseData = await this.model.getBasicProfile(userId)
-    const { name, introduction, careerList, price } = this.dataOverlap(
+    const { name, introduction, phone, careerList, price } = this.dataOverlap(
       { ...baseData, ...baseData.profile },
       data,
       ['careerList', 'price'],
@@ -169,6 +171,7 @@ export default class ProfileService {
     await this.model.saveProfile(
       userId,
       name,
+      phone,
       introduction,
       JSON.stringify({ careerList }),
     )
@@ -279,6 +282,7 @@ export default class ProfileService {
 
     keyList.push('name')
     keyList.push('introduction')
+    keyList.push('phone')
 
     for (const k of keyList) {
       if (newData[k] != null) result[k] = newData[k]

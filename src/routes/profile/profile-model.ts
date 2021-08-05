@@ -7,14 +7,21 @@ export default class ProfileModel {
   saveProfile = async (
     userId: number,
     name: string | undefined,
+    phone: string | undefined,
     introduction: string | undefined,
     profile: string | undefined,
   ): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      if (name == null && introduction == null && profile == null) return
+      if (
+        name == null &&
+        introduction == null &&
+        phone == null &&
+        profile == null
+      )
+        return
 
-      const data = { name, introduction, profile }
+      const data = { name, introduction, phone, profile }
       let fields = ''
       for (const key in data) {
         if (data[key] != null) fields += `${key}=:${key},`
@@ -24,7 +31,7 @@ export default class ProfileModel {
 
       const sql = `UPDATE users SET ${fields} WHERE user_id=:userId`
 
-      const value = { userId, name, introduction, profile }
+      const value = { userId, name, introduction, phone, profile }
 
       await connection.query(sql, value)
     } catch (e) {
@@ -40,26 +47,20 @@ export default class ProfileModel {
     name: string | undefined
     introduction: string | undefined
     img: string | undefined
+    phone: string | undefined
     profile: any
     onboard: any
   }> => {
     const connection = await db.getConnection()
     try {
       const sql =
-        'SELECT name, introduction, profile, img, onboard FROM users WHERE user_id=:userId'
+        'SELECT name, introduction, profile, phone, img, onboard FROM users WHERE user_id=:userId'
 
       const value = { userId }
 
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-      const { name, introduction, profile, img, onboard } = rows[0]
-      return {
-        name,
-        introduction,
-        profile,
-        img,
-        onboard,
-      }
+      return rows[0] as any
     } catch (e) {
       throw e
     } finally {

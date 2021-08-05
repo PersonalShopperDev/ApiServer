@@ -124,6 +124,9 @@ components:
           $ref: '#/components/scheme/common/name'
         introduction:
           $ref: '#/components/scheme/common/introduction'
+        phone:
+          type: string
+          description: 회원 전화 번호
     demander:
       type: object
       allOf:

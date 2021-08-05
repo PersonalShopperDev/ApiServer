@@ -23,11 +23,13 @@ export interface UserProfileGet extends ProfileUser {
 export interface ProfileDemanderPatch {
   hopeToSupplier: string | undefined
   bodyStat: BodyStat | undefined
+  phone: string
 }
 
 export interface ProfileSupplierPatch {
   price: number | undefined
   careerList: Career[] | undefined
+  phone: string
 }
 
 interface DemanderNotPatch {

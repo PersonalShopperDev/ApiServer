@@ -362,4 +362,41 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
       connection.release()
     }
   }
+
+  getNotificationData = async (
+    userId: number[],
+  ): Promise<
+    {
+      time: Date | null
+      phone: string
+    }[]
+  > => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT notification_time as time, phone FROM users WHERE user_id IN (:userId)`
+      const value = { userId }
+
+      const [rows] = await connection.query(sql, value)
+
+      return rows as any
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  refreshNotificationTime = async (userId: number[]): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `UPDATE users SET notification_time=NOW() WHERE user_id=:userId`
+      const value = { userId }
+
+      await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
 }

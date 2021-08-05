@@ -2,6 +2,8 @@ import { Namespace, Socket } from 'socket.io'
 import { checkAuthorization } from '../../config/auth-check'
 import ChatModel from './chat-model'
 import { logger } from '../../config/logger'
+import axios from 'axios'
+import crypto from 'crypto-js'
 
 export default class ChatSocket {
   private static instance: ChatSocket
@@ -58,6 +60,8 @@ export default class ChatSocket {
       coordTitle,
       coordImg,
     })
+
+    await this.notification([userId], '코디가 도착했어요!\n확인하러 가볼까요?')
   }
 
   sendImg = async (roomId: number, userId: number, img: string) => {
@@ -70,6 +74,11 @@ export default class ChatSocket {
       chatType: 6,
       chatTime: new Date(),
     })
+
+    await this.notification(
+      [userId],
+      '코디 관련 메시지가 왔습니다\n원활한 코디를 위해 빠르게 답장해주세요!',
+    )
   }
 
   connect = async (socket: Socket) => {
@@ -117,6 +126,86 @@ export default class ChatSocket {
     })
   }
 
+  changeStatus = async (
+    estimateId: number,
+    userId: number | null,
+    newStatus: number,
+  ): Promise<boolean> => {
+    try {
+      const estimate = await this.model.getEstimate(estimateId)
+      if (estimate == null) {
+        return false
+      }
+
+      const { roomId, status } = estimate
+
+      switch (status) {
+        case 0: // 초기 상태
+          if (!(newStatus == 1 || newStatus == 2)) {
+            return false
+          }
+          break
+        case 1:
+          return false
+        case 2: // 입금 요청 - 수락 상태
+          if (newStatus != 3) {
+            return false
+          }
+          break
+        case 3: // 입금 확인 중 - 입금자 입력 이후
+          if (!(newStatus == 3 || newStatus == 4)) {
+            return false
+          }
+          break
+        case 4: // 코디 진행 - 입금자 확인
+          if (newStatus != 5) {
+            return false
+          }
+          break
+        case 5: // 코디 완료 - 리뷰 작성 필요
+          if (newStatus != 6) {
+            return false
+          }
+          break
+        default:
+          return false
+      }
+
+      switch (newStatus) {
+        case 1:
+          await this.sendMsg(roomId, userId!, '거절되었습니다.')
+          break
+        case 2:
+          await this.sendMsg(roomId, userId!, '수락되었습니다.')
+          await this.notification(
+            [userId!],
+            '견적서가 수락되었습니다\n코디하러 가볼까요?',
+          )
+          break
+        case 4:
+          await this.sendNotice(roomId, 5, '입금 확인 완료!')
+          const rooms = await this.model.getChatRoom(roomId)
+
+          await this.notification(rooms.users, '입금 확인이 완료되었습니다')
+          break
+        case 5:
+          await this.sendNotice(roomId, 5, '코디가 확정 되었습니다!')
+          break
+      }
+
+      await this.model.setEstimateStatus(estimateId, newStatus)
+
+      this.io.to(roomId.toString()).emit('onChangeEstimateStatus', {
+        roomId,
+        estimateId,
+        status: newStatus,
+      })
+    } catch (e) {
+      return false
+    }
+    return true
+  }
+
   private onSendMsg = async (socket: Socket, userId: number, data) => {
     try {
       const { roomId, msg } = data
@@ -131,18 +220,8 @@ export default class ChatSocket {
         return
       }
 
+      await this.sendMsg(roomId, userId, msg)
       await this.model.readMsg(roomId, userId)
-
-      const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
-
-      socket.to(roomId.toString()).emit('receiveMsg', {
-        roomId,
-        chatId,
-        userId,
-        chatTime: new Date(),
-        msg,
-        chatType: 0,
-      })
     } catch (e) {
       socket.emit('error', 500)
     }
@@ -260,79 +339,6 @@ export default class ChatSocket {
     }
   }
 
-  changeStatus = async (
-    estimateId: number,
-    userId: number | null,
-    newStatus: number,
-  ): Promise<boolean> => {
-    try {
-      const estimate = await this.model.getEstimate(estimateId)
-      if (estimate == null) {
-        return false
-      }
-
-      const { roomId, status } = estimate
-
-      switch (status) {
-        case 0: // 초기 상태
-          if (!(newStatus == 1 || newStatus == 2)) {
-            return false
-          }
-          break
-        case 1:
-          return false
-        case 2: // 입금 요청 - 수락 상태
-          if (newStatus != 3) {
-            return false
-          }
-          break
-        case 3: // 입금 확인 중 - 입금자 입력 이후
-          if (!(newStatus == 3 || newStatus == 4)) {
-            return false
-          }
-          break
-        case 4: // 코디 진행 - 입금자 확인
-          if (newStatus != 5) {
-            return false
-          }
-          break
-        case 5: // 코디 완료 - 리뷰 작성 필요
-          if (newStatus != 6) {
-            return false
-          }
-          break
-        default:
-          return false
-      }
-
-      switch (newStatus) {
-        case 1:
-          await this.sendMsg(roomId, userId!, '거절되었습니다.')
-          break
-        case 2:
-          await this.sendMsg(roomId, userId!, '수락되었습니다.')
-          break
-        case 4:
-          await this.sendNotice(roomId, 5, '입금 확인 완료!')
-          break
-        case 5:
-          await this.sendNotice(roomId, 5, '코디가 확정 되었습니다!')
-          break
-      }
-
-      await this.model.setEstimateStatus(estimateId, newStatus)
-
-      this.io.to(roomId.toString()).emit('onChangeEstimateStatus', {
-        roomId,
-        estimateId,
-        status: newStatus,
-      })
-    } catch (e) {
-      return false
-    }
-    return true
-  }
-
   private sendMsg = async (
     roomId: number,
     userId: number,
@@ -348,6 +354,11 @@ export default class ChatSocket {
       chatType: 0,
       chatTime: new Date(),
     })
+
+    await this.notification(
+      [userId],
+      '코디 관련 메시지가 왔습니다\n원활한 코디를 위해 빠르게 답장해주세요! ',
+    )
   }
 
   private sendNotice = async (
@@ -364,5 +375,74 @@ export default class ChatSocket {
       msg,
       chatTime: new Date(),
     })
+  }
+
+  private notification = async (userId: number[], msg: string) => {
+    msg = `[퍼스널쇼퍼]\n${msg}\nwww.yourpersonalshoppers.com`
+    const dataList = await this.model.getNotificationData(userId)
+    const messages: { to: string }[] = []
+
+    for (const item of dataList) {
+      const { time, phone } = item
+      if (
+        phone != null &&
+        (time == null ||
+          new Date().getTime() >= time.getTime() + 10 * 60 * 1000)
+      ) {
+        messages.push({ to: phone })
+      }
+    }
+
+    if (messages.length == 0) return
+
+    const body = {
+      type: 'SMS',
+      contentType: 'COMM',
+      countryCode: '82',
+      from: '01050203105',
+      content: msg,
+      messages,
+    }
+
+    const accessKey = process.env.NAVER_CLOUD_KEY
+    const method = 'POST'
+    const space = ' '
+    const newLine = '\n'
+    const hmac = crypto.algo.HMAC.create(
+      crypto.algo.SHA256,
+      process.env.NAVER_CLOUD_SECRET,
+    )
+
+    const date = Date.now().toString()
+    const uri = process.env.NAVER_CLOUD_ID
+    const url = `/sms/v2/services/${uri}/messages`
+
+    hmac.update(method)
+    hmac.update(space)
+    hmac.update(url)
+    hmac.update(newLine)
+    hmac.update(date)
+    hmac.update(newLine)
+    hmac.update(accessKey)
+
+    const hash = hmac.finalize()
+    const signature = hash.toString(crypto.enc.Base64)
+
+    const result = await axios.post(
+      `https://sens.apigw.ntruss.com${url}`,
+      body,
+      {
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'x-ncp-apigw-timestamp': date,
+          'x-ncp-iam-access-key': accessKey,
+          'x-ncp-apigw-signature-v2': signature,
+        },
+      },
+    )
+
+    await this.model.refreshNotificationTime(
+      messages.map((item) => Number(item.to)),
+    )
   }
 }
