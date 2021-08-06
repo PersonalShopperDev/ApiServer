@@ -186,13 +186,8 @@ export default class ChatSocket {
           break
         case 4:
           await this.sendNotice(roomId, 5, '입금 확인 완료!')
-          const rooms = await this.model.getChatRoom(roomId)
 
-          await this.notification(
-            roomId,
-            rooms.users,
-            '입금 확인이 완료되었습니다',
-          )
+          await this.notification(roomId, [], '입금 확인이 완료되었습니다')
           break
         case 5:
           await this.sendNotice(roomId, 5, '코디가 확정 되었습니다!')

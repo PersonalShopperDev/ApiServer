@@ -18,7 +18,6 @@ router.put(
 router.put(
   '/:estimateId/payment',
   body('estimateId').isInt(),
-  body('name').isString(),
   AuthAdmin,
   controller.setPayment,
 )
