@@ -132,5 +132,6 @@ export default class Data {
 
     return JSON.parse(file)
   }
+
   // endregion
 }

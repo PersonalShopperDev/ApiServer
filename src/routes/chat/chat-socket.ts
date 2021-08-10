@@ -408,6 +408,7 @@ export default class ChatSocket {
     for (const item of dataList) {
       const { userId, time, phone } = item
       if (this.userSocketMap.hasOwnProperty(userId)) continue
+
       if (
         phone != null &&
         (time == null ||

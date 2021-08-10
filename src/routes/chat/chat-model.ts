@@ -369,7 +369,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
     {
       userId: number
       time: Date | null
-      phone: string
+      phone: string | null
     }[]
   > => {
     const connection = await db.getConnection()

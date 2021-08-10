@@ -1,0 +1,35 @@
+<table class="container">
+    <tr>
+        <th>ID</th>
+        <th>이름</th>
+        <th>성별</th>
+        <th>이메일</th>
+        <th>가격</th>
+        <th>여성</th>
+        <th>남성</th>
+        <th>자기소개</th>
+        <th>신청 커리어</th>
+        <th>create</th>
+        <th>update</th>
+    </tr>
+
+    <% for(const item of list){ %>
+    <form method="post" action="/admin/supplier/<%= item.id %>/accept">
+        <input name="career" type="hidden" value=<%= item.career %>>
+        <tr>
+            <td><%= item.id %></td>
+            <td><%= item.name %></td>
+            <td><%= item.gender %></td>
+            <td><%= item.email %></td>
+            <td><%= item.price %></td>
+            <td><%= item.sf %></td>
+            <td><%= item.sm %></td>
+            <td><%= item.introduction %></td>
+            <td><%= item.careerTxt %></td>
+            <td><%= item.create_time.toISOString() %></td>
+            <td><%= item.update_time.toISOString() %></td>
+            <td><input type="submit" value="수락"></td>
+        </tr>
+    </form>
+    <% } %>
+</table>
