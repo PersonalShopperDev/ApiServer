@@ -18,10 +18,8 @@ export interface Supplier {
 }
 
 export interface Review {
-  id: number
   supplierId: number
-  beforeImg: string
-  afterImg: string
+  img: string
   title: string
 }
 

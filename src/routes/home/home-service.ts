@@ -1,4 +1,4 @@
-import { Banner, Demander, HomeData, Review, Supplier } from './home-type'
+import { Banner, Demander, HomeData } from './home-type'
 import HomeModel from './home-model'
 import ResourcePath from '../resource/resource-path'
 
@@ -22,7 +22,12 @@ export default class HomeService {
       userId == null
         ? await this.model.getSupplier()
         : await this.model.getSupplierWithLogin(userId, gender)
-    const reviews = await this.model.getReviews()
+
+    const reviews = (await this.model.getReviews()).map((item) => {
+      const { title, img, supplierId } = item
+
+      return { supplierId, title, img: ResourcePath.homeReviewImg(img) }
+    })
 
     if (!banners || !suppliers || !reviews) return null
 

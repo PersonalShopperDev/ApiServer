@@ -60,18 +60,12 @@ path:
                     items:
                       type: object
                       properties:
-                        id:
-                          type: number
-                          description: 리뷰 ID
                         supplierId:
                           type: number
                           description: 해당 리뷰의 스타일리스트 ID
-                        beforeImg:
+                        img:
                           type: string
-                          description: 리뷰 before 이미지
-                        afterImg:
-                          type: string
-                          description: 리뷰 after 이미지
+                          description: 리뷰 이미지 URL
                         title:
                           type: string
                           description: 제목

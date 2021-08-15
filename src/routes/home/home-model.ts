@@ -133,26 +133,15 @@ LIMIT 6;`
     }
   }
 
-  getReviews = async (): Promise<Array<Review> | null> => {
+  getReviews = async (): Promise<Array<Review>> => {
     const connection = await db.getConnection()
     try {
-      // const sql = `SELECT r.coord_id as id, c.supplier_id as supplierId, r.title FROM coord_reviews r JOIN coords c on c.coord_id = r.coord_id LIMIT 5;`
-      //
-      // const [rows] = (await connection.query(sql)) as RowDataPacket[]
-      //
-      // return rows.map((row) => {
-      //   return {
-      //     id: row.id,
-      //     supplierId: row.supplierId,
-      //     title: row.title,
-      //     beforeImg: '',
-      //     afterImg: '',
-      //   }
-      // })
+      const sql = `SELECT user_id as supplierId, title, img FROM home_reviews LIMIT 5;`
 
-      return []
+      const [rows] = (await connection.query(sql)) as RowDataPacket[]
+      return rows as any
     } catch (e) {
-      return null
+      throw e
     } finally {
       connection.release()
     }
