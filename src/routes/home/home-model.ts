@@ -133,10 +133,32 @@ LIMIT 6;`
     }
   }
 
-  getReviews = async (): Promise<Array<Review>> => {
+  getReviews = async (): Promise<
+    {
+      coord_id: number
+      demanderId: number
+      supplierId: number
+      content: string
+      img: string
+      style: number[]
+      onboard: any
+    }[]
+  > => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT user_id as supplierId, title, img FROM home_reviews LIMIT 5;`
+      const sql = `SELECT r.coord_id, rd.user_id AS demanderId, rs.user_id AS supplierId, r.content, i.img, t.style, u.onboard FROM coord_reviews r
+LEFT JOIN coord_review_imgs i ON i.coord_id = r.coord_id AND i.type = 'H'
+LEFT JOIN coords c ON c.coord_id = r.coord_id
+LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN room_user rd ON rd.room_id = e.room_id AND rd.user_type='D'
+LEFT JOIN room_user rs ON rs.room_id = e.room_id AND rs.user_type='S'
+LEFT JOIN (
+    SELECT user_id, json_arrayagg(style_id) AS style FROM user_style
+    GROUP BY user_id
+) t ON rd.user_id = t.user_id
+LEFT JOIN users u ON u.user_id = rd.user_id
+WHERE r.is_home = 1
+;`
 
       const [rows] = (await connection.query(sql)) as RowDataPacket[]
       return rows as any

@@ -1,6 +1,7 @@
 import { Banner, Demander, HomeData } from './home-type'
 import HomeModel from './home-model'
 import ResourcePath from '../resource/resource-path'
+import Data from '../../data/data'
 
 export default class HomeService {
   model = new HomeModel()
@@ -24,9 +25,16 @@ export default class HomeService {
         : await this.model.getSupplierWithLogin(userId, gender)
 
     const reviews = (await this.model.getReviews()).map((item) => {
-      const { title, img, supplierId } = item
+      const { demanderId, supplierId, content, img, style, onboard } = item
 
-      return { supplierId, title, img: ResourcePath.homeReviewImg(img) }
+      return {
+        demanderId,
+        supplierId,
+        content,
+        styleList: Data.getStyleItemList(style),
+        body: Data.getBodyItem(onboard.body),
+        img: ResourcePath.homeReviewImg(img),
+      }
     })
 
     if (!banners || !suppliers || !reviews) return null

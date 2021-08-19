@@ -1,3 +1,5 @@
+import { IdValuePair } from '../../data/data-type'
+
 export interface HomeData {
   banners: Array<Banner>
   suppliers: Array<Supplier>
@@ -19,8 +21,11 @@ export interface Supplier {
 
 export interface Review {
   supplierId: number
+  demanderId: number
   img: string
-  title: string
+  content: string
+  styleList: IdValuePair[]
+  body: IdValuePair
 }
 
 export interface Demander {

@@ -63,12 +63,25 @@ path:
                         supplierId:
                           type: number
                           description: 해당 리뷰의 스타일리스트 ID
+                        demanderId:
+                          type: number
+                          description: 해당 리뷰의 쇼퍼 ID
                         img:
                           type: string
                           description: 리뷰 이미지 URL
-                        title:
+                        content:
                           type: string
-                          description: 제목
+                          description: 리뷰 내용
+                        styleList:
+                          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+                        body:
+                          type: object
+                          description: 사용자의 체형
+                          properties:
+                            id:
+                              type: number
+                            value:
+                              type: string
                   demanders:
                     type: array
                     description: API 호출자가 Supplier 일 경우 이 값이 주어진다.
