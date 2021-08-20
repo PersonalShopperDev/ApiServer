@@ -421,4 +421,20 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
       connection.release()
     }
   }
+
+  createPayment = async (roomId: number, userId: number): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `INSERT INTO payment(room_id, price, status) SELECT :roomId, price, 0 FROM suppliers WHERE user_id=:userId`
+
+      const value = { roomId, userId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
 }

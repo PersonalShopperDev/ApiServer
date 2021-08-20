@@ -108,14 +108,14 @@ export default class ChatController {
         return
       }
 
-      const paymentResult = await this.service.checkPayment(userId)
+      const paymentResult = await this.service.createPayment(roomId, userId)
 
       if (paymentResult) {
         await ChatSocket.getInstance().sendNotice(
           roomId,
           '결제가 요청되었습니다.',
         )
-        res.sendStatus(200)
+        res.sendStatus(201)
       } else {
         res.sendStatus(351)
       }
