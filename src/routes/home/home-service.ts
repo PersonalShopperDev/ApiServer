@@ -31,7 +31,7 @@ export default class HomeService {
         demanderId,
         supplierId,
         content,
-        styleList: Data.getStyleItemList(style),
+        styleList: style == null ? [] : Data.getStyleItemList(style),
         body: Data.getBodyItem(onboard.body),
         img: ResourcePath.homeReviewImg(img),
       }
