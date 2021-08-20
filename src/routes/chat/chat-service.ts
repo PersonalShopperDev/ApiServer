@@ -173,4 +173,10 @@ export default class ChatService {
       ResourcePath.chatImg(key),
     )
   }
+
+  checkPayment = async (userId: number): Promise<boolean> => {
+    const onboard = await this.model.getOnboard(userId)
+
+    return onboard.bank != null && onboard.account != null
+  }
 }

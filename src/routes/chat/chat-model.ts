@@ -400,4 +400,25 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
       connection.release()
     }
   }
+
+  getOnboard = async (
+    userId: number,
+  ): Promise<{
+    account: string | undefined
+    bank: string | undefined
+  }> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT onboard FROM users WHERE user_id=:userId`
+
+      const value = { userId }
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
 }

@@ -249,3 +249,23 @@ path:
                 required:
                   - targetUser
                   - chatList
+                  -
+  /chat/:roomId/payment:
+    post:
+      summary: 결제 요청
+      description: 해당 채팅방에 결제를 요청합니다.
+      tags: [ Chat ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: roomId
+          in: 'path'
+          description: 불러오고자 하는 RoomId
+          required: true
+          schema:
+            type: number
+      responses:
+        '201':
+          description: Created
+        '351':
+          description: Need Account Info

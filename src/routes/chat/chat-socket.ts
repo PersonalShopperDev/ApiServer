@@ -382,7 +382,7 @@ export default class ChatSocket {
     )
   }
 
-  private sendNotice = async (roomId: number, msg: string): Promise<void> => {
+  sendNotice = async (roomId: number, msg: string): Promise<void> => {
     const chatId = await this.model.saveMsg(roomId, null, 'notice', msg, null)
 
     this.io.to(roomId.toString()).emit('receiveMsg', {

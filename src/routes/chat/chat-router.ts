@@ -21,4 +21,6 @@ router.post(
   controller.postImg,
 )
 
+router.post('/:roomId/payment', AuthRequire, controller.payment)
+
 export default router
