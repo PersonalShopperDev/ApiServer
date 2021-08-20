@@ -75,7 +75,7 @@ GROUP BY a.room_id;`
       roomId: number
       users: Array<number>
       lastChat: string
-      lastChatType: number
+      lastChatType: string
       lastChatTime: Date
     }[]
   > => {
@@ -113,7 +113,7 @@ LIMIT :pageOffset, :pageAmount;`
   saveMsg = async (
     roomId: number,
     userId: number | null,
-    type: number,
+    type: string,
     msg: string,
     sub: number | null,
   ): Promise<number> => {
@@ -243,7 +243,7 @@ WHERE estimate_id = :estimateId;`
   ): Promise<ChatHistoryModel[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type, c.msg, c.sub_data as subData, e.price, e.status, cd.title as coordTitle, cd.img as coordImg, c.create_time as createTime FROM chat_history c
+      const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type AS chatType, c.msg, c.sub_data as subData, e.price, e.status, cd.title as coordTitle, cd.img as coordImg, c.create_time as createTime FROM chat_history c
 LEFT JOIN estimates e ON c.sub_data = e.estimate_id
 LEFT JOIN coords cd ON cd.coord_id = c.sub_data
 WHERE c.room_id = :roomId 

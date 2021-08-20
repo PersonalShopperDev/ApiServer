@@ -65,6 +65,7 @@ export default class ChatController {
         targetUser,
       })
     } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }

@@ -8,7 +8,7 @@ export interface ChatRoomDetail {
   targetUser: ChatUserProfile
   unreadCount: number
   lastChat: string
-  lastChatType: number
+  lastChatType: string
   lastChatTime: Date
 }
 
@@ -21,7 +21,7 @@ export interface ChatUserProfile {
 export interface ChatHistoryModel {
   chatId: number
   userId: number
-  type: number
+  chatType: string
   msg: string
   subData: number
   price: number
@@ -34,7 +34,7 @@ export interface ChatHistoryModel {
 interface ChatBase {
   chatId: number
   userId: number
-  chatType: number
+  chatType: string
   chatTime: Date
   isRead: boolean
 }

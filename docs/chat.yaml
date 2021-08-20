@@ -25,23 +25,17 @@ components:
         $ref: 'estimate.yaml#/components/estimateStatus'
   chat:
     chatType:
-      type: number
+      type: string
       description: |
         채팅의 종류
 
-        0: 일반 메시지
+        plain: 일반 txt
 
-        1: 견적서
+        img: 이미지
 
-        2: 코디 결과
+        notice: 알림
 
-        3: 알림 (내가 보낸 형태)
-
-        4: 알림(상대가 보낸 형태)
-
-        5: 알림 (전체 공지)
-
-        6: 사진
+        coord: 코디 결과
 
     base:
       type: object

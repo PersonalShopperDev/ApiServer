@@ -110,42 +110,42 @@ export default class ChatService {
 
     const result: ChatHistoryData[] = []
     for (const item of historyList.reverse()) {
-      const { chatId, createTime, type, userId } = item
+      const { chatId, createTime, chatType, userId } = item
       const isRead = readInfo.filter((readId) => chatId <= readId).length >= 2
-      switch (type) {
-        case 1:
+      switch (chatType) {
+        case '1': // 견적서
           result.push({
             chatId,
             userId,
             isRead,
+            chatType,
             chatTime: createTime,
-            chatType: type,
             estimateId: item.subData,
             msg: item.msg,
             price: item.price,
             status: item.status,
           })
           break
-        case 2:
+        case 'coord':
           result.push({
             chatId,
             userId,
             isRead,
+            chatType,
             chatTime: createTime,
-            chatType: type,
             coordId: item.subData,
             coordTitle: item.msg,
             coordImg: ResourcePath.coordImg(item.coordImg),
           })
           break
-        case 0:
+        case 'plain':
         default:
           result.push({
             chatId,
             userId,
             isRead,
+            chatType,
             chatTime: createTime,
-            chatType: type,
             msg: item.msg,
           })
           break

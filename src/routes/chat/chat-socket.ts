@@ -45,7 +45,7 @@ export default class ChatSocket {
     const chatId = await this.model.saveMsg(
       roomId,
       userId,
-      2,
+      'coord',
       coordTitle,
       coordId,
     )
@@ -55,7 +55,7 @@ export default class ChatSocket {
       chatId,
       userId,
       chatTime: new Date(),
-      chatType: 2,
+      chatType: 'coord',
       coordId,
       coordTitle,
       coordImg,
@@ -69,13 +69,13 @@ export default class ChatSocket {
   }
 
   sendImg = async (roomId: number, userId: number, img: string) => {
-    const chatId = await this.model.saveMsg(roomId, userId, 6, img, null)
+    const chatId = await this.model.saveMsg(roomId, userId, 'img', img, null)
     this.io.to(roomId.toString()).emit('receiveMsg', {
       roomId,
       userId,
       chatId,
       msg: img,
-      chatType: 6,
+      chatType: 'img',
       chatTime: new Date(),
     })
 
@@ -185,12 +185,12 @@ export default class ChatSocket {
           )
           break
         case 4:
-          await this.sendNotice(roomId, 5, '입금 확인 완료!')
+          await this.sendNotice(roomId, '입금 확인 완료!')
 
           await this.notification(roomId, [], '입금 확인이 완료되었습니다')
           break
         case 5:
-          await this.sendNotice(roomId, 5, '코디가 확정 되었습니다!')
+          await this.sendNotice(roomId, '코디가 확정 되었습니다!')
           break
       }
 
@@ -221,14 +221,20 @@ export default class ChatSocket {
         return
       }
 
-      const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
+      const chatId = await this.model.saveMsg(
+        roomId,
+        userId,
+        'plain',
+        msg,
+        null,
+      )
 
       socket.to(roomId.toString()).emit('receiveMsg', {
         roomId,
         userId,
         chatId,
         msg,
-        chatType: 0,
+        chatType: 'plain',
         chatTime: new Date(),
       })
 
@@ -280,7 +286,7 @@ export default class ChatSocket {
       const chatId = await this.model.saveMsg(
         roomId,
         userId,
-        1,
+        '1',
         msg,
         estimateId,
       )
@@ -358,14 +364,14 @@ export default class ChatSocket {
     userId: number,
     msg: string,
   ): Promise<void> => {
-    const chatId = await this.model.saveMsg(roomId, userId, 0, msg, null)
+    const chatId = await this.model.saveMsg(roomId, userId, 'plain', msg, null)
 
     this.io.to(roomId.toString()).emit('receiveMsg', {
       roomId,
       userId,
       chatId,
       msg,
-      chatType: 0,
+      chatType: 'plain',
       chatTime: new Date(),
     })
 
@@ -376,18 +382,14 @@ export default class ChatSocket {
     )
   }
 
-  private sendNotice = async (
-    roomId: number,
-    chatType: number,
-    msg: string,
-  ): Promise<void> => {
-    const chatId = await this.model.saveMsg(roomId, null, chatType, msg, null)
+  private sendNotice = async (roomId: number, msg: string): Promise<void> => {
+    const chatId = await this.model.saveMsg(roomId, null, 'notice', msg, null)
 
     this.io.to(roomId.toString()).emit('receiveMsg', {
       roomId,
       chatId,
-      chatType,
       msg,
+      chatType: 'notice',
       chatTime: new Date(),
     })
   }
