@@ -39,7 +39,7 @@ interface ChatBase {
   isRead: boolean
 }
 
-export interface Estimate {
+export interface Payment {
   estimateId: number
   roomId: number
   price: number
@@ -50,7 +50,7 @@ export interface ChatSimpleMsg extends ChatBase {
   msg: string
 }
 
-export interface ChatEstimate extends ChatBase, Estimate {
+export interface ChatEstimate extends ChatBase, Payment {
   msg: string
 }
 

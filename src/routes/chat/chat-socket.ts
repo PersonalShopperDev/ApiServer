@@ -8,23 +8,125 @@ import crypto from 'crypto-js'
 export default class ChatSocket {
   private static instance: ChatSocket
 
+  private io: Namespace
+  private userSocketMap = {}
+  private model = new ChatModel()
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor(io: Namespace) {
     this.io = io
-  }
-
-  private io: Namespace
-  private userSocketMap = {}
-
-  static getInstance = (): ChatSocket => {
-    return ChatSocket.instance
   }
 
   static createInstance = (io: Namespace): ChatSocket => {
     return ChatSocket.instance || (ChatSocket.instance = new ChatSocket(io))
   }
 
-  private model = new ChatModel()
+  static getInstance = (): ChatSocket => {
+    return ChatSocket.instance
+  }
+
+  connect = async (socket: Socket) => {
+    const auth = socket.handshake.auth
+
+    const jwt = checkAuthorization(auth.Authorization)
+    if (jwt == null) {
+      socket.disconnect(true)
+      return
+    }
+
+    const { userId, userType } = jwt
+
+    this.userSocketMap[userId] = socket.id
+    socket.on('disconnect', () => {
+      this.userSocketMap[userId] = undefined
+    })
+
+    const chatRoomList = await this.model.getChatRooms(jwt.userId)
+
+    socket.join(chatRoomList.map((item) => item.roomId.toString()))
+
+    socket.use(([event, data], next) => {
+      logger.info(
+        `${new Date().toISOString()}|${userId}|${userType}|` +
+          `SOCKET ${event}|${JSON.stringify(data)}`,
+      )
+      next()
+    })
+
+    socket.on('sendMsg', async (data) => {
+      await this.onSendMsg(socket, userId, data)
+    })
+
+    socket.on('readMsg', async (data) => {
+      await this.onReadMsg(socket, userId, data)
+    })
+  }
+
+  private onSendMsg = async (socket: Socket, userId: number, data) => {
+    try {
+      const { roomId, msg } = data
+
+      if (isNaN(Number(roomId)) || msg == null) {
+        socket.emit('error', 422)
+        return
+      }
+
+      if (!socket.rooms.has(roomId.toString())) {
+        socket.emit('error', 403)
+        return
+      }
+
+      const chatId = await this.model.saveMsg(
+        roomId,
+        userId,
+        'plain',
+        msg,
+        null,
+      )
+
+      socket.to(roomId.toString()).emit('receiveMsg', {
+        roomId,
+        userId,
+        chatId,
+        msg,
+        chatType: 'plain',
+        chatTime: new Date(),
+      })
+
+      await this.notificationSms(
+        roomId,
+        [userId],
+        '코디 관련 메시지가 왔습니다',
+      )
+
+      // await this.sendMsg(roomId, userId, msg)
+      await this.model.readMsg(roomId, userId)
+    } catch (e) {
+      socket.emit('error', 500)
+    }
+  }
+
+  private onReadMsg = async (socket: Socket, userId: number, data) => {
+    try {
+      const { roomId } = data
+
+      if (isNaN(Number(roomId))) {
+        socket.emit('error', 422)
+        return
+      }
+
+      if (!socket.rooms.has(roomId.toString())) {
+        socket.emit('error', 403)
+        return
+      }
+
+      await this.model.readMsg(roomId, userId)
+
+      socket.to(roomId.toString()).emit('readMsg', { roomId })
+    } catch (e) {
+      socket.emit('error', 500)
+    }
+  }
 
   newChat = (userIds: number[], roomId: number) => {
     const socketIds = userIds.map((id) => this.userSocketMap[id])
@@ -61,7 +163,7 @@ export default class ChatSocket {
       coordImg,
     })
 
-    await this.notification(
+    await this.notificationSms(
       roomId,
       [userId],
       '코디가 도착했어요!\n확인하러 가볼까요?',
@@ -79,51 +181,41 @@ export default class ChatSocket {
       chatTime: new Date(),
     })
 
-    await this.notification(roomId, [userId], '코디 관련 메시지가 왔습니다')
+    await this.notificationSms(roomId, [userId], '코디 관련 메시지가 왔습니다')
   }
 
-  connect = async (socket: Socket) => {
-    const auth = socket.handshake.auth
+  private sendMsg = async (
+    roomId: number,
+    userId: number,
+    msg: string,
+  ): Promise<void> => {
+    const chatId = await this.model.saveMsg(roomId, userId, 'plain', msg, null)
 
-    const jwt = checkAuthorization(auth.Authorization)
-    if (jwt == null) {
-      socket.disconnect(true)
-      return
-    }
-
-    const { userId, userType } = jwt
-
-    this.userSocketMap[userId] = socket.id
-    socket.on('disconnect', () => {
-      this.userSocketMap[userId] = undefined
+    this.io.to(roomId.toString()).emit('receiveMsg', {
+      roomId,
+      userId,
+      chatId,
+      msg,
+      chatType: 'plain',
+      chatTime: new Date(),
     })
 
-    const chatRoomList = await this.model.getChatRooms(jwt.userId)
+    await this.notificationSms(
+      roomId,
+      [userId],
+      '코디 관련 메시지가 왔습니다\n원활한 코디를 위해 빠르게 답장해주세요! ',
+    )
+  }
 
-    socket.join(chatRoomList.map((item) => item.roomId.toString()))
+  sendNotice = async (roomId: number, msg: string): Promise<void> => {
+    const chatId = await this.model.saveMsg(roomId, null, 'notice', msg, null)
 
-    socket.use(([event, data], next) => {
-      logger.info(
-        `${new Date().toISOString()}|${userId}|${userType}|` +
-          `SOCKET ${event}|${JSON.stringify(data)}`,
-      )
-      next()
-    })
-
-    socket.on('sendMsg', async (data) => {
-      await this.onSendMsg(socket, userId, data)
-    })
-
-    socket.on('sendEstimate', async (data) => {
-      await this.onSendEstimate(socket, userId, data)
-    })
-
-    socket.on('responseEstimate', async (data) => {
-      await this.onResponseEstimate(socket, userId, data)
-    })
-
-    socket.on('readMsg', async (data) => {
-      await this.onReadMsg(socket, userId, data)
+    this.io.to(roomId.toString()).emit('receiveMsg', {
+      roomId,
+      chatId,
+      msg,
+      chatType: 'notice',
+      chatTime: new Date(),
     })
   }
 
@@ -178,7 +270,7 @@ export default class ChatSocket {
           break
         case 2:
           await this.sendMsg(roomId, userId!, '수락되었습니다.')
-          await this.notification(
+          await this.notificationSms(
             roomId,
             [userId!],
             '견적서가 수락되었습니다\n코디하러 가볼까요?',
@@ -187,7 +279,7 @@ export default class ChatSocket {
         case 4:
           await this.sendNotice(roomId, '입금 확인 완료!')
 
-          await this.notification(roomId, [], '입금 확인이 완료되었습니다')
+          await this.notificationSms(roomId, [], '입금 확인이 완료되었습니다')
           break
         case 5:
           await this.sendNotice(roomId, '코디가 확정 되었습니다!')
@@ -207,194 +299,7 @@ export default class ChatSocket {
     return true
   }
 
-  private onSendMsg = async (socket: Socket, userId: number, data) => {
-    try {
-      const { roomId, msg } = data
-
-      if (isNaN(Number(roomId)) || msg == null) {
-        socket.emit('error', 422)
-        return
-      }
-
-      if (!socket.rooms.has(roomId.toString())) {
-        socket.emit('error', 403)
-        return
-      }
-
-      const chatId = await this.model.saveMsg(
-        roomId,
-        userId,
-        'plain',
-        msg,
-        null,
-      )
-
-      socket.to(roomId.toString()).emit('receiveMsg', {
-        roomId,
-        userId,
-        chatId,
-        msg,
-        chatType: 'plain',
-        chatTime: new Date(),
-      })
-
-      await this.notification(roomId, [userId], '코디 관련 메시지가 왔습니다')
-
-      // await this.sendMsg(roomId, userId, msg)
-      await this.model.readMsg(roomId, userId)
-    } catch (e) {
-      socket.emit('error', 500)
-    }
-  }
-
-  private onSendEstimate = async (socket: Socket, userId: number, data) => {
-    try {
-      const { roomId, msg, price, account, bank } = data
-
-      if (
-        isNaN(Number(roomId)) ||
-        msg == null ||
-        isNaN(Number(price)) ||
-        account == null ||
-        bank == null
-      ) {
-        socket.emit('error', 422)
-        return
-      }
-
-      if (!socket.rooms.has(roomId.toString())) {
-        socket.emit('error', 403)
-        return
-      }
-
-      // 최근 견적서가 마감이 안되어 있을 경우
-      const latestEstimate = await this.model.getLatestEstimate(roomId)
-      if (
-        latestEstimate != null &&
-        !(latestEstimate.status == 1 || latestEstimate?.status >= 5)
-      ) {
-        return
-      }
-
-      const estimateId = await this.model.newEstimate(
-        roomId,
-        account,
-        bank,
-        price,
-      )
-
-      const chatId = await this.model.saveMsg(
-        roomId,
-        userId,
-        '1',
-        msg,
-        estimateId,
-      )
-
-      await this.model.readMsg(roomId, userId)
-
-      socket.to(roomId.toString()).emit('receiveMsg', {
-        roomId,
-        chatId,
-        userId,
-        estimateId,
-        chatTime: new Date(),
-        msg,
-        price,
-        status: 0,
-        chatType: 1,
-      })
-    } catch (e) {
-      socket.emit('error', 500)
-    }
-  }
-
-  private onResponseEstimate = async (socket: Socket, userId: number, data) => {
-    try {
-      const { estimateId, value } = data
-      if (isNaN(Number(estimateId)) || typeof value != 'boolean') {
-        socket.emit('error', 422)
-        return
-      }
-
-      const roomData = await this.model.getChatRoomIdWithEstimate(estimateId)
-      if (roomData == null || roomData.demanderId != userId) {
-        socket.emit('error', 403)
-        return
-      }
-
-      if (!(await this.changeStatus(estimateId, userId, value ? 2 : 1))) {
-        return
-      }
-
-      const { roomId } = roomData
-
-      socket
-        .to(roomId.toString())
-        .emit('responseEstimate', { roomId, estimateId, value })
-    } catch (e) {
-      socket.emit('error', 500)
-    }
-  }
-
-  private onReadMsg = async (socket: Socket, userId: number, data) => {
-    try {
-      const { roomId } = data
-
-      if (isNaN(Number(roomId))) {
-        socket.emit('error', 422)
-        return
-      }
-
-      if (!socket.rooms.has(roomId.toString())) {
-        socket.emit('error', 403)
-        return
-      }
-
-      await this.model.readMsg(roomId, userId)
-
-      socket.to(roomId.toString()).emit('readMsg', { roomId })
-    } catch (e) {
-      socket.emit('error', 500)
-    }
-  }
-
-  private sendMsg = async (
-    roomId: number,
-    userId: number,
-    msg: string,
-  ): Promise<void> => {
-    const chatId = await this.model.saveMsg(roomId, userId, 'plain', msg, null)
-
-    this.io.to(roomId.toString()).emit('receiveMsg', {
-      roomId,
-      userId,
-      chatId,
-      msg,
-      chatType: 'plain',
-      chatTime: new Date(),
-    })
-
-    await this.notification(
-      roomId,
-      [userId],
-      '코디 관련 메시지가 왔습니다\n원활한 코디를 위해 빠르게 답장해주세요! ',
-    )
-  }
-
-  sendNotice = async (roomId: number, msg: string): Promise<void> => {
-    const chatId = await this.model.saveMsg(roomId, null, 'notice', msg, null)
-
-    this.io.to(roomId.toString()).emit('receiveMsg', {
-      roomId,
-      chatId,
-      msg,
-      chatType: 'notice',
-      chatTime: new Date(),
-    })
-  }
-
-  private notification = async (
+  private notificationSms = async (
     roomId: number,
     exclusiveId: number[],
     msg: string,
@@ -471,5 +376,97 @@ export default class ChatSocket {
       )
       await this.model.refreshNotificationTime(sendId)
     } catch (e) {}
+  }
+
+  // Deprecated
+
+  private onSendEstimate = async (socket: Socket, userId: number, data) => {
+    try {
+      const { roomId, msg, price, account, bank } = data
+
+      if (
+        isNaN(Number(roomId)) ||
+        msg == null ||
+        isNaN(Number(price)) ||
+        account == null ||
+        bank == null
+      ) {
+        socket.emit('error', 422)
+        return
+      }
+
+      if (!socket.rooms.has(roomId.toString())) {
+        socket.emit('error', 403)
+        return
+      }
+
+      // 최근 견적서가 마감이 안되어 있을 경우
+      const latestEstimate = await this.model.getLatestPayment(roomId)
+      if (
+        latestEstimate != null &&
+        !(latestEstimate.status == 1 || latestEstimate?.status >= 5)
+      ) {
+        return
+      }
+
+      const estimateId = await this.model.newEstimate(
+        roomId,
+        account,
+        bank,
+        price,
+      )
+
+      const chatId = await this.model.saveMsg(
+        roomId,
+        userId,
+        '1',
+        msg,
+        estimateId,
+      )
+
+      await this.model.readMsg(roomId, userId)
+
+      socket.to(roomId.toString()).emit('receiveMsg', {
+        roomId,
+        chatId,
+        userId,
+        estimateId,
+        chatTime: new Date(),
+        msg,
+        price,
+        status: 0,
+        chatType: 1,
+      })
+    } catch (e) {
+      socket.emit('error', 500)
+    }
+  }
+
+  private onResponseEstimate = async (socket: Socket, userId: number, data) => {
+    try {
+      const { estimateId, value } = data
+      if (isNaN(Number(estimateId)) || typeof value != 'boolean') {
+        socket.emit('error', 422)
+        return
+      }
+
+      const roomData = await this.model.getChatRoomIdWithEstimate(estimateId)
+      if (roomData == null || roomData.demanderId != userId) {
+        socket.emit('error', 403)
+        return
+      }
+
+      if (!(await this.changeStatus(estimateId, userId, value ? 2 : 1))) {
+        return
+      }
+
+      const { roomId } = roomData
+
+      socket
+        .to(roomId.toString())
+        .emit('responseEstimate', { roomId, estimateId, value })
+    } catch (e) {
+      socket.emit('error', 500)
+    }
   }
 }

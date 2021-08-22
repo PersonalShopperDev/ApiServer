@@ -1,10 +1,5 @@
 import ChatModel from './chat-model'
-import {
-  ChatHistoryData,
-  ChatRoomDetail,
-  ChatUserProfile,
-  Estimate,
-} from './chat-type'
+import { ChatHistoryData, ChatRoomDetail, ChatUserProfile } from './chat-type'
 import ResourcePath from '../resource/resource-path'
 import ChatSocket from './chat-socket'
 import { ImgFile } from '../../types/upload'
@@ -155,8 +150,9 @@ export default class ChatService {
     return result
   }
 
-  getLatestEstimate = async (roomId: number): Promise<Estimate | null> => {
-    return await this.model.getLatestEstimate(roomId)
+  getLatestPayment = async (roomId: number): Promise<number | null> => {
+    const payment = await this.model.getLatestPayment(roomId)
+    return payment?.status ?? 0
   }
 
   sendImg = async (

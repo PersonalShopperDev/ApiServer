@@ -4,7 +4,7 @@ import {
   ChatHistoryModel,
   ChatRoomData,
   ChatUserProfile,
-  Estimate,
+  Payment,
 } from './chat-type'
 
 export default class ChatModel {
@@ -314,7 +314,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
     }
   }
 
-  getEstimate = async (estimateId: number): Promise<Estimate | null> => {
+  getEstimate = async (estimateId: number): Promise<Payment | null> => {
     const connection = await db.getConnection()
     try {
       const sql = `SELECT estimate_id as estimateId, room_id as roomId, price, status FROM estimates WHERE estimate_id=:estimateId`
@@ -330,10 +330,10 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
     }
   }
 
-  getLatestEstimate = async (roomId: number): Promise<Estimate | null> => {
+  getLatestPayment = async (roomId: number): Promise<Payment | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT estimate_id as estimateId, price, status FROM estimates WHERE room_id=:roomId ORDER BY estimate_id DESC LIMIT 1`
+      const sql = `SELECT payment_id as paymentId, price, status FROM payments WHERE room_id=:roomId ORDER BY payment_id DESC LIMIT 1`
       const value = { roomId }
 
       const [rows] = await connection.query(sql, value)
@@ -426,7 +426,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
   createPayment = async (roomId: number, userId: number): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO payment(room_id, price, status) SELECT :roomId, price, 1 FROM suppliers WHERE user_id=:userId`
+      const sql = `INSERT INTO payments(room_id, price, status) SELECT :roomId, price, 1 FROM suppliers WHERE user_id=:userId`
 
       const value = { roomId, userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]

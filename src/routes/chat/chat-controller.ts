@@ -58,12 +58,12 @@ export default class ChatController {
         olderChatId,
       )
       const targetUser = await this.service.getProfile(targetId)
-      const latestEstimate = await this.service.getLatestEstimate(roomId)
+      const latestPaymentStatus = await this.service.getLatestPayment(roomId)
 
       res.status(200).json({
         chatList,
-        latestEstimate,
         targetUser,
+        paymentStatus: latestPaymentStatus,
       })
     } catch (e) {
       console.log(e)
