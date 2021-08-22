@@ -60,7 +60,7 @@ AND r.user_type='D'`
   ): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      await ChatSocket.getInstance().changeStatus(estimateId, null, 6)
+      await ChatSocket.getInstance().notifyChangeStatus(estimateId, 4)
       const sql =
         'INSERT INTO coord_reviews(coord_id, content, rating, public_body) VALUES(:coordId, :content, :rating, :publicBody)'
 

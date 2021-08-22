@@ -219,78 +219,13 @@ export default class ChatSocket {
     })
   }
 
-  changeStatus = async (
-    estimateId: number,
-    userId: number | null,
+  notifyChangeStatus = async (
+    roomId: number,
     newStatus: number,
   ): Promise<boolean> => {
     try {
-      const estimate = await this.model.getEstimate(estimateId)
-      if (estimate == null) {
-        return false
-      }
-
-      const { roomId, status } = estimate
-
-      switch (status) {
-        case 0: // 초기 상태
-          if (!(newStatus == 1 || newStatus == 2)) {
-            return false
-          }
-          break
-        case 1:
-          return false
-        case 2: // 입금 요청 - 수락 상태
-          if (newStatus != 3) {
-            return false
-          }
-          break
-        case 3: // 입금 확인 중 - 입금자 입력 이후
-          if (!(newStatus == 3 || newStatus == 4)) {
-            return false
-          }
-          break
-        case 4: // 코디 진행 - 입금자 확인
-          if (newStatus != 5) {
-            return false
-          }
-          break
-        case 5: // 코디 완료 - 리뷰 작성 필요
-          if (newStatus != 6) {
-            return false
-          }
-          break
-        default:
-          return false
-      }
-
-      switch (newStatus) {
-        case 1:
-          await this.sendMsg(roomId, userId!, '거절되었습니다.')
-          break
-        case 2:
-          await this.sendMsg(roomId, userId!, '수락되었습니다.')
-          await this.notificationSms(
-            roomId,
-            [userId!],
-            '견적서가 수락되었습니다\n코디하러 가볼까요?',
-          )
-          break
-        case 4:
-          await this.sendNotice(roomId, '입금 확인 완료!')
-
-          await this.notificationSms(roomId, [], '입금 확인이 완료되었습니다')
-          break
-        case 5:
-          await this.sendNotice(roomId, '코디가 확정 되었습니다!')
-          break
-      }
-
-      await this.model.setEstimateStatus(estimateId, newStatus)
-
-      this.io.to(roomId.toString()).emit('onChangeEstimateStatus', {
+      this.io.to(roomId.toString()).emit('onChangePaymentStatus', {
         roomId,
-        estimateId,
         status: newStatus,
       })
     } catch (e) {
@@ -376,97 +311,5 @@ export default class ChatSocket {
       )
       await this.model.refreshNotificationTime(sendId)
     } catch (e) {}
-  }
-
-  // Deprecated
-
-  private onSendEstimate = async (socket: Socket, userId: number, data) => {
-    try {
-      const { roomId, msg, price, account, bank } = data
-
-      if (
-        isNaN(Number(roomId)) ||
-        msg == null ||
-        isNaN(Number(price)) ||
-        account == null ||
-        bank == null
-      ) {
-        socket.emit('error', 422)
-        return
-      }
-
-      if (!socket.rooms.has(roomId.toString())) {
-        socket.emit('error', 403)
-        return
-      }
-
-      // 최근 견적서가 마감이 안되어 있을 경우
-      const latestEstimate = await this.model.getLatestPayment(roomId)
-      if (
-        latestEstimate != null &&
-        !(latestEstimate.status == 1 || latestEstimate?.status >= 5)
-      ) {
-        return
-      }
-
-      const estimateId = await this.model.newEstimate(
-        roomId,
-        account,
-        bank,
-        price,
-      )
-
-      const chatId = await this.model.saveMsg(
-        roomId,
-        userId,
-        '1',
-        msg,
-        estimateId,
-      )
-
-      await this.model.readMsg(roomId, userId)
-
-      socket.to(roomId.toString()).emit('receiveMsg', {
-        roomId,
-        chatId,
-        userId,
-        estimateId,
-        chatTime: new Date(),
-        msg,
-        price,
-        status: 0,
-        chatType: 1,
-      })
-    } catch (e) {
-      socket.emit('error', 500)
-    }
-  }
-
-  private onResponseEstimate = async (socket: Socket, userId: number, data) => {
-    try {
-      const { estimateId, value } = data
-      if (isNaN(Number(estimateId)) || typeof value != 'boolean') {
-        socket.emit('error', 422)
-        return
-      }
-
-      const roomData = await this.model.getChatRoomIdWithEstimate(estimateId)
-      if (roomData == null || roomData.demanderId != userId) {
-        socket.emit('error', 403)
-        return
-      }
-
-      if (!(await this.changeStatus(estimateId, userId, value ? 2 : 1))) {
-        return
-      }
-
-      const { roomId } = roomData
-
-      socket
-        .to(roomId.toString())
-        .emit('responseEstimate', { roomId, estimateId, value })
-    } catch (e) {
-      socket.emit('error', 500)
-    }
   }
 }
