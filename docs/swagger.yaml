@@ -25,8 +25,6 @@ tags:
     description: Style Type 관련
   - name: Chat
     description: Chat 관련 정보
-  - name: Estimate
-    description: 견적 관련 정보
   - name: Payment
     description: 결제 관련 정보
   - name: Coord

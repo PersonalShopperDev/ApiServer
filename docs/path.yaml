@@ -67,15 +67,6 @@
 /payment/:roomId/account:
   $ref: 'payment.yaml#/path/~1payment~1:roomId~1account'
 
-/estimate:
-  $ref: 'estimate.yaml#/path/~1estimate'
-/estimate/:estimateId/payer:
-  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1payer'
-/estimate/:estimateId/payment:
-  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1payment'
-/estimate/:estimateId/confirm:
-  $ref: 'estimate.yaml#/path/~1estimate~1:estimateId~1confirm'
-
 /coord:
   $ref: 'coord.yaml#/path/~1coord'
 /coord/cloth:

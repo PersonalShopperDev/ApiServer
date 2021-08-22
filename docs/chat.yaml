@@ -12,17 +12,6 @@ components:
       name:
         type: sring
         description: 상대방 유저 이름
-  estimate:
-    type: object
-    properties:
-      estimateId:
-        type: nubmer
-        description: 견적서 ID
-      price:
-        type: number
-        description: 견적서에 함께 적힌 가격, chatType 1 일 때만 존재
-      status:
-        $ref: 'estimate.yaml#/components/estimateStatus'
   chat:
     chatType:
       type: string
@@ -247,6 +236,8 @@ path:
                       2: 결제 완료
 
                       3: 코디 완료
+
+                      4: 리뷰 완료
                     type: number
                   chatList:
                     type: array
