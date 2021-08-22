@@ -169,16 +169,4 @@ export default class ChatService {
       ResourcePath.chatImg(key),
     )
   }
-
-  createPayment = async (roomId: number, userId: number): Promise<boolean> => {
-    const { account, bank } = await this.model.getProfile(userId)
-
-    if (bank == null || account == null) {
-      return false
-    }
-
-    await this.model.createPayment(roomId, userId)
-
-    return true
-  }
 }

@@ -1,0 +1,48 @@
+path:
+  /payment/:roomId/request:
+    post:
+      summary: 결제 요청
+      description: 해당 채팅방에 결제를 요청합니다.
+      tags: [ Payment ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: roomId
+          in: 'path'
+          description: 불러오고자 하는 RoomId
+          required: true
+          schema:
+            type: number
+      responses:
+        '201':
+          description: Created
+        '351':
+          description: Need Account Info
+  /payment/:roomId/account:
+    post:
+      summary: 계좌이체 결제 완료
+      description: 입금자 명을 입력받아 계좌 이체 결제 내용을 기록합니다.
+      tags: [ Payment ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: roomId
+          in: 'path'
+          description: 불러오고자 하는 RoomId
+          required: true
+          schema:
+            type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 입금자 명
+              required:
+                - name
+      responses:
+        '200':
+          description: Success

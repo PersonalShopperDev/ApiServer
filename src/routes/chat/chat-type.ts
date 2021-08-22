@@ -40,6 +40,13 @@ interface ChatBase {
 }
 
 export interface Payment {
+  paymentId: number
+  roomId: number
+  price: number
+  status: number
+}
+
+export interface Estimate {
   estimateId: number
   roomId: number
   price: number
@@ -50,7 +57,7 @@ export interface ChatSimpleMsg extends ChatBase {
   msg: string
 }
 
-export interface ChatEstimate extends ChatBase, Payment {
+export interface ChatEstimate extends ChatBase, Estimate {
   msg: string
 }
 
