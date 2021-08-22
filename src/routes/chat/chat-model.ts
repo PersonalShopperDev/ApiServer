@@ -401,7 +401,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
     }
   }
 
-  getOnboard = async (
+  getProfile = async (
     userId: number,
   ): Promise<{
     account: string | undefined
@@ -409,7 +409,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
   }> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT onboard FROM users WHERE user_id=:userId`
+      const sql = `SELECT profile FROM users WHERE user_id=:userId`
 
       const value = { userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]

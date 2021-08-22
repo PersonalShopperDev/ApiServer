@@ -51,6 +51,12 @@ components:
               $ref: '#/components/scheme/supplier/price'
             coord:
               $ref: '#/components/scheme/supplier/coord'
+            account:
+              $ref: '#/components/scheme/supplier/account'
+            bank:
+              $ref: '#/components/scheme/supplier/bank'
+            accountUser:
+              $ref: '#/components/scheme/supplier/accountUser'
       required:
         - userType
   getOther:
@@ -147,6 +153,12 @@ components:
               $ref: '#/components/scheme/supplier/careerList'
             price:
               $ref: '#/components/scheme/supplier/price'
+            account:
+              $ref: '#/components/scheme/supplier/account'
+            bank:
+              $ref: '#/components/scheme/supplier/bank'
+            accountUser:
+              $ref: '#/components/scheme/supplier/accountUser'
   scheme:
     common:
       name:
@@ -255,7 +267,15 @@ components:
       price:
         type: number
         description: 코디 가격
-
+      account:
+        type: string
+        description: 계좌 번호
+      bank:
+        type: number
+        description: 계좌 은행
+      accountUser:
+        type: string
+        description: 계좌주 이름
       coord:
         type: array
         description: 대표 코디 목록, Image Url Array

@@ -61,6 +61,8 @@
   $ref: 'chat.yaml#/path/~1chat~1:roomId'
 /chat/:roomId/img:
   $ref: 'chat.yaml#/path/~1chat~1:roomId~1img'
+/chat/:roomId/payment:
+  $ref: 'chat.yaml#/path/~1chat~1:roomId~1payment'
 
 /estimate:
   $ref: 'estimate.yaml#/path/~1estimate'

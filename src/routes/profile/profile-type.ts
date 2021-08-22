@@ -30,6 +30,8 @@ export interface ProfileSupplierPatch {
   price: number | undefined
   careerList: Career[] | undefined
   phone: string
+  account: string
+  bank: string
 }
 
 interface DemanderNotPatch {

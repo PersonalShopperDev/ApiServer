@@ -162,18 +162,29 @@ export default class ProfileService {
     data: ProfileUser & ProfileSupplierPatch,
   ) => {
     const baseData = await this.model.getBasicProfile(userId)
-    const { name, introduction, phone, careerList, price } = this.dataOverlap(
-      { ...baseData, ...baseData.profile },
-      data,
-      ['careerList', 'price'],
-    )
+    const {
+      name,
+      introduction,
+      phone,
+      careerList,
+      price,
+      bank,
+      account,
+      accountUser,
+    } = this.dataOverlap({ ...baseData, ...baseData.profile }, data, [
+      'careerList',
+      'price',
+      'bank',
+      'account',
+      'accountUser',
+    ])
 
     await this.model.saveProfile(
       userId,
       name,
       phone,
       introduction,
-      JSON.stringify({ careerList }),
+      JSON.stringify({ careerList, account, bank, accountUser }),
     )
 
     if (price != null) {
