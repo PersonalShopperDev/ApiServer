@@ -414,7 +414,8 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
       const value = { userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-      return rows[0]
+      if (rows[0] == null) return { bank: undefined, account: undefined }
+      return rows[0].profile
     } catch (e) {
       throw e
     } finally {
@@ -425,7 +426,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
   createPayment = async (roomId: number, userId: number): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO payment(room_id, price, status) SELECT :roomId, price, 0 FROM suppliers WHERE user_id=:userId`
+      const sql = `INSERT INTO payment(room_id, price, status) SELECT :roomId, price, 1 FROM suppliers WHERE user_id=:userId`
 
       const value = { roomId, userId }
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]

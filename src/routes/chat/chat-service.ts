@@ -175,9 +175,9 @@ export default class ChatService {
   }
 
   createPayment = async (roomId: number, userId: number): Promise<boolean> => {
-    const onboard = await this.model.getProfile(userId)
+    const { account, bank } = await this.model.getProfile(userId)
 
-    if (onboard.bank == null || onboard.account == null) {
+    if (bank == null || account == null) {
       return false
     }
 
