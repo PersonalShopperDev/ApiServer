@@ -42,56 +42,6 @@ export default class CoordService {
     }
   }
 
-  newCoord = async (
-    demanderId: number,
-    supplierId: number,
-    title: string,
-    comment: string,
-  ): Promise<CoordIdData | null> => {
-    const data = await this.model.findEstimate(demanderId, supplierId)
-
-    if (data == null) return null
-
-    data.coordId = await this.model.newCoord(data.estimateId, title, comment)
-    return data
-  }
-
-  saveMainImg = async (coorId: number, file: ImgFile): Promise<string> => {
-    const key = `${Date.now()}0${coorId}`
-
-    await this.s3.upload(`coord/${key}`, file.mimetype, file.buffer)
-    await this.model.updateCoordImg(coorId, key)
-
-    return key
-  }
-
-  addCloth = async (
-    coorId: number,
-    userId: number,
-    cloth: ClothDataWithFile,
-  ): Promise<boolean> => {
-    const clothNum = await this.model.checkCoordId(coorId, userId)
-
-    if (clothNum == null) {
-      // 권한 없음
-      return false
-    }
-    const { name, img, price, purchaseUrl } = cloth
-
-    const file = img
-    const key = `${Date.now()}${clothNum}${coorId}`
-    await this.s3.upload(`coord/${key}`, file.mimetype, file.buffer)
-
-    await this.model.insertCloth(coorId, {
-      name,
-      price,
-      purchaseUrl,
-      img: key,
-    })
-
-    return true
-  }
-
   saveImg = async (userId: number, file: ImgFile): Promise<string> => {
     const key = `${Date.now()}${userId}`
     await this.s3.upload(`coord/${key}`, file.mimetype, file.buffer)
@@ -108,5 +58,31 @@ export default class CoordService {
     await this.model.createReference(coordId, data.referenceImgs)
 
     return true
+  }
+
+  requestEditCoord = async (
+    coordId: number,
+    userId: number,
+  ): Promise<number | null> => {
+    const ids = await this.model.getIdsByCoordId(coordId, userId)
+    if (ids == null) {
+      return null
+    }
+    await this.model.requestEditCoord(ids.paymentId, coordId)
+
+    return ids.roomId
+  }
+
+  confirmCoord = async (
+    coordId: number,
+    userId: number,
+  ): Promise<number | null> => {
+    const ids = await this.model.getIdsByCoordId(coordId, userId)
+    if (ids == null) {
+      return null
+    }
+    await this.model.confirmCoord(ids.paymentId, coordId)
+
+    return ids.roomId
   }
 }
