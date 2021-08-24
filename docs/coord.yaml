@@ -17,18 +17,18 @@ components:
       purchaseUrl:
         type: string
         description: 옷 구매 링크
-      mainImg:
+      img:
         type: string
         description: 대표 이미지 URL
-      img:
-        type: array
-        description: /coord/img 로 업로드 된 코디 이미지 URL List
-        items:
-          type: string
     required:
       - price
       - purchaseUrl
-      - mainImg
+      - img
+  referenceImgList:
+    type: array
+    description: /coord/img 로 업로드 된 레퍼런스 이미지 URL List
+    items:
+      type: string
 
 
 
@@ -94,6 +94,8 @@ path:
                     $ref: '#/components/comment'
                   clothes:
                     $ref: '#/components/clothes'
+                  referenceImgList:
+                    $ref: '#/components/referenceImgList'
                 required:
                   - comment
                   - clothes
@@ -117,6 +119,8 @@ path:
                   $ref: '#/components/comment'
                 clothes:
                   $ref: '#/components/clothes'
+                referenceImgList:
+                  $ref: '#/components/referenceImgList'
               required:
                 - roomId
                 - comment
