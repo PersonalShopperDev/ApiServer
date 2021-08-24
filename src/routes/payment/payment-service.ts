@@ -1,5 +1,7 @@
 import PaymentModel from './payment-model'
 import ChatModel from '../chat/chat-model'
+import { PaymentHistory, UserData } from './payment-type'
+import ResourcePath from '../resource/resource-path'
 import { Payment } from '../chat/chat-type'
 
 export default class PaymentService {
@@ -12,6 +14,30 @@ export default class PaymentService {
     if (!roomData.users.includes(userId)) return false
 
     return true
+  }
+
+  getPaymentList = async (
+    userId: number,
+    page: number,
+  ): Promise<PaymentHistory[]> => {
+    const rawData = await this.model.getPaymentList(userId, page)
+
+    return rawData.map((item) => {
+      const { paymentTime, price, status, paymentId } = item
+      const { userId, name, img } = item
+      const targetUser: UserData = {
+        userId,
+        name,
+        img: ResourcePath.profileImg(img),
+      }
+      return {
+        paymentId,
+        paymentTime,
+        price,
+        status,
+        targetUser,
+      }
+    })
   }
 
   getPayment = async (roomId: number): Promise<Payment | null> => {

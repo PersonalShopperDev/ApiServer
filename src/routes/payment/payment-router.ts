@@ -6,6 +6,8 @@ import { body } from 'express-validator'
 const router = express.Router()
 const controller = new PaymentController()
 
+router.get('/', AuthRequire, controller.getList)
+
 router.post('/:roomId/request', AuthRequire, controller.request)
 router.post(
   '/:roomId/account',

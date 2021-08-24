@@ -62,6 +62,8 @@
 /chat/:roomId/img:
   $ref: 'chat.yaml#/path/~1chat~1:roomId~1img'
 
+/payment:
+  $ref: 'payment.yaml#/path/~1payment'
 /payment/:roomId/request:
   $ref: 'payment.yaml#/path/~1payment~1:roomId~1request'
 /payment/:roomId/account:

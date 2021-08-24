@@ -5,6 +5,19 @@ import ChatSocket from '../chat/chat-socket'
 export default class PaymentController {
   service = new PaymentService()
 
+  getList = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId } = req['auth']
+      const { page } = req.query as any
+
+      const data = await this.service.getPaymentList(userId, page ?? 0)
+
+      res.status(200).json(data)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
   request = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userId } = req['auth']
