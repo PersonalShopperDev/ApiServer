@@ -20,6 +20,7 @@ export default class HomeController {
       }
       res.status(200).json(result)
     } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }

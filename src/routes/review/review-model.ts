@@ -6,10 +6,10 @@ export default class ReviewModel {
   getReviewId = async (estimateId: number): Promise<number | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT r.coord_id FROM estimates e
-LEFT JOIN coords c on c.estimate_id = e.estimate_id
+      const sql = `SELECT r.coord_id FROM payments e
+LEFT JOIN coords c on c.payment_id = e.payment_id
 LEFT JOIN coord_reviews r ON r.coord_id = c.coord_id
-WHERE e.estimate_id=:estimateId
+WHERE e.payment_id=:estimateId
 AND c.status=1`
 
       const [rows] = await connection.query(sql, { estimateId })
@@ -31,10 +31,10 @@ AND c.status=1`
   } | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT c.coord_id, r.user_id FROM estimates e
+      const sql = `SELECT c.coord_id, r.user_id FROM payments e
 LEFT JOIN room_user r ON r.room_id = e.room_id  
-LEFT JOIN coords c on c.estimate_id = e.estimate_id
-WHERE e.estimate_id=:estimateId
+LEFT JOIN coords c on c.payment_id = e.payment_id
+WHERE e.payment_id=:estimateId
 AND c.status=1
 AND r.user_type='D'`
 
@@ -117,7 +117,7 @@ AND r.user_type='D'`
     const connection = await db.getConnection()
     try {
       const sql = `SELECT r.user_id as id, u.name, u.img as profile, c.img, type FROM coords c
-LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN payments e ON e.payment_id = c.payment_id
 LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type = 'S'
 LEFT JOIN users u ON r.user_id = u.user_id
 LEFT JOIN (

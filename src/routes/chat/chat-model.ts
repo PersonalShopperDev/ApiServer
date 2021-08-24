@@ -141,7 +141,7 @@ LIMIT :pageOffset, :pageAmount;`
     const connection = await db.getConnection()
     try {
       const sql =
-        'INSERT INTO estimates(room_id, price, account, bank, status) VALUES(:roomId, :price, :account, :bank, 0)'
+        'INSERT INTO payments(room_id, price, account, bank, status) VALUES(:roomId, :price, :account, :bank, 0)'
       const value = { roomId, account, bank, price }
       const [result] = await connection.query(sql, value)
 
@@ -180,9 +180,9 @@ WHERE user_id=:demanderId AND user_type='D'`
   ): Promise<{ roomId: number; demanderId: number } | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT e.room_id as roomId, r.user_id as demanderId FROM estimates e 
+      const sql = `SELECT e.room_id as roomId, r.user_id as demanderId FROM payments e 
 LEFT JOIN (SELECT room_id, user_id FROM room_user WHERE user_type='D') r on e.room_id = r.room_id 
-WHERE estimate_id = :estimateId;`
+WHERE payment_id = :estimateId;`
       const value = { estimateId }
       const [rows] = await connection.query(sql, value)
 
@@ -244,7 +244,7 @@ WHERE estimate_id = :estimateId;`
     const connection = await db.getConnection()
     try {
       const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type AS chatType, c.msg, c.sub_data as subData, e.price, e.status, cd.title as coordTitle, cd.img as coordImg, c.create_time as createTime FROM chat_history c
-LEFT JOIN estimates e ON c.sub_data = e.estimate_id
+LEFT JOIN payments e ON c.sub_data = e.payment_id
 LEFT JOIN coords cd ON cd.coord_id = c.sub_data
 WHERE c.room_id = :roomId 
 ${olderChatId != undefined ? 'AND c.chat_id < :olderChatId' : ''}
@@ -317,7 +317,7 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
   getEstimate = async (estimateId: number): Promise<Payment | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT estimate_id as estimateId, room_id as roomId, price, status FROM estimates WHERE estimate_id=:estimateId`
+      const sql = `SELECT payment_id as estimateId, room_id as roomId, price, status FROM payments WHERE payment_id=:estimateId`
       const value = { estimateId }
 
       const [rows] = await connection.query(sql, value)
@@ -350,13 +350,13 @@ LIMIT 1`
     }
   }
 
-  setEstimateStatus = async (
+  setpaymentstatus = async (
     estimateId: number,
     status: number,
   ): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `UPDATE estimates SET status=:status WHERE estimate_id=:estimateId`
+      const sql = `UPDATE payments SET status=:status WHERE payment_id=:estimateId`
       const value = { estimateId, status }
 
       await connection.query(sql, value)

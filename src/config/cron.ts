@@ -8,7 +8,7 @@ export const updateSupplierPopular = cron.schedule('0 0 0 * * *', async () => {
 (
   SELECT s.user_id, cnt * 4 as point FROM suppliers s
   LEFT JOIN (
-    SELECT r.user_id, COUNT(*) as cnt FROM estimates e 
+    SELECT r.user_id, COUNT(*) as cnt FROM payments e 
     LEFT JOIN room_user r ON r.room_id = e.room_id
     WHERE e.create_time >= DATE_ADD(NOW(),INTERVAL -1 WEEK)
     AND e.status >= 2

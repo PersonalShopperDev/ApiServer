@@ -37,7 +37,7 @@ SELECT s.user_id, name, img, hireCount, reviewCount, tf.typeCount FROM suppliers
 LEFT JOIN users u ON s.user_id = u.user_id
 LEFT JOIN (
   SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount  FROM coords c
-  LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+  LEFT JOIN payments e ON e.payment_id = c.payment_id
   LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
   LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
   GROUP BY r.user_id
@@ -82,7 +82,7 @@ LIMIT 6;`
 LEFT JOIN users u ON a.user_id = u.user_id 
 LEFT JOIN (
   SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount  FROM coords c
-  LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+  LEFT JOIN payments e ON e.payment_id = c.payment_id
   LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
   LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
   GROUP BY r.user_id
@@ -149,7 +149,7 @@ LIMIT 6;`
       const sql = `SELECT r.coord_id, rd.user_id AS demanderId, rs.user_id AS supplierId, r.content, i.img, t.style, u.onboard FROM coord_reviews r
 LEFT JOIN coord_review_imgs i ON i.coord_id = r.coord_id AND i.type = 'H'
 LEFT JOIN coords c ON c.coord_id = r.coord_id
-LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN payments e ON e.payment_id = c.payment_id
 LEFT JOIN room_user rd ON rd.room_id = e.room_id AND rd.user_type='D'
 LEFT JOIN room_user rs ON rs.room_id = e.room_id AND rs.user_type='S'
 LEFT JOIN (

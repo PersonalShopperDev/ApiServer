@@ -49,7 +49,7 @@ export default class UserModel {
 LEFT JOIN users u ON s.user_id = u.user_id
 LEFT JOIN (
     SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount, ROUND(AVG(rating),2) AS rating FROM coords c
-    LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+    LEFT JOIN payments e ON e.payment_id = c.payment_id
     LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type='S'
     LEFT JOIN coord_reviews cr ON cr.coord_id = c.coord_id
     GROUP BY r.user_id
