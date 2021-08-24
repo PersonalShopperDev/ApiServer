@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator'
 import { Coord } from './coord-type'
 import ChatService from '../chat/chat-service'
 import ChatSocket from '../chat/chat-socket'
+import ResourcePath from '../resource/resource-path'
 
 export default class CoordController {
   service = new CoordService()
@@ -46,8 +47,8 @@ export default class CoordController {
     }
 
     try {
-      await this.service.saveImg(userId, img)
-      res.sendStatus(200)
+      const filePath = await this.service.saveImg(userId, img)
+      res.status(200).json({ path: ResourcePath.coordImg(filePath) })
     } catch (e) {
       res.sendStatus(500)
     }
