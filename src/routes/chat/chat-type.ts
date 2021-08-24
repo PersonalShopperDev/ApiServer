@@ -44,6 +44,8 @@ export interface Payment {
   roomId: number
   price: number
   status: number
+  latestCoordId: number | null
+  requestEditCoordId: number | null
 }
 
 export interface Estimate {

@@ -224,21 +224,31 @@ path:
                 properties:
                   targetUser:
                     $ref: "#/components/profile"
-                  paymentStatus:
-                    description: |
+                  payment:
+                    type: object
+                    description: 결제 관련 정보
+                    properties:
+                      paymentStatus:
+                        description: |
 
-                      가장 최근의 Payment 정보
+                          가장 최근의 Payment 정보
 
-                      0: 없음
+                          0: 없음
 
-                      1: 결제 요청
+                          1: 결제 요청
 
-                      2: 결제 완료
+                          2: 결제 완료 / 코디 진행
 
-                      3: 코디 완료
+                          3: 코디 완료
 
-                      4: 리뷰 완료
-                    type: number
+                          4: 리뷰 완료
+                        type: number
+                      latestCoordId:
+                        type: number
+                        description: 결제와 관련된 가장 최근 코디 ID
+                      requestEditCoordId:
+                        type: number
+                        description: 코디 수정 요청시 해당하는 Coord ID, 코디 수정 요청이 없을 경우 null
                   chatList:
                     type: array
                     items:

@@ -333,7 +333,11 @@ WHERE u.room_id = :roomId AND u.user_id = :userId;`
   getLatestPayment = async (roomId: number): Promise<Payment | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT payment_id as paymentId, price, status FROM payments WHERE room_id=:roomId ORDER BY payment_id DESC LIMIT 1`
+      const sql = `SELECT p.payment_id as paymentId, p.price, p.status, c.coord_id AS latestCoordId, p.request_edit AS requestEditCoordId FROM payments p 
+LEFT JOIN coords c ON c.payment_id = p.payment_id
+WHERE p.room_id=:roomId 
+ORDER BY p.payment_id DESC, c.coord_id DESC  
+LIMIT 1`
       const value = { roomId }
 
       const [rows] = await connection.query(sql, value)

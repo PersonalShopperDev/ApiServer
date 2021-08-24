@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import ChatService from './chat-service'
 import { validationResult } from 'express-validator'
 import { ImgFile } from '../../types/upload'
-import ChatSocket from './chat-socket'
 
 export default class ChatController {
   service = new ChatService()
@@ -58,12 +57,21 @@ export default class ChatController {
         olderChatId,
       )
       const targetUser = await this.service.getProfile(targetId)
-      const latestPaymentStatus = await this.service.getLatestPayment(roomId)
+      const latestPayment = await this.service.getLatestPayment(roomId)
+
+      const payment =
+        latestPayment == null
+          ? undefined
+          : {
+              status: latestPayment.status,
+              latestCoordId: latestPayment.latestCoordId,
+              requestEditCoordId: latestPayment.requestEditCoordId,
+            }
 
       res.status(200).json({
         chatList,
         targetUser,
-        paymentStatus: latestPaymentStatus,
+        payment,
       })
     } catch (e) {
       console.log(e)
