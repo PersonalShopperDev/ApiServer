@@ -1,4 +1,73 @@
+components:
+  comment:
+    type: string
+    description: 코디 설명
+    maxLength: 700
+  clothes:
+    type: array
+    description: 옷 목록
+    items:
+      $ref: '#/components/cloth'
+  cloth:
+    type: object
+    properties:
+      price:
+        type: number
+        description: 옷 가격
+      purchaseUrl:
+        type: string
+        description: 옷 구매 링크
+      mainImg:
+        type: string
+        description: 대표 이미지 URL
+      img:
+        type: array
+        description: /coord/img 로 업로드 된 코디 이미지 URL List
+        items:
+          type: string
+    required:
+      - price
+      - purchaseUrl
+      - mainImg
+
+
+
+
 path:
+  /coord/img:
+    post:
+      summary: 코디 이미지 저장하기
+      description: 코디에 사용되는 이미지를 저장합니다. 이미지 경로를 반환 합니다.
+      tags: [ Coord ]
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                img:
+                  type: binary
+                  description: 이미지 파일
+                  maximum: 500kb
+              required:
+                - img
+      responses:
+        '201':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  path:
+                    type: string
+                    description: 저장된 이미지 경로, 직접 사용하는 경로가 아니므로 서버에서 처리하기 편하도록 되어 있다.
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '422':
+          description: Request parameters missing or invalid
   /coord:
     get:
       summary: 코디 데이터 불러오기
@@ -21,140 +90,80 @@ path:
               schema:
                 type: object
                 properties:
-                  mainImg:
-                    type: string
-                    description: 코디 Img Url
-                  title:
-                    type: string
-                    description: 코디 제목
                   comment:
-                    type: string
-                    description: 스타일링 팁
+                    $ref: '#/components/comment'
                   clothes:
-                    type: array
-                    description: 옷 목록
-                    items:
-                      type: object
-                      properties:
-                        img:
-                          type: string
-                          description: 옷 Img Url
-                        name:
-                          type: string
-                          description: 옷 이름
-                        price:
-                          type: number
-                          description: 옷 가격
-                        purchaseUrl:
-                          type: string
-                          description: 옷 구매 URL
-                      required:
-                        - img
-                        - name
+                    $ref: '#/components/clothes'
                 required:
-                  - mainImg
-                  - title
                   - comment
                   - clothes
 
     post:
       summary: 코디 저장하기
-      description: Demander에게 보낼 코디를 저장합니다. 이 API 로 Coord를 생성한 뒤, 옷 정보를 따로 보내주셔야합니다.
+      description: 작성된 코디를 보내줍니다. 이미지를 미리 /coord/img로 저장해야합니다.
       tags: [ Coord ]
       security:
         - bearerAuth: [ ]
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               properties:
-                demanderId:
+                roomId:
                   type: number
-                  description: Demmander Id
-                mainImg:
-                  type: binary
-                  description: 코디 보드 이미지
-                  maximum: 500kb
-                title:
-                  type: string
-                  description: 코디 제목
-                  maxLength: 50
+                  description: 코디를 보낼 Room Id
                 comment:
-                  type: string
-                  description: 코디 설명
-                  maxLength: 700
+                  $ref: '#/components/comment'
+                clothes:
+                  $ref: '#/components/clothes'
               required:
-                - demanderId
-                - mainImg
-                - title
+                - roomId
                 - comment
+                - clothList
 
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  coordId:
-                    type: number
-                    description: 생성된 coord ID
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
         '422':
           description: Request parameters missing or invalid
 
-  /coord/cloth:
+  /coord/:coordId/confirm:
     post:
-      summary: 코디 옷 저장하기
-      description: 코디의 옷 정보를 저장합니다.
+      summary: 코디 확정
+      description: 코디가 확정 됩니다.
       tags: [ Coord ]
       security:
         - bearerAuth: [ ]
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                coordId:
-                  type: number
-                  description: POST /coord에서 얻어온 Coord Id
-                img:
-                  type: binary
-                  description: 옷 이미지
-                  maximum: 100kb
-                name:
-                  type: string
-                  description: 옷 이름
-                  maxLength: 50
-                price:
-                  type: number
-                  description: 옷 가격
-                purchaseUrl:
-                  type: string
-                  description: 옷 구매 링크
-                  maxLength: 150
-              required:
-                - coordId
-                - Img
-                - Name
-
+      parameters:
+        - name: coordId
+          in: 'path'
+          description: 처리할 Coord Id
+          schema:
+            type: number
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  coordId:
-                    type: number
-                    description: 생성된 coord ID
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-        '422':
-          description: Request parameters missing or invalid
 
+  /coord/:coordId/edit:
+    post:
+      summary: 코디 수정 요청
+      description: Supplier에게 코디 수정을 요청합니다.
+      tags: [ Coord ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: coordId
+          in: 'path'
+          description: 처리할 Coord Id
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'

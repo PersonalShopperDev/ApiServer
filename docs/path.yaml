@@ -67,10 +67,14 @@
 /payment/:roomId/account:
   $ref: 'payment.yaml#/path/~1payment~1:roomId~1account'
 
+/coord/img:
+  $ref: 'coord.yaml#/path/~1coord~1img'
 /coord:
   $ref: 'coord.yaml#/path/~1coord'
-/coord/cloth:
-  $ref: 'coord.yaml#/path/~1coord~1cloth'
+/coord/:coordId/confirm:
+  $ref: 'coord.yaml#/path/~1coord~1:coordId~1confirm'
+/coord/:coordId/edit:
+  $ref: 'coord.yaml#/path/~1coord~1:coordId~1edit'
 
 
 /notice:
