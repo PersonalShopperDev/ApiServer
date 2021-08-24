@@ -142,7 +142,7 @@ export default class ChatSocket {
     userId: number,
     coordId: number,
     coordTitle: string,
-    coordImg: string,
+    coordImgList: string[],
   ) => {
     const chatId = await this.model.saveMsg(
       roomId,
@@ -160,7 +160,7 @@ export default class ChatSocket {
       chatType: 'coord',
       coordId,
       coordTitle,
-      coordImg,
+      coordImgList,
     })
 
     await this.notificationSms(

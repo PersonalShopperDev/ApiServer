@@ -243,10 +243,12 @@ WHERE payment_id = :estimateId;`
   ): Promise<ChatHistoryModel[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type AS chatType, c.msg, c.sub_data as subData, e.price, e.status, cd.title as coordTitle, cd.img as coordImg, c.create_time as createTime FROM chat_history c
+      const sql = `SELECT c.chat_id as chatId, c.user_id as userId, c.type AS chatType, c.msg, c.sub_data as subData, e.price, e.status, cd.coordImgList, c.create_time as createTime FROM chat_history c
 LEFT JOIN payments e ON c.sub_data = e.payment_id
-LEFT JOIN coords cd ON cd.coord_id = c.sub_data
-WHERE c.room_id = :roomId 
+LEFT JOIN (
+    SELECT coord_id, json_arrayagg(img) as coordImgList FROM coord_clothes group by coord_id
+) cd ON cd.coord_id = c.sub_data
+WHERE c.room_id = :roomId
 ${olderChatId != undefined ? 'AND c.chat_id < :olderChatId' : ''}
 ORDER BY c.chat_id DESC
 LIMIT 50`

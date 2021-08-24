@@ -70,9 +70,11 @@ components:
             coordTitle:
               type: string
               description: 코디 제목
-            coordImg:
-              type: string
-              description: 코디 보드 이미지 URL
+            coordImgList:
+              type: array
+              description: 코디된 옷 이미지 URL List
+              items:
+                type: string
     notice:
       type: object
       properties:

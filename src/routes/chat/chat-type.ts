@@ -26,8 +26,7 @@ export interface ChatHistoryModel {
   subData: number
   price: number
   status: number
-  coordTitle: string
-  coordImg: string
+  coordImgList: string[]
   createTime: Date
 }
 
@@ -66,7 +65,7 @@ export interface ChatEstimate extends ChatBase, Estimate {
 export interface ChatCoord extends ChatBase {
   coordId: number
   coordTitle: string
-  coordImg: string
+  coordImgList: string[]
 }
 
 export type ChatHistoryData = ChatSimpleMsg | ChatEstimate | ChatCoord

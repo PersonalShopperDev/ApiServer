@@ -48,16 +48,16 @@ export default class CoordService {
     return key
   }
 
-  saveCoord = async (roomId: number, data: Coord): Promise<boolean> => {
+  saveCoord = async (roomId: number, data: Coord): Promise<number | null> => {
     const payment = await this.chatModel.getLatestPayment(roomId)
-    if (payment == null) return false
+    if (payment == null) return null
 
     const coordId = await this.model.createCoord(payment.paymentId, data)
 
     await this.model.createCloth(coordId, data.clothes)
     await this.model.createReference(coordId, data.referenceImgs)
 
-    return true
+    return coordId
   }
 
   requestEditCoord = async (

@@ -135,7 +135,9 @@ export default class ChatService {
             chatTime: createTime,
             coordId: item.subData,
             coordTitle: item.msg,
-            coordImg: ResourcePath.coordImg(item.coordImg),
+            coordImgList: item.coordImgList.map((img) =>
+              ResourcePath.coordImg(img),
+            ),
           })
           break
         case 'plain':

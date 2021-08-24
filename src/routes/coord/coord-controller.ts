@@ -75,7 +75,15 @@ export default class CoordController {
         return
       }
 
-      if (await this.service.saveCoord(roomId, data)) {
+      const coordId = await this.service.saveCoord(roomId, data)
+      if (coordId != null) {
+        await ChatSocket.getInstance().sendCoord(
+          roomId,
+          userId,
+          coordId,
+          data.title,
+          data.clothes.map((item) => item.img),
+        )
         res.sendStatus(200)
       } else {
         res.sendStatus(400)
