@@ -1,4 +1,8 @@
 components:
+  title:
+    type: string
+    description: 코디 제목
+    maxLength: 50
   comment:
     type: string
     description: 코디 설명
@@ -68,7 +72,7 @@ path:
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
         '422':
           description: Request parameters missing or invalid
-  /coord:
+  /coord/:coordId:
     get:
       summary: 코디 데이터 불러오기
       description: 코디 정보를 가져옵니다.
@@ -90,6 +94,8 @@ path:
               schema:
                 type: object
                 properties:
+                  title:
+                    $ref: '#/components/title'
                   comment:
                     $ref: '#/components/comment'
                   clothes:
@@ -97,9 +103,10 @@ path:
                   referenceImgList:
                     $ref: '#/components/referenceImgList'
                 required:
+                  - title
                   - comment
                   - clothes
-
+  /coord:
     post:
       summary: 코디 저장하기
       description: 작성된 코디를 보내줍니다. 이미지를 미리 /coord/img로 저장해야합니다.
@@ -115,6 +122,8 @@ path:
                 roomId:
                   type: number
                   description: 코디를 보낼 Room Id
+                title:
+                  $ref: '#/components/title'
                 comment:
                   $ref: '#/components/comment'
                 clothes:
@@ -123,6 +132,7 @@ path:
                   $ref: '#/components/referenceImgList'
               required:
                 - roomId
+                - title
                 - comment
                 - clothList
 

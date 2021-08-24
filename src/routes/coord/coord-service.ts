@@ -17,10 +17,7 @@ export default class CoordService {
   chatModel = new ChatModel()
   s3 = DIContainer.get(S3)
 
-  getCoord = async (
-    userId: number,
-    coordId: number,
-  ): Promise<CoordData | null> => {
+  getCoord = async (userId: number, coordId: number): Promise<Coord | null> => {
     const base = await this.model.getCoordBase(userId, coordId)
 
     if (base == null) {
@@ -28,15 +25,20 @@ export default class CoordService {
     }
 
     const clothes = await this.model.getClothes(coordId)
+    const references = await this.model.getReference(coordId)
 
     for (const c of clothes) {
       c.img = ResourcePath.coordImg(c.img)
     }
-    base.mainImg = ResourcePath.coordImg(base.mainImg)
+
+    for (const i in references) {
+      references[i] = ResourcePath.coordImg(references[i])
+    }
 
     return {
       ...base,
       clothes,
+      referenceImgs: references,
     }
   }
 
@@ -100,10 +102,7 @@ export default class CoordService {
     const payment = await this.chatModel.getLatestPayment(roomId)
     if (payment == null) return false
 
-    const coordId = await this.model.createCoord(
-      payment.paymentId,
-      data.comment,
-    )
+    const coordId = await this.model.createCoord(payment.paymentId, data)
 
     await this.model.createCloth(coordId, data.clothes)
     await this.model.createReference(coordId, data.referenceImgs)

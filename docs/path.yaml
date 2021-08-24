@@ -67,6 +67,8 @@
 /payment/:roomId/account:
   $ref: 'payment.yaml#/path/~1payment~1:roomId~1account'
 
+/coord/:coordId:
+  $ref: 'coord.yaml#/path/~1coord~1:coordId'
 /coord/img:
   $ref: 'coord.yaml#/path/~1coord~1img'
 /coord:

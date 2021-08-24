@@ -28,6 +28,7 @@ export interface CoordIdData {
 }
 
 export interface Coord {
+  title: string
   comment: string
   clothes: Cloth[]
   referenceImgs: string[]

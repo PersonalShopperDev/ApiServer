@@ -1,20 +1,18 @@
 import db from '../../config/db'
-import { Cloth, ClothData, CoordIdData } from './coord-type'
+import { Cloth, ClothData, Coord, CoordIdData } from './coord-type'
 import { RowDataPacket } from 'mysql2'
-import ChatSocket from '../chat/chat-socket'
 
 export default class CoordModel {
   getCoordBase = async (
     userId: number,
     coordId: number,
   ): Promise<{
-    mainImg: string
     title: string
     comment: string
   } | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT c.img as mainImg, c.title, c.comment FROM coords c
+      const sql = `SELECT c.title, c.comment FROM coords c
 JOIN payments e ON e.payment_id = c.payment_id
 JOIN room_user r ON r.room_id = e.room_id
 WHERE coord_id=:coordId AND r.user_id=:userId`
@@ -41,6 +39,23 @@ WHERE coord_id=:coordId AND r.user_id=:userId`
       const [rows] = await connection.query(sql, value)
 
       return rows as ClothData[]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getReference = async (coordId: number): Promise<string[]> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT img, name, price, purchase_url as purchaseUrl FROM coord_references WHERE coord_id=:coordId`
+
+      const value = { coordId }
+
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows as string[]
     } catch (e) {
       throw e
     } finally {
@@ -155,12 +170,13 @@ VALUES (:coordId, :img, :name, :price, :purchaseUrl)`
     }
   }
 
-  createCoord = async (paymentId: number, comment: string): Promise<number> => {
+  createCoord = async (paymentId: number, coord: Coord): Promise<number> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO coords(payment_id, comment) VALUES(:paymentId, :comment)`
+      const sql = `INSERT INTO coords(payment_id, title, comment) VALUES(:paymentId, :title, :comment)`
 
-      const value = { paymentId, comment }
+      const { title, comment } = coord
+      const value = { paymentId, title, comment }
 
       const [result] = await connection.query(sql, value)
 

@@ -18,7 +18,7 @@ export default class CoordController {
 
     try {
       const { userId } = req['auth']
-      const { coordId } = req.query as any
+      const { coordId } = req.params as any
 
       const result = await this.service.getCoord(userId, coordId)
 
