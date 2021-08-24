@@ -1,5 +1,5 @@
 import db from '../../config/db'
-import { ClothData, CoordIdData } from './coord-type'
+import { Cloth, ClothData, CoordIdData } from './coord-type'
 import { RowDataPacket } from 'mysql2'
 import ChatSocket from '../chat/chat-socket'
 
@@ -15,7 +15,7 @@ export default class CoordModel {
     const connection = await db.getConnection()
     try {
       const sql = `SELECT c.img as mainImg, c.title, c.comment FROM coords c
-JOIN estimates e ON e.estimate_id = c.estimate_id
+JOIN payments e ON e.payment_id = c.payment_id
 JOIN room_user r ON r.room_id = e.room_id
 WHERE coord_id=:coordId AND r.user_id=:userId`
 
@@ -54,7 +54,7 @@ WHERE coord_id=:coordId AND r.user_id=:userId`
   ): Promise<CoordIdData | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT e.estimate_id AS estimateId, e.status, e.room_id as roomId FROM estimates e
+      const sql = `SELECT e.payment_id AS estimateId, e.status, e.room_id as roomId FROM payments e
 RIGHT JOIN (
   SELECT room_id, COUNT(*) as cnt FROM room_user
   WHERE (user_id=:demanderId AND user_type='D') OR (user_id=:supplierId AND user_type='S')
@@ -85,7 +85,7 @@ WHERE status = 4
     const connection = await db.getConnection()
     try {
       const sql = `SELECT c.coord_id, cc.name FROM coords c
-LEFT JOIN estimates e ON e.estimate_id = c.estimate_id
+LEFT JOIN payments e ON e.payment_id = c.payment_id
 LEFT JOIN room_user r ON r.room_id = e.room_id
 LEFT JOIN coord_clothes cc ON cc.coord_id = c.coord_id
 WHERE c.coord_id=:coordId AND r.user_id = :userId;
@@ -111,7 +111,7 @@ WHERE c.coord_id=:coordId AND r.user_id = :userId;
   ): Promise<number> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO coords(estimate_id, title, comment) VALUES(:estimateId, :title, :comment)`
+      const sql = `INSERT INTO coords(payment_id, title, comment) VALUES(:estimateId, :title, :comment)`
 
       const value = { estimateId, title, comment }
 
@@ -146,6 +146,63 @@ WHERE c.coord_id=:coordId AND r.user_id = :userId;
       const sql = `INSERT INTO coord_clothes(coord_id, img, name, price, purchase_url) 
 VALUES (:coordId, :img, :name, :price, :purchaseUrl)`
       const value = { coordId, ...item }
+
+      await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  createCoord = async (paymentId: number, comment: string): Promise<number> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `INSERT INTO coords(payment_id, comment) VALUES(:paymentId, :comment)`
+
+      const value = { paymentId, comment }
+
+      const [result] = await connection.query(sql, value)
+
+      return result['insertId']
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  createCloth = async (coordId: number, clothList: Cloth[]): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `INSERT INTO coord_clothes(coord_id, img, price, purchase_url) VALUES (:clothList)`
+      const value = {
+        clothList: clothList.map((item) => {
+          const { price, purchaseUrl, img } = item
+          return [coordId, img, price, purchaseUrl]
+        }),
+      }
+
+      await connection.query(sql, value)
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  createReference = async (
+    coordId: number,
+    referenceList: string[],
+  ): Promise<void> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `INSERT INTO coord_reference(coord_id, img) VALUES :clothList`
+      const value = {
+        clothList: referenceList.map((item) => {
+          return [coordId, item]
+        }),
+      }
 
       await connection.query(sql, value)
     } catch (e) {

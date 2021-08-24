@@ -3,9 +3,12 @@ import CoordService from './coord-service'
 import { validationResult } from 'express-validator'
 import ChatSocket from '../chat/chat-socket'
 import ResourcePath from '../resource/resource-path'
+import { Coord } from './coord-type'
+import ChatService from '../chat/chat-service'
 
 export default class CoordController {
   service = new CoordService()
+  chatService = new ChatService()
 
   getCoord = async (req: Request, res: Response): Promise<void> => {
     if (!validationResult(req).isEmpty()) {
@@ -104,6 +107,111 @@ export default class CoordController {
       }
 
       res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  saveImg = async (req: Request, res: Response): Promise<void> => {
+    const img = req['file']
+    if (img == null) {
+      res.sendStatus(422)
+      return
+    }
+
+    const { userId, userType } = req['auth']
+    if (userType != 'S') {
+      res.sendStatus(403)
+      return
+    }
+
+    try {
+      await this.service.saveImg(userId, img)
+      res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  saveCoord = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!validationResult(req).isEmpty()) {
+        res.sendStatus(422)
+        return
+      }
+
+      const { userId, userType } = req['auth']
+      if (userType != 'S') {
+        res.sendStatus(403)
+        return
+      }
+
+      const data: Coord = req.body
+      const { roomId } = req.body
+
+      const isMyRoom = await this.chatService.checkRoom(roomId, userId)
+      if (isMyRoom == null) {
+        res.sendStatus(403)
+        return
+      }
+
+      if (await this.service.saveCoord(roomId, data)) {
+        res.sendStatus(200)
+      } else {
+        res.sendStatus(400)
+      }
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  requestEditCoord = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId, userType } = req['auth']
+      if (userType != 'D') {
+        res.sendStatus(403)
+        return
+      }
+
+      const coordId = req.params.coordId
+      //
+      // const isMyCoord = await this.chatService.checkRoom(roomId, userId)
+      // if (isMyRoom == null) {
+      //   res.sendStatus(403)
+      //   return
+      // }
+      //
+      // if (await this.service.saveCoord(roomId, data)) {
+      //   res.sendStatus(200)
+      // } else {
+      //   res.sendStatus(400)
+      // }
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  confirmCoord = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { userId, userType } = req['auth']
+      if (userType != 'D') {
+        res.sendStatus(403)
+        return
+      }
+
+      // const coordId = req.params.coordId
+      //
+      // const isMyRoom = await this.chatService.checkRoom(roomId, userId)
+      // if (isMyRoom == null) {
+      //   res.sendStatus(403)
+      //   return
+      // }
+      //
+      // if (await this.service.saveCoord(roomId, data)) {
+      //   res.sendStatus(200)
+      // } else {
+      //   res.sendStatus(400)
+      // }
     } catch (e) {
       res.sendStatus(500)
     }

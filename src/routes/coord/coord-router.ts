@@ -1,8 +1,7 @@
 import express from 'express'
 import { body, query } from 'express-validator'
-import { AuthCheck, AuthRequire } from '../../config/auth-check'
+import { AuthRequire } from '../../config/auth-check'
 import CoordController from './coord-controller'
-import S3 from '../../config/s3'
 import multer from 'multer'
 
 const router = express.Router()
@@ -30,5 +29,21 @@ router.post(
   AuthRequire,
   controller.addCloth,
 )
+
+router.post('/img', upload.single('img'), AuthRequire, controller.saveImg)
+router.post(
+  '/',
+  body('roomId').isInt(),
+  body('comment').isString(),
+  body('clothes').isArray(),
+  body('clothes.*.price').isInt(),
+  body('clothes.*.purchaseUrl').isString(),
+  body('clothes.*.mainImg').isString(),
+  AuthRequire,
+  controller.saveCoord,
+)
+
+router.post('/:coordId/edit', AuthRequire, controller.requestEditCoord)
+router.post('/:coordId/confirm', AuthRequire, controller.confirmCoord)
 
 export default router

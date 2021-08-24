@@ -23,6 +23,22 @@ export interface ClothDataWithFile {
 export interface CoordIdData {
   coordId: number
   estimateId: number
-  estimateStatus: number
+  paymentstatus: number
   roomId: number
+}
+
+export interface Coord {
+  comment: string
+  clothes: Cloth[]
+  referenceImgs: string[]
+}
+
+export interface CoordForSave extends Coord {
+  roomId: number
+}
+
+export interface Cloth {
+  price: number
+  purchaseUrl: string
+  img: string
 }

@@ -2,11 +2,19 @@ import CoordModel from './coord-model'
 import { ImgFile } from '../../types/upload'
 import DIContainer from '../../config/inversify.config'
 import S3 from '../../config/s3'
-import { ClothDataWithFile, CoordData, CoordIdData } from './coord-type'
+import {
+  ClothDataWithFile,
+  Coord,
+  CoordData,
+  CoordForSave,
+  CoordIdData,
+} from './coord-type'
 import ResourcePath from '../resource/resource-path'
+import ChatModel from '../chat/chat-model'
 
 export default class CoordService {
   model = new CoordModel()
+  chatModel = new ChatModel()
   s3 = DIContainer.get(S3)
 
   getCoord = async (
@@ -78,6 +86,27 @@ export default class CoordService {
       purchaseUrl,
       img: key,
     })
+
+    return true
+  }
+
+  saveImg = async (userId: number, file: ImgFile): Promise<string> => {
+    const key = `${Date.now()}${userId}`
+    await this.s3.upload(`coord/${key}`, file.mimetype, file.buffer)
+    return key
+  }
+
+  saveCoord = async (roomId: number, data: Coord): Promise<boolean> => {
+    const payment = await this.chatModel.getLatestPayment(roomId)
+    if (payment == null) return false
+
+    const coordId = await this.model.createCoord(
+      payment.paymentId,
+      data.comment,
+    )
+
+    await this.model.createCloth(coordId, data.clothes)
+    await this.model.createReference(coordId, data.referenceImgs)
 
     return true
   }
