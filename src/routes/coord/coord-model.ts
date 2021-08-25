@@ -29,16 +29,16 @@ WHERE coord_id=:coordId AND r.user_id=:userId`
     }
   }
 
-  getClothes = async (coordId: number): Promise<ClothData[]> => {
+  getClothes = async (coordId: number): Promise<Cloth[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT img, name, price, purchase_url as purchaseUrl FROM coord_clothes WHERE coord_id=:coordId`
+      const sql = `SELECT img, price, purchase_url as purchaseUrl FROM coord_clothes WHERE coord_id=:coordId`
 
       const value = { coordId }
 
       const [rows] = await connection.query(sql, value)
 
-      return rows as ClothData[]
+      return rows as Cloth[]
     } catch (e) {
       throw e
     } finally {
