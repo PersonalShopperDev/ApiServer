@@ -102,6 +102,19 @@ path:
                     $ref: '#/components/clothes'
                   referenceImgList:
                     $ref: '#/components/referenceImgList'
+                  supplier:
+                    type: object
+                    description: 코디 제공자의 기본 정보
+                    properties:
+                      id:
+                        type: number
+                        description: Supplier User ID
+                      name:
+                        type: string
+                        description: 이름
+                      img:
+                        type: string
+                        description: 프로필 이미지 URL
                   needRequest:
                     type: boolean
                     description: 코디 확정 | 수정 요청이 필요한지 여부

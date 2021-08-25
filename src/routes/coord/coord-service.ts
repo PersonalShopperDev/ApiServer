@@ -2,13 +2,7 @@ import CoordModel from './coord-model'
 import { ImgFile } from '../../types/upload'
 import DIContainer from '../../config/inversify.config'
 import S3 from '../../config/s3'
-import {
-  ClothDataWithFile,
-  Coord,
-  CoordData,
-  CoordForGet,
-  CoordIdData,
-} from './coord-type'
+import { Coord, CoordForGet } from './coord-type'
 import ResourcePath from '../resource/resource-path'
 import ChatModel from '../chat/chat-model'
 
@@ -40,10 +34,14 @@ export default class CoordService {
       references[i] = ResourcePath.coordImg(references[i])
     }
 
+    const supplier = await this.model.getSupplier(coordId)
+    supplier.img = ResourcePath.profileImg(supplier.img)
+
     return {
       ...base,
       clothes,
       referenceImgList: references,
+      supplier,
       needRequest: payment.status == 2 && payment.requestEdit == null,
     }
   }

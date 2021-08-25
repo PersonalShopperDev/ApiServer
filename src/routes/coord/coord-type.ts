@@ -35,11 +35,18 @@ export interface Coord {
 }
 
 export interface CoordForGet extends Coord {
+  supplier: Supplier
   needRequest: boolean
 }
 
 export interface Cloth {
   price: number
   purchaseUrl: string
+  img: string
+}
+
+export interface Supplier {
+  id: number
+  name: string
   img: string
 }
