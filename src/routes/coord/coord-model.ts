@@ -1,5 +1,5 @@
 import db from '../../config/db'
-import { Cloth, ClothData, Coord, CoordIdData } from './coord-type'
+import { Cloth, ClothData, Coord } from './coord-type'
 import { RowDataPacket } from 'mysql2'
 
 export default class CoordModel {
@@ -75,6 +75,30 @@ LEFT JOIN room_user r ON r.room_id = e.room_id
 WHERE c.coord_id=:coordId AND r.user_id = :userId;
 `
       const value = { userId, coordId }
+
+      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+
+      return rows[0]
+    } catch (e) {
+      throw e
+    } finally {
+      connection.release()
+    }
+  }
+
+  getCoordPayment = async (
+    coordId: number,
+  ): Promise<{
+    status: number
+    requestEdit: number | null
+  }> => {
+    const connection = await db.getConnection()
+    try {
+      const sql = `SELECT p.status, p.request_edit as requestEdit FROM coords c
+ LEFT JOIN payments p on c.payment_id = p.payment_id
+ WHERE c.coord_id=:coordId`
+
+      const value = { coordId }
 
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 

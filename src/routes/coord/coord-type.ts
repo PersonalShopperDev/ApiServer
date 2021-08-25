@@ -34,8 +34,8 @@ export interface Coord {
   referenceImgList: string[]
 }
 
-export interface CoordForSave extends Coord {
-  roomId: number
+export interface CoordForGet extends Coord {
+  needRequest: boolean
 }
 
 export interface Cloth {

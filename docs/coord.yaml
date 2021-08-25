@@ -102,6 +102,9 @@ path:
                     $ref: '#/components/clothes'
                   referenceImgList:
                     $ref: '#/components/referenceImgList'
+                  needRequest:
+                    type: boolean
+                    description: 코디 확정 | 수정 요청이 필요한지 여부
                 required:
                   - title
                   - comment

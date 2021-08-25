@@ -6,7 +6,7 @@ import {
   ClothDataWithFile,
   Coord,
   CoordData,
-  CoordForSave,
+  CoordForGet,
   CoordIdData,
 } from './coord-type'
 import ResourcePath from '../resource/resource-path'
@@ -17,7 +17,10 @@ export default class CoordService {
   chatModel = new ChatModel()
   s3 = DIContainer.get(S3)
 
-  getCoord = async (userId: number, coordId: number): Promise<Coord | null> => {
+  getCoord = async (
+    userId: number,
+    coordId: number,
+  ): Promise<CoordForGet | null> => {
     const base = await this.model.getCoordBase(userId, coordId)
 
     if (base == null) {
@@ -26,6 +29,8 @@ export default class CoordService {
 
     const clothes = await this.model.getClothes(coordId)
     const references = await this.model.getReference(coordId)
+
+    const payment = await this.model.getCoordPayment(coordId)
 
     for (const c of clothes) {
       c.img = ResourcePath.coordImg(c.img)
@@ -39,6 +44,7 @@ export default class CoordService {
       ...base,
       clothes,
       referenceImgList: references,
+      needRequest: payment.status == 2 && payment.requestEdit == null,
     }
   }
 
