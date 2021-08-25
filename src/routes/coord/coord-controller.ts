@@ -29,6 +29,7 @@ export default class CoordController {
 
       res.status(200).send(result)
     } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }
@@ -47,8 +48,8 @@ export default class CoordController {
     }
 
     try {
-      const filePath = await this.service.saveImg(userId, img)
-      res.status(200).json({ path: ResourcePath.coordImg(filePath) })
+      const path = await this.service.saveImg(userId, img)
+      res.status(200).json({ path })
     } catch (e) {
       res.sendStatus(500)
     }
@@ -58,6 +59,7 @@ export default class CoordController {
     try {
       if (!validationResult(req).isEmpty()) {
         res.sendStatus(422)
+        console.log(validationResult(req))
         return
       }
 

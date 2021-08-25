@@ -38,7 +38,7 @@ export default class CoordService {
     return {
       ...base,
       clothes,
-      referenceImgs: references,
+      referenceImgList: references,
     }
   }
 
@@ -55,7 +55,7 @@ export default class CoordService {
     const coordId = await this.model.createCoord(payment.paymentId, data)
 
     await this.model.createCloth(coordId, data.clothes)
-    await this.model.createReference(coordId, data.referenceImgs)
+    await this.model.createReference(coordId, data.referenceImgList)
 
     return coordId
   }

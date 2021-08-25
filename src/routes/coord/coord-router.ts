@@ -17,7 +17,7 @@ router.post(
   body('clothes').isArray(),
   body('clothes.*.price').isInt(),
   body('clothes.*.purchaseUrl').isString(),
-  body('clothes.*.mainImg').isString(),
+  body('clothes.*.img').isString(),
   AuthRequire,
   controller.saveCoord,
 )

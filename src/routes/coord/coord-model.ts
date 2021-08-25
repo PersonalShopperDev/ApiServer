@@ -49,13 +49,13 @@ WHERE coord_id=:coordId AND r.user_id=:userId`
   getReference = async (coordId: number): Promise<string[]> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT img, name, price, purchase_url as purchaseUrl FROM coord_references WHERE coord_id=:coordId`
+      const sql = `SELECT img FROM coord_references WHERE coord_id=:coordId`
 
       const value = { coordId }
 
       const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
 
-      return rows as string[]
+      return rows.map((row) => row.img)
     } catch (e) {
       throw e
     } finally {
@@ -107,7 +107,7 @@ WHERE c.coord_id=:coordId AND r.user_id = :userId;
   createCloth = async (coordId: number, clothList: Cloth[]): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO coord_clothes(coord_id, img, price, purchase_url) VALUES (:clothList)`
+      const sql = `INSERT INTO coord_clothes(coord_id, img, price, purchase_url) VALUES :clothList`
       const value = {
         clothList: clothList.map((item) => {
           const { price, purchaseUrl, img } = item
@@ -125,13 +125,13 @@ WHERE c.coord_id=:coordId AND r.user_id = :userId;
 
   createReference = async (
     coordId: number,
-    referenceList: string[],
+    referenceImgList: string[],
   ): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `INSERT INTO coord_reference(coord_id, img) VALUES :clothList`
+      const sql = `INSERT INTO coord_references(coord_id, img) VALUES :clothList`
       const value = {
-        clothList: referenceList.map((item) => {
+        clothList: referenceImgList.map((item) => {
           return [coordId, item]
         }),
       }
