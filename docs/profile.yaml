@@ -428,9 +428,14 @@ path:
                         profileImg:
                           type: sting
                           description: Profile Img URL
+                        coordImg:
+                          type: array
+                          description: 코디 받은 이미지 URL List
+                          items:
+                            type: string
                         img:
                           type: array
-                          description: Img URL List, 첫 인덱스는 무조건 코디 사진.
+                          description: 리뷰에 등록한 이미지 URL List
                           items:
                             type: string
                         rating:

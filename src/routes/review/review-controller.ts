@@ -57,8 +57,8 @@ export default class ReviewController {
   getCoordInfo = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req['auth']
 
-    const { estimateId } = req.params as any
-    const coordId = await this.service.getCoordId(userId, estimateId)
+    const { paymentId } = req.params as any
+    const coordId = await this.service.getCoordId(userId, paymentId)
     try {
       if (coordId == null) {
         res.sendStatus(404)
@@ -69,6 +69,7 @@ export default class ReviewController {
 
       res.status(200).json(result)
     } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }

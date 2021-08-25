@@ -230,10 +230,7 @@ export default class ProfileService {
 
       const reviewImg = await this.model.getReviewImg(id)
 
-      const img = [
-        ResourcePath.coordImg(coordImg),
-        ...reviewImg.map((row) => ResourcePath.reviewImg(row.img)),
-      ]
+      const img = [...reviewImg.map((row) => ResourcePath.reviewImg(row.img))]
 
       const year = date.getFullYear()
       const month = ('0' + (1 + date.getMonth())).slice(-2)
@@ -245,6 +242,10 @@ export default class ProfileService {
         img,
         rating,
         content,
+        coordImg:
+          coordImg == null
+            ? []
+            : coordImg.map((img) => ResourcePath.coordImg(img)),
         profileImg: ResourcePath.profileImg(profileImg),
         date: `${year}-${month}-${day}`,
         body: Data.getBodyItem(onboard['body']),

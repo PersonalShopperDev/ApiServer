@@ -77,7 +77,7 @@ interface _ReviewData {
 export interface ReviewModelData extends _ReviewData {
   date: Date
   publicBody: number
-  coordImg: string
+  coordImg: string[]
   type: number[]
   profile: any | null
   onboard: any
@@ -85,6 +85,7 @@ export interface ReviewModelData extends _ReviewData {
 
 export interface ReviewData extends _ReviewData {
   date: string
+  coordImg: string[]
   img: string[]
   weight: number | undefined
   height: number | undefined

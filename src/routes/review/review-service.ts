@@ -14,9 +14,9 @@ export default class ReviewService {
 
   getCoordId = async (
     userId: number,
-    estimateId: number,
+    paymentId: number,
   ): Promise<number | null> => {
-    const result = await this.model.getCoordId(estimateId)
+    const result = await this.model.getCoordId(paymentId)
     if (result == null || result.userId != userId) {
       return null
     }
@@ -59,14 +59,14 @@ export default class ReviewService {
   }
 
   getCoordInfo = async (coordId: number): Promise<ReviewCoord> => {
-    const { id, name, profile, img, type } = await this.model.getCoordInfo(
+    const { id, name, profile, imgList, type } = await this.model.getCoordInfo(
       coordId,
     )
 
     return {
       supplierId: id,
       profile: ResourcePath.profileImg(profile),
-      img: ResourcePath.coordImg(img),
+      imgList: imgList.map((img) => ResourcePath.coordImg(img)),
       title: `${name} 스타일리스트의 코디`,
       styleTypeList: type == null ? [] : Data.getStyleItemList(type),
     }

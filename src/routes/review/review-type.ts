@@ -8,7 +8,7 @@ export interface ReviewContent {
 
 export interface ReviewCoord {
   supplierId: number
-  img: string
+  imgList: string[]
   profile: string
   title: string
   styleTypeList: StyleType[]

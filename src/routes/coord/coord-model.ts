@@ -71,7 +71,7 @@ WHERE coord_id=:coordId AND r.user_id=:userId`
     try {
       const sql = `SELECT p.payment_id as paymentId, r.room_id as roomId FROM coords c
 LEFT JOIN payments p ON p.payment_id = c.payment_id
-LEFT JOIN room_user r ON r.room_id = e.room_id
+LEFT JOIN room_user r ON r.room_id = p.room_id
 WHERE c.coord_id=:coordId AND r.user_id = :userId;
 `
       const value = { userId, coordId }
@@ -214,13 +214,22 @@ WHERE c.coord_id=:coordId`
   confirmCoord = async (paymentId: number, coordId: number): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `UPDATE payments SET status=3 WHERE payment_id = :paymentId`
+      await connection.beginTransaction()
       const value = {
         paymentId,
         coordId,
       }
 
-      await connection.query(sql, value)
+      await connection.query(
+        `UPDATE payments SET status=3 WHERE payment_id = :paymentId`,
+        value,
+      )
+      await connection.query(
+        `UPDATE coords SET status=1 WHERE coord_id = :coordId`,
+        value,
+      )
+
+      await connection.commit()
     } catch (e) {
       throw e
     } finally {

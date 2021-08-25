@@ -146,6 +146,7 @@ export default class CoordController {
         res.sendStatus(400)
       }
     } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }

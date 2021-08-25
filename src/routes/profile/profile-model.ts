@@ -244,9 +244,12 @@ LIMIT 3`
 
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, c.img as coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coord_reviews r
+      const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, cc.coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coord_reviews r
 LEFT JOIN coords c ON c.coord_id = r.coord_id
 LEFT JOIN payments e ON e.payment_id = c.payment_id
+LEFT JOIN (
+    SELECT coord_id, json_arrayagg(img) as coordImg FROM coord_clothes GROUP BY coord_id
+) cc ON cc.coord_id = c.coord_id
 LEFT JOIN room_user rd ON rd.room_id = e.room_id AND rd.user_type='D'
 LEFT JOIN room_user rs ON rs.room_id = e.room_id AND rs.user_type='S'
 LEFT JOIN (

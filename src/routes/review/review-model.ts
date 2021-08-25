@@ -24,21 +24,21 @@ AND c.status=1`
   }
 
   getCoordId = async (
-    estimateId: number,
+    paymentId: number,
   ): Promise<{
     coordId: number
     userId: number
   } | null> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT c.coord_id, r.user_id FROM payments e
-LEFT JOIN room_user r ON r.room_id = e.room_id  
-LEFT JOIN coords c on c.payment_id = e.payment_id
-WHERE e.payment_id=:estimateId
+      const sql = `SELECT c.coord_id, r.user_id FROM payments p
+LEFT JOIN room_user r ON r.room_id = p.room_id  
+LEFT JOIN coords c on c.payment_id = p.payment_id
+WHERE p.payment_id=:paymentId
 AND c.status=1
 AND r.user_type='D'`
 
-      const [result] = await connection.query(sql, { estimateId })
+      const [result] = await connection.query(sql, { paymentId })
 
       if (result[0] == null) return null
       const { coord_id, user_id } = result[0]
@@ -111,20 +111,23 @@ AND r.user_type='D'`
     id: number
     name: string
     profile: string
-    img: string
+    imgList: string[]
     type: number[]
   }> => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT r.user_id as id, u.name, u.img as profile, c.img, type FROM coords c
-LEFT JOIN payments e ON e.payment_id = c.payment_id
-LEFT JOIN room_user r ON r.room_id = e.room_id AND r.user_type = 'S'
+      const sql = `SELECT r.user_id as id, u.name, u.img as profile, cc.imgList, t.type FROM coords c
+LEFT JOIN payments p ON p.payment_id = c.payment_id
+LEFT JOIN (
+SELECT coord_id, json_arrayagg(img) as imgList FROM coord_clothes GROUP BY coord_id
+) cc ON cc.coord_id = c.coord_id
+LEFT JOIN room_user r ON r.room_id = p.room_id AND r.user_type = 'S'
 LEFT JOIN users u ON r.user_id = u.user_id
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
     GROUP BY user_id
 ) t ON r.user_id = t.user_id
-WHERE coord_id=:coordId
+WHERE c.coord_id=:coordId
 ;`
 
       const [rows] = await connection.query(sql, { coordId })

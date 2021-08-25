@@ -21,6 +21,6 @@ router.put(
   controller.saveReview,
 )
 
-router.get('/:estimateId/coord', AuthRequire, controller.getCoordInfo)
+router.get('/:paymentId/coord', AuthRequire, controller.getCoordInfo)
 
 export default router
