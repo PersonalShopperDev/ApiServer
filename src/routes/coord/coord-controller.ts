@@ -113,6 +113,7 @@ export default class CoordController {
           roomId,
           '코디 수정 요청이 들어왔습니다.',
         )
+        await ChatSocket.getInstance().notifyChangePayment(roomId)
         res.sendStatus(200)
       } else {
         res.sendStatus(400)
@@ -138,7 +139,7 @@ export default class CoordController {
           roomId,
           '코디가 확정되었습니다!',
         )
-        await ChatSocket.getInstance().notifyChangeStatus(roomId, 3)
+        await ChatSocket.getInstance().notifyChangePayment(roomId)
 
         res.sendStatus(200)
       } else {

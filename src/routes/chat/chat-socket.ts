@@ -219,14 +219,13 @@ export default class ChatSocket {
     })
   }
 
-  notifyChangeStatus = async (
-    roomId: number,
-    newStatus: number,
-  ): Promise<boolean> => {
+  notifyChangePayment = async (roomId: number): Promise<boolean> => {
     try {
-      this.io.to(roomId.toString()).emit('onChangePaymentStatus', {
+      const latestPayment = await this.model.getLatestPayment(roomId)
+
+      this.io.to(roomId.toString()).emit('onChangePayment', {
         roomId,
-        status: newStatus,
+        latestPayment,
       })
     } catch (e) {
       return false
