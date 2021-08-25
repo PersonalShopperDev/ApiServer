@@ -76,7 +76,14 @@ export default class CoordService {
     }
     await this.model.requestEditCoord(ids.paymentId, coordId)
 
+    await this.autoConfirm(coordId, userId)
     return ids.roomId
+  }
+
+  autoConfirm = async (coordId: number, userId: number): Promise<void> => {
+    const payment = await this.model.getCoordPayment(coordId)
+    if (payment.requestEdit == null) return
+    await this.confirmCoord(coordId, userId)
   }
 
   confirmCoord = async (
