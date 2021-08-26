@@ -4,7 +4,6 @@ import { validationResult } from 'express-validator'
 import { Coord } from './coord-type'
 import ChatService from '../chat/chat-service'
 import ChatSocket from '../chat/chat-socket'
-import ResourcePath from '../resource/resource-path'
 
 export default class CoordController {
   service = new CoordService()
@@ -78,7 +77,7 @@ export default class CoordController {
         return
       }
 
-      const coordId = await this.service.saveCoord(roomId, data)
+      const coordId = await this.service.saveCoord(roomId, userId, data)
       if (coordId != null) {
         await ChatSocket.getInstance().sendCoord(
           roomId,
@@ -92,6 +91,7 @@ export default class CoordController {
         res.sendStatus(400)
       }
     } catch (e) {
+      console.log(e)
       res.sendStatus(500)
     }
   }

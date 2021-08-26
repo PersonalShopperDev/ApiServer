@@ -35,7 +35,7 @@ export default class PaymentController {
           roomId,
           '결제가 요청되었습니다.',
         )
-        await ChatSocket.getInstance().notifyChangePayment(paymentId)
+        await ChatSocket.getInstance().notifyChangePayment(roomId)
         res.sendStatus(201)
       } else {
         res.sendStatus(351)

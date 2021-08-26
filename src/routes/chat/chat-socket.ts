@@ -168,6 +168,7 @@ export default class ChatSocket {
       [userId],
       '코디가 도착했어요!\n확인하러 가볼까요?',
     )
+    await this.notifyChangePayment(roomId)
   }
 
   sendImg = async (roomId: number, userId: number, img: string) => {

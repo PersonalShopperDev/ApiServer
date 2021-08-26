@@ -5,6 +5,7 @@ import S3 from '../../config/s3'
 import { Coord, CoordForGet } from './coord-type'
 import ResourcePath from '../resource/resource-path'
 import ChatModel from '../chat/chat-model'
+import ChatSocket from '../chat/chat-socket'
 
 export default class CoordService {
   model = new CoordModel()
@@ -52,14 +53,21 @@ export default class CoordService {
     return key
   }
 
-  saveCoord = async (roomId: number, data: Coord): Promise<number | null> => {
+  saveCoord = async (
+    roomId: number,
+    userId: number,
+    data: Coord,
+  ): Promise<number | null> => {
     const payment = await this.chatModel.getLatestPayment(roomId)
     if (payment == null) return null
 
     const coordId = await this.model.createCoord(payment.paymentId, data)
 
     await this.model.createCloth(coordId, data.clothes)
-    await this.model.createReference(coordId, data.referenceImgList)
+    if (data.referenceImgList.length > 0)
+      await this.model.createReference(coordId, data.referenceImgList)
+
+    await this.autoConfirm(coordId, userId)
 
     return coordId
   }
@@ -74,7 +82,6 @@ export default class CoordService {
     }
     await this.model.requestEditCoord(ids.paymentId, coordId)
 
-    await this.autoConfirm(coordId, userId)
     return ids.roomId
   }
 
