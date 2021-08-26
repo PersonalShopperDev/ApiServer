@@ -25,6 +25,8 @@ router.use((req, res, next) => {
 
 router.get('/', adminController.getSupplierPage)
 router.get('/supplier', adminController.getSupplierPage)
+router.get('/payment', adminController.getPaymentPage)
+router.post('/payment/:id/accept', adminController.acceptPaymentAccount)
 router.post(
   '/supplier/:id/accept',
   body('career').isInt(),

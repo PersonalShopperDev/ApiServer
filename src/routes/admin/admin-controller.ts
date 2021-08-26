@@ -21,6 +21,19 @@ export default class AdminController {
     res.send(page)
   }
 
+  getPaymentPage = async (req, res) => {
+    const file = fs.readFileSync(
+      path.join(__dirname, '../../../data/admin', 'main.html'),
+      'utf-8',
+    )
+
+    const page = ejs.render(file, {
+      content: await this.service.getPaymentList(),
+    })
+
+    res.send(page)
+  }
+
   getLoginPage = async (req, res) => {
     res.sendFile(path.join(__dirname, '../../../data/admin', '/login.html'))
   }
@@ -38,6 +51,20 @@ export default class AdminController {
     await this.service.acceptSupplier(id, career)
 
     res.redirect('/admin/supplier')
+  }
+
+  acceptPaymentAccount = async (req, res) => {
+    if (!validationResult(req).isEmpty()) {
+      console.log(validationResult(req))
+      res.redirect('/admin/payment')
+      return
+    }
+
+    const { id } = req.params
+
+    await this.service.acceptPaymentAccount(id)
+
+    res.redirect('/admin/payment')
   }
 
   loginAdmin = async (req, res) => {

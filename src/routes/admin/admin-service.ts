@@ -2,6 +2,7 @@ import AdminModel from './admin-model'
 import ejs from 'ejs'
 import fs from 'fs'
 import path from 'path'
+import ChatSocket from '../chat/chat-socket'
 
 export default class AdminService {
   model = new AdminModel()
@@ -28,8 +29,29 @@ export default class AdminService {
     return page
   }
 
+  getPaymentList = async (): Promise<string> => {
+    const data = await this.model.getPaymentList()
+
+    const file = fs.readFileSync(
+      path.join(__dirname, '../../../data/admin', 'payment.html'),
+      'utf-8',
+    )
+
+    const page = ejs.render(file, { list: data })
+
+    return page
+  }
+
   acceptSupplier = async (id: number, career: number): Promise<void> => {
     await this.model.acceptSupplier(id, career)
+  }
+
+  acceptPaymentAccount = async (paymentId: number): Promise<void> => {
+    await this.model.acceptPaymentAccount(paymentId)
+    const roomId = await this.model.getRoomIdByPaymentId(paymentId)
+
+    await ChatSocket.getInstance().sendNotice(roomId, '결제가 완료되었습니다!')
+    await ChatSocket.getInstance().notifyChangePayment(roomId)
   }
 
   private convertCareer = (careerId: number): string => {

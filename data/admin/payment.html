@@ -1,0 +1,25 @@
+<table class="container">
+    <tr>
+        <th>ID</th>
+        <th>S ID</th>
+        <th>S 이름</th>
+        <th>D ID</th>
+        <th>D 이름</th>
+        <th>Status</th>
+        <th></th>
+    </tr>
+
+    <% for(const item of list){ %>
+    <form method="post" action="/admin/payment/<%= item.id %>/accept">
+        <tr>
+            <td><%= item.id %></td>
+            <td><%= item.supplier.id %></td>
+            <td><%= item.supplier.name %></td>
+            <td><%= item.demander.id %></td>
+            <td><%= item.demander.name %></td>
+            <td><%= item.status %></td>
+            <td><input type="submit" value="수락"></td>
+        </tr>
+    </form>
+    <% } %>
+</table>
