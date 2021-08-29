@@ -61,7 +61,7 @@ export default class ChatController {
 
       const payment =
         latestPayment == null
-          ? undefined
+          ? { status: 0 }
           : {
               status: latestPayment.status,
               latestCoordId: latestPayment.latestCoordId,

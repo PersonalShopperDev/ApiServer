@@ -15,10 +15,14 @@ router.post(
 )
 
 router.use((req, res, next) => {
-  const payload = jwt.verify(req.cookies.a_jwt, process.env.JWT_KEY)
-  if (payload.admin && payload.exp > new Date().getTime() * 0.001) {
-    next()
-  } else {
+  try {
+    const payload = jwt.verify(req.cookies.a_jwt, process.env.JWT_KEY)
+    if (payload.admin && payload.exp > new Date().getTime() * 0.001) {
+      next()
+    } else {
+      res.redirect('/admin/login')
+    }
+  } catch (e) {
     res.redirect('/admin/login')
   }
 })
