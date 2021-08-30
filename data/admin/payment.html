@@ -5,6 +5,7 @@
         <th>S 이름</th>
         <th>D ID</th>
         <th>D 이름</th>
+        <th>입금자 명</th>
         <th>Status</th>
         <th></th>
     </tr>
@@ -17,6 +18,7 @@
             <td><%= item.supplier.name %></td>
             <td><%= item.demander.id %></td>
             <td><%= item.demander.name %></td>
+            <td><%= item.payName %></td>
             <td><%= item.status %></td>
             <td><input type="submit" value="수락"></td>
         </tr>

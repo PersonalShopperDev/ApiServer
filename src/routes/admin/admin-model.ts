@@ -44,11 +44,12 @@ WHERE s.status = -1`
         name: string
       }
       status: number
+      payName: string
     }[]
   > => {
     const connection = await db.getConnection()
     try {
-      const sql = `SELECT p.payment_id AS id, p.status, ud.user_id AS Did, ud.name AS Dname, us.user_id AS Sid, us.name AS Sname FROM payments p
+      const sql = `SELECT p.payment_id AS id, p.status, p.data AS payName, ud.user_id AS Did, ud.name AS Dname, us.user_id AS Sid, us.name AS Sname FROM payments p
 LEFT JOIN room_user rd ON rd.room_id = p.room_id AND rd.user_type='D'
 LEFT JOIN users ud ON ud.user_id = rd.user_id
 LEFT JOIN room_user rs ON rs.room_id = p.room_id AND rs.user_type='S'
@@ -56,10 +57,11 @@ LEFT JOIN users us ON us.user_id = rs.user_id
 where p.status = 1`
       const [rows] = (await connection.query(sql)) as RowDataPacket[]
       return rows.map((row) => {
-        const { id, status, Did, Dname, Sid, Sname } = row
+        const { id, status, payName, Did, Dname, Sid, Sname } = row
         return {
           id,
           status,
+          payName,
           demander: {
             id: Did,
             name: Dname,
