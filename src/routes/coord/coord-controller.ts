@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator'
 import { Coord } from './coord-type'
 import ChatService from '../chat/chat-service'
 import ChatSocket from '../chat/chat-socket'
+import ResourcePath from '../resource/resource-path'
 
 export default class CoordController {
   service = new CoordService()
@@ -84,7 +85,7 @@ export default class CoordController {
           userId,
           coordId,
           data.title,
-          data.clothes.map((item) => item.img),
+          data.clothes.map((item) => ResourcePath.coordImg(item.img)),
         )
         res.sendStatus(200)
       } else {

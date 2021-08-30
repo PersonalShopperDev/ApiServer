@@ -95,7 +95,7 @@ where p.status = 1`
   acceptPaymentAccount = async (id: number): Promise<void> => {
     const connection = await db.getConnection()
     try {
-      const sql = `UPDATE payments SET status=2 WHERE payment_id=:id `
+      const sql = `UPDATE payments SET status=2, pay_time=NOW() WHERE payment_id=:id `
       const [rows] = await connection.query(sql, { id })
       return rows as any
     } catch (e) {
