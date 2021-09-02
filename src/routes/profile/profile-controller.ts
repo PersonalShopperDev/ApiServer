@@ -4,12 +4,13 @@ import { UserManager } from '../auth/auth-model'
 
 export default class ProfileController {
   service = new ProfileService()
+  userManager = new UserManager()
 
   getProfile = async (req: Request, res: Response): Promise<void> => {
     const userId = req.params['id'] as any
 
     try {
-      const userType = await UserManager.getUserType(userId)
+      const userType = await this.userManager.getUserType(userId)
 
       switch (userType) {
         case 'S':

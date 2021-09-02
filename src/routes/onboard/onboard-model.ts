@@ -1,37 +1,30 @@
-import { id, injectable } from 'inversify'
-import axios from 'axios'
-import db from '../../config/db'
-import S3 from '../../config/s3'
 import { RowDataPacket } from 'mysql2'
 import { OnboardDemander, OnboardSupplier } from './onboard-type'
+import DIContainer from '../../config/inversify.config'
+import DB from '../../config/db'
 
 export default class OnboardModel {
+  db = DIContainer.get(DB)
+
   getOnboardData = async (
     userId: number,
   ): Promise<{
     gender: string | undefined
     onboard: OnboardDemander | OnboardSupplier | undefined
   }> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = 'SELECT gender, onboard FROM users WHERE user_id=:userId'
+    const sql = 'SELECT gender, onboard FROM users WHERE user_id=:userId'
 
-      const value = { userId }
+    const value = { userId }
 
-      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+    const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
 
-      if (rows[0] == null)
-        return {
-          gender: undefined,
-          onboard: undefined,
-        }
+    if (rows[0] == null)
+      return {
+        gender: undefined,
+        onboard: undefined,
+      }
 
-      return rows[0]
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    return rows[0]
   }
 
   saveBasicUserData = async (
@@ -39,18 +32,11 @@ export default class OnboardModel {
     gender: string,
     onboard: OnboardDemander | OnboardSupplier,
   ): Promise<void> => {
-    const connection = await db.getConnection()
-    try {
-      const sql =
-        'UPDATE users SET gender=:gender, onboard=:onboard WHERE user_id=:userId;'
-      const value = { userId, gender, onboard: JSON.stringify(onboard) }
+    const sql =
+      'UPDATE users SET gender=:gender, onboard=:onboard WHERE user_id=:userId;'
+    const value = { userId, gender, onboard: JSON.stringify(onboard) }
 
-      await connection.query(sql, value)
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    await this.db.query(sql, value)
   }
 
   newSupplier = async (
@@ -58,38 +44,24 @@ export default class OnboardModel {
     supplyMale: boolean | undefined,
     supplyFemale: boolean | undefined,
   ): Promise<void> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = `INSERT INTO suppliers(user_id, supplyGender) VALUES(:userId, :supplyGender) 
+    const sql = `INSERT INTO suppliers(user_id, supplyGender) VALUES(:userId, :supplyGender) 
         ON DUPLICATE KEY UPDATE supplyGender=:supplyGender `
 
-      const supplyGender = this.getSupplyGenderNumber(supplyMale, supplyFemale)
-      const value = { userId, supplyGender }
+    const supplyGender = this.getSupplyGenderNumber(supplyMale, supplyFemale)
+    const value = { userId, supplyGender }
 
-      await connection.query(sql, value)
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    await this.db.query(sql, value)
   }
 
   saveOnboardData = async (
     userId: number,
     onboard: OnboardDemander | OnboardSupplier,
   ): Promise<void> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = 'UPDATE users SET onboard=:onboard WHERE user_id=:userId'
+    const sql = 'UPDATE users SET onboard=:onboard WHERE user_id=:userId'
 
-      const value = { userId, onboard: JSON.stringify(onboard) }
+    const value = { userId, onboard: JSON.stringify(onboard) }
 
-      await connection.query(sql, value)
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    await this.db.query(sql, value)
   }
 
   saveSupplyGender = async (
@@ -97,20 +69,13 @@ export default class OnboardModel {
     supplyMale: boolean | undefined,
     supplyFemale: boolean | undefined,
   ): Promise<void> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = `UPDATE suppliers SET supplyGender=:supplyGender WHERE user_id=:userId`
+    const sql = `UPDATE suppliers SET supplyGender=:supplyGender WHERE user_id=:userId`
 
-      const supplyGender = this.getSupplyGenderNumber(supplyMale, supplyFemale)
+    const supplyGender = this.getSupplyGenderNumber(supplyMale, supplyFemale)
 
-      const value = { userId, supplyGender }
+    const value = { userId, supplyGender }
 
-      await connection.query(sql, value)
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    await this.db.query(sql, value)
   }
 
   getSupplyGender = async (
@@ -119,23 +84,16 @@ export default class OnboardModel {
     supplyMale: boolean
     supplyFemale: boolean
   }> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = 'SELECT supplyGender FROM suppliers WHERE user_id=:userId'
+    const sql = 'SELECT supplyGender FROM suppliers WHERE user_id=:userId'
 
-      const value = { userId }
+    const value = { userId }
 
-      const [rows] = await connection.query(sql, value)
-      const supplyGender = rows[0].supplyGender[0]
+    const [rows] = await this.db.query(sql, value)
+    const supplyGender = rows[0].supplyGender[0]
 
-      return {
-        supplyMale: (supplyGender & 0b01) > 0,
-        supplyFemale: (supplyGender & 0b10) > 0,
-      }
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
+    return {
+      supplyMale: (supplyGender & 0b01) > 0,
+      supplyFemale: (supplyGender & 0b10) > 0,
     }
   }
 

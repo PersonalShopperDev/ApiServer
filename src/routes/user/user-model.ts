@@ -4,20 +4,21 @@ import { RowDataPacket } from 'mysql2'
 import StyleModel from '../style/style-model'
 import ResourcePath from '../resource/resource-path'
 import Data from '../../data/data'
+import DIContainer from '../../config/inversify.config'
+import DB from '../../config/db'
 
 export default class UserModel {
+  db = DIContainer.get(DB)
+
   getStyleTypeId = async (userId: number): Promise<number[] | null> => {
-    const connection = await db.getConnection()
     try {
       const sql = `SELECT style_id as id FROM user_style WHERE user_id = :userId;`
       const value = { userId }
-      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+      const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
 
       return rows.map((row) => row.id)
     } catch (e) {
       return null
-    } finally {
-      connection.release()
     }
   }
 
@@ -44,7 +45,6 @@ export default class UserModel {
         break
     }
 
-    const connection = await db.getConnection()
     const sql = `SELECT s.user_id, name, img, hireCount, reviewCount, price, type, rating FROM suppliers s
 LEFT JOIN users u ON s.user_id = u.user_id
 LEFT JOIN (
@@ -79,9 +79,7 @@ LIMIT :pageOffset, :pageAmount;
       pageOffset: page * pageAmount,
       gender: gender == 'M' ? 1 : gender == 'F' ? 2 : 3,
     }
-    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-
-    connection.release()
+    const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
 
     return rows.map((row) => {
       return {
@@ -98,7 +96,6 @@ LIMIT :pageOffset, :pageAmount;
   }
 
   getSupplierCount = async (type) => {
-    const connection = await db.getConnection()
     try {
       const sql = `SELECT COUNT(*) as count FROM
 (
@@ -109,13 +106,11 @@ LIMIT :pageOffset, :pageAmount;
 ) a; `
 
       const value = { type }
-      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+      const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
 
       return rows[0].count
     } catch (e) {
       return null
-    } finally {
-      connection.release()
     }
   }
 
@@ -126,7 +121,6 @@ LIMIT :pageOffset, :pageAmount;
   ): Promise<Array<Supplier>> => {
     const pageAmount = 20
 
-    const connection = await db.getConnection()
     const sql = `SELECT u.user_id, u.img, u.name, t.type FROM users u
 LEFT JOIN (
     SELECT user_id, COUNT(*) as typeCount FROM user_style
@@ -149,9 +143,7 @@ LIMIT :pageOffset, :pageAmount;
       pageOffset: page * pageAmount,
       gender,
     }
-    const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-
-    connection.release()
+    const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
 
     return rows.map((row) => {
       return {

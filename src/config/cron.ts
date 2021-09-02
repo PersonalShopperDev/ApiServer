@@ -1,10 +1,11 @@
 import cron from 'node-cron'
-import db from './db'
+import DB from './db'
+import DIContainer from './inversify.config'
+
+const db = DIContainer.get(DB)
 
 export const updateSupplierPopular = cron.schedule('0 0 0 * * *', async () => {
-  const connection = await db.getConnection()
-  try {
-    const sql = `UPDATE suppliers s,
+  const sql = `UPDATE suppliers s,
 (
   SELECT s.user_id, cnt * 4 as point FROM suppliers s
   LEFT JOIN (
@@ -17,9 +18,5 @@ export const updateSupplierPopular = cron.schedule('0 0 0 * * *', async () => {
   ) c ON c.user_id = s.user_id
 ) h
 SET s.popular = h.point WHERE s.user_id = h.user_id;`
-    await connection.query(sql)
-  } catch (e) {
-  } finally {
-    connection.release()
-  }
+  await db.query(sql)
 })

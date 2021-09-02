@@ -8,6 +8,8 @@ import {
 
 export default class AuthService {
   static resources = ['kakao', 'naver']
+  private tokenManager = new TokenManager()
+  private userManager = new UserManager()
 
   login = async (
     resource: string,
@@ -38,7 +40,7 @@ export default class AuthService {
   newTokenWithRefreshToken = async (
     refreshToken: string,
   ): Promise<AuthToken | null> => {
-    const result = await TokenManager.checkRefreshToken(refreshToken)
+    const result = await this.tokenManager.checkRefreshToken(refreshToken)
     if (!result) return null
     const { userId, expire } = result
 
@@ -49,20 +51,20 @@ export default class AuthService {
     }
     if (expire.getTime() < new Date().getTime() + 3 * 24 * 60 * 60 * 1000) {
       // expire Date 가 얼마 남지 않았을 때
-      newRefreshToken = await TokenManager.generateRefreshToken(userId)
+      newRefreshToken = await this.tokenManager.generateRefreshToken(userId)
     }
 
-    const accessToken = await TokenManager.generateAccessToken(userId)
+    const accessToken = await this.tokenManager.generateAccessToken(userId)
     return { accessToken, refreshToken: newRefreshToken }
   }
 
   withdraw = async (userId: number): Promise<boolean> => {
-    return await UserManager.deleteUser(userId)
+    return await this.userManager.deleteUser(userId)
   }
 
   private newToken = async (userId: number): Promise<AuthToken | null> => {
-    const accessToken = await TokenManager.generateAccessToken(userId)
-    const refreshToken = await TokenManager.generateRefreshToken(userId)
+    const accessToken = await this.tokenManager.generateAccessToken(userId)
+    const refreshToken = await this.tokenManager.generateRefreshToken(userId)
 
     return { accessToken, refreshToken }
   }
@@ -78,7 +80,7 @@ export default class AuthService {
     maxTerms: number
     maxPrivacy: number
   }> => {
-    const result = await UserManager.getAgreement(userId)
+    const result = await this.userManager.getAgreement(userId)
 
     return {
       ...result,
@@ -95,7 +97,7 @@ export default class AuthService {
     if (terms > this.maxTerms || privacy > this.maxPrivacy) {
       return false
     }
-    await UserManager.setAgreement(userId, terms, privacy)
+    await this.userManager.setAgreement(userId, terms, privacy)
     return true
   }
 }

@@ -9,11 +9,11 @@ import {
   ReviewData,
 } from './profile-type'
 import ResourcePath from '../resource/resource-path'
-import { body } from 'express-validator'
 import Data from '../../data/data'
+import DIContainer from '../../config/inversify.config'
 
 export default class ProfileService {
-  model = new ProfileModel()
+  model = DIContainer.get(ProfileModel)
 
   getProfileSupplier = async (userId: number): Promise<ProfileSupplierGet> => {
     const {

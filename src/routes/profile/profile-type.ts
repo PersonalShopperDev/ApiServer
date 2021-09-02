@@ -1,6 +1,41 @@
-import StyleModel from '../style/style-model'
 import { StyleType } from '../style/style-type'
 import { IdValuePair } from '../../data/data-type'
+import { resolveSrv } from 'dns'
+
+export interface DemanderProfile {
+  userType: string
+  name: string
+  email: string
+  profileImg: string
+  introduction: string
+  styles: IdValuePair[]
+  phone: string
+  hopeToSupplier: string
+  body: IdValuePair
+  skin: IdValuePair
+  clothSize: ClothSize
+  clothPrice: Price[]
+}
+export interface ClothSize {
+  topSize: number | undefined
+  bottomSize: number | undefined
+  shoulderSize: number | undefined
+  waistSize: number | undefined
+  bellySize: number | undefined
+  hipSize: number | undefined
+}
+export interface Price {
+  topPrice: PriceContent | undefined
+  bottomPrice: PriceContent | undefined
+  dressPrice: PriceContent | undefined
+  shoesPrice: PriceContent | undefined
+  bagPrice: PriceContent | undefined
+  accessoryPrice: PriceContent | undefined
+}
+interface PriceContent {
+  min: number
+  max: number
+}
 
 export type ProfileDemanderGet = UserProfileGet &
   ProfileDemanderPatch &

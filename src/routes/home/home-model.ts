@@ -1,9 +1,12 @@
-import db from '../../config/db'
-import { Demander, Review, Supplier } from './home-type'
+import DB from '../../config/db'
+import { Demander, Supplier } from './home-type'
 import { RowDataPacket } from 'mysql2'
 import ResourcePath from '../resource/resource-path'
+import DIContainer from '../../config/inversify.config'
 
 export default class HomeModel {
+  db = DIContainer.get(DB)
+
   getBanners = async (): Promise<
     {
       img: string
@@ -11,28 +14,19 @@ export default class HomeModel {
       actionArgId: number
     }[]
   > => {
-    const connection = await db.getConnection()
-    try {
-      const sql =
-        'SELECT img_path as img, action_type as actionType, action_arg_id as actionArgId  FROM banners WHERE (start_date IS NULL OR DATE(start_date) < NOW()) AND (end_date IS NULL OR DATE(end_date) > NOW());'
+    const sql =
+      'SELECT img_path as img, action_type as actionType, action_arg_id as actionArgId  FROM banners WHERE (start_date IS NULL OR DATE(start_date) < NOW()) AND (end_date IS NULL OR DATE(end_date) > NOW());'
 
-      const [rows] = await connection.query(sql)
+    const [rows] = await this.db.query(sql)
 
-      return rows as any
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    return rows as any
   }
 
   getSupplierWithLogin = async (
     userId: number,
     gender: string | null,
   ): Promise<Array<Supplier> | null> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = `
+    const sql = `
 SELECT s.user_id, name, img, hireCount, reviewCount, tf.typeCount FROM suppliers s
 LEFT JOIN users u ON s.user_id = u.user_id
 LEFT JOIN (
@@ -53,32 +47,25 @@ AND s.status >= 0
 ORDER BY ISNULL(img) ASC, typeCount DESC, s.popular DESC
 LIMIT 6;`
 
-      const value = {
-        userId,
-        gender: gender == 'M' ? 1 : gender == 'F' ? 2 : 3,
-      }
-      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
-
-      return rows.map((row) => {
-        return {
-          id: row.user_id,
-          img: ResourcePath.profileImg(row.img),
-          name: row.name,
-          hireCount: row.hireCount ? row.hireCount : 0,
-          reviewCount: row.reviewCount ? row.reviewCount : 0,
-        }
-      })
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
+    const value = {
+      userId,
+      gender: gender == 'M' ? 1 : gender == 'F' ? 2 : 3,
     }
+    const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
+
+    return rows.map((row) => {
+      return {
+        id: row.user_id,
+        img: ResourcePath.profileImg(row.img),
+        name: row.name,
+        hireCount: row.hireCount ? row.hireCount : 0,
+        reviewCount: row.reviewCount ? row.reviewCount : 0,
+      }
+    })
   }
 
   getSupplier = async (): Promise<Array<Supplier> | null> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = `SELECT a.user_id, name, img, price, hireCount, reviewCount FROM suppliers a
+    const sql = `SELECT a.user_id, name, img, price, hireCount, reviewCount FROM suppliers a
 LEFT JOIN users u ON a.user_id = u.user_id 
 LEFT JOIN (
   SELECT r.user_id, COUNT(*) AS hireCount, COUNT(rating) AS reviewCount  FROM coords c
@@ -91,28 +78,21 @@ WHERE a.status >= 0
 ORDER BY isHome DESC, ISNULL(img) ASC, a.popular DESC
 LIMIT 6;`
 
-      const [rows] = (await connection.query(sql)) as RowDataPacket[]
+    const [rows] = (await this.db.query(sql)) as RowDataPacket[]
 
-      return rows.map((row) => {
-        return {
-          id: row.user_id,
-          img: ResourcePath.profileImg(row.img),
-          name: row.name,
-          hireCount: row.hireCount ? row.hireCount : 0,
-          reviewCount: row.reviewCount ? row.reviewCount : 0,
-        }
-      })
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    return rows.map((row) => {
+      return {
+        id: row.user_id,
+        img: ResourcePath.profileImg(row.img),
+        name: row.name,
+        hireCount: row.hireCount ? row.hireCount : 0,
+        reviewCount: row.reviewCount ? row.reviewCount : 0,
+      }
+    })
   }
 
   getDemanderWithLogin = async (userId: number): Promise<Array<Demander>> => {
-    const connection = await db.getConnection()
-    try {
-      const sql = `
+    const sql = `
 SELECT u.user_id AS id, u.img, u.name, t.type AS styles FROM users u
 LEFT JOIN (
     SELECT user_id, json_arrayagg(style_id) AS type FROM user_style
@@ -122,15 +102,10 @@ WHERE NOT EXISTS (SELECT user_id FROM suppliers WHERE user_id = u.user_id)
 ORDER BY u.user_id DESC 
 LIMIT 6;`
 
-      const value = { userId }
-      const [rows] = (await connection.query(sql, value)) as RowDataPacket[]
+    const value = { userId }
+    const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
 
-      return rows as any
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    return rows as any
   }
 
   getReviews = async (): Promise<
@@ -144,9 +119,7 @@ LIMIT 6;`
       onboard: any
     }[]
   > => {
-    const connection = await db.getConnection()
-    try {
-      const sql = `SELECT r.coord_id, rd.user_id AS demanderId, rs.user_id AS supplierId, r.content, i.img, t.style, u.onboard FROM coord_reviews r
+    const sql = `SELECT r.coord_id, rd.user_id AS demanderId, rs.user_id AS supplierId, r.content, i.img, t.style, u.onboard FROM coord_reviews r
 LEFT JOIN coord_review_imgs i ON i.coord_id = r.coord_id AND i.type = 'H'
 LEFT JOIN coords c ON c.coord_id = r.coord_id
 LEFT JOIN payments e ON e.payment_id = c.payment_id
@@ -160,12 +133,7 @@ LEFT JOIN users u ON u.user_id = rd.user_id
 WHERE r.is_home = 1
 ;`
 
-      const [rows] = (await connection.query(sql)) as RowDataPacket[]
-      return rows as any
-    } catch (e) {
-      throw e
-    } finally {
-      connection.release()
-    }
+    const [rows] = (await this.db.query(sql)) as RowDataPacket[]
+    return rows as any
   }
 }
