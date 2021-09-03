@@ -8,9 +8,10 @@ import {
 import ResourcePath from '../resource/resource-path'
 import Data from '../../data/data'
 import DIContainer from '../../config/inversify.config'
-import { ParameterInvalidError } from '../../config/Error'
+import { NoContentError } from '../../config/Error'
 import { injectable } from 'inversify'
 import { UserManager } from '../auth/auth-model'
+import { IdValuePair } from '../../data/data-type'
 
 @injectable()
 export default class ProfileService {
@@ -27,7 +28,7 @@ export default class ProfileService {
       case 'D':
         return await this.getDemanderProfile(userId)
       default:
-        throw new ParameterInvalidError()
+        throw new NoContentError()
     }
   }
 
@@ -40,7 +41,7 @@ export default class ProfileService {
         return await this.getDemanderProfile(userId, false)
 
       default:
-        throw new ParameterInvalidError()
+        throw new NoContentError()
     }
   }
 
@@ -68,7 +69,23 @@ export default class ProfileService {
       profile.accountUser = undefined
       profile.bank = undefined
     }
-    return { ...profile, ...point }
+
+    const styles = {
+      male: [] as IdValuePair[],
+      female: [] as IdValuePair[],
+    }
+
+    if (profile.styles != null) {
+      for (const s of profile.styles) {
+        if (s.id % 10 == 1) {
+          styles.male.push(s)
+        } else {
+          styles.female.push(s)
+        }
+      }
+    }
+
+    return { ...profile, styles, ...point }
   }
 
   saveProfile = async (
@@ -110,7 +127,7 @@ export default class ProfileService {
         }
         break
       default:
-        throw new ParameterInvalidError()
+        throw new NoContentError()
     }
     await this.model.saveProfile(userId, profile)
   }

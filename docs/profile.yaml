@@ -11,8 +11,6 @@ components:
           $ref: '#/components/scheme/profileImg'
         introduction:
           $ref: '#/components/scheme/introduction'
-        styles:
-          $ref: '#/components/scheme/styles'
         phone:
           $ref: '#/components/scheme/phone'
     demander:
@@ -27,6 +25,8 @@ components:
         - $ref: '#/components/get/common'
         - type: object
           properties:
+            styles:
+              $ref: '#/components/scheme/styles'
             hopeToSupplier:
               $ref: '#/components/scheme/hopeToSupplier'
             body:
@@ -53,6 +53,8 @@ components:
         - $ref: '#/components/get/common'
         - type: object
           properties:
+            styles:
+              $ref: '#/components/scheme/stylesGender'
             rating:
               $ref: '#/components/scheme/rating'
 
@@ -81,8 +83,6 @@ components:
           $ref: '#/components/scheme/name'
         introduction:
           $ref: '#/components/scheme/introduction'
-        styles:
-          $ref: '#/components/scheme/styles'
         profileImg:
           $ref: '#/components/scheme/profileImg'
     demander:
@@ -97,6 +97,8 @@ components:
         - $ref: '#/components/get/common'
         - type: object
           properties:
+            styles:
+              $ref: '#/components/scheme/styles'
             hopeToSupplier:
               $ref: '#/components/scheme/hopeToSupplier'
             body:
@@ -125,6 +127,8 @@ components:
         - $ref: '#/components/get/common'
         - type: object
           properties:
+            styles:
+              $ref: '#/components/scheme/stylesGender'
             rating:
               type: number
               description: 리뷰 평점
@@ -203,7 +207,14 @@ components:
       type: array
       description: 사용자가 선택한 Style Type
       items:
-        $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+        $ref: './swagger.yaml#/components/scheme/StyleType'
+    stylesGender:
+      type: object
+      properties:
+        male:
+          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+        female:
+          $ref: './swagger.yaml#/components/scheme/StyleTypeList'
     profileImg:
       type: string
       description: 프로필 이미지 URL

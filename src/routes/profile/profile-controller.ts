@@ -6,7 +6,7 @@ import DIContainer from '../../config/inversify.config'
 import {
   ForbiddenError,
   NotFoundError,
-  ParameterInvalidError,
+  NoContentError,
 } from '../../config/Error'
 import Data from '../../data/data'
 
@@ -39,8 +39,8 @@ export default class ProfileController {
     } catch (e) {
       if (e instanceof NotFoundError) {
         res.sendStatus(401)
-      } else if (e instanceof ParameterInvalidError) {
-        res.sendStatus(403)
+      } else if (e instanceof NoContentError) {
+        res.sendStatus(204)
       } else {
         res.sendStatus(500)
       }
@@ -57,8 +57,8 @@ export default class ProfileController {
     } catch (e) {
       if (e instanceof NotFoundError) {
         res.sendStatus(401)
-      } else if (e instanceof ParameterInvalidError) {
-        res.sendStatus(403)
+      } else if (e instanceof NoContentError) {
+        res.sendStatus(204)
       } else {
         console.log(e)
         res.sendStatus(500)
