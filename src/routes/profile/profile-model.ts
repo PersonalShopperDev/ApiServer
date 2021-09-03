@@ -54,9 +54,10 @@ WHERE u.user_id=:userId`
   getSupplier = async (
     userId: number,
   ): Promise<BasicProfile & SupplierProfile> => {
-    const sql = `SELECT u.name, u.email, u.img AS profileImg, u.phone, u.profile, s.price, t.styles FROM users u
+    const sql = `SELECT u.name, u.email, u.img AS profileImg, u.phone, u.profile, s.price, c.coord, t.styles FROM users u
 LEFT JOIN (SELECT user_id, json_arrayagg(style_id) as styles FROM user_style GROUP BY user_id) t ON t.user_id = u.user_id
 LEFT JOIN suppliers s ON s.user_id = u.user_id
+LEFT JOIN (SELECT user_id, json_arrayagg(JSON_OBJECT('id', lookbook_id, 'img', img_path)) as coord FROM lookbooks WHERE represent = 1 GROUP BY user_id) c ON c.user_id = u.user_id
 WHERE u.user_id=:userId;`
     const value = { userId }
     const [rows] = await this.db.query(sql, value)
@@ -65,7 +66,7 @@ WHERE u.user_id=:userId;`
       throw new NotFoundError()
     }
 
-    const { name, email, profileImg, phone, price, profile } = rows[0]
+    const { name, email, profileImg, phone, price, coord, profile } = rows[0]
     const styles =
       rows[0].styles != null ? Data.getStyleItemList(rows[0].styles) : undefined
     return {
@@ -76,6 +77,7 @@ WHERE u.user_id=:userId;`
       styles,
       phone,
       price,
+      coord,
       ...profile,
     }
   }
