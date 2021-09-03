@@ -1,41 +1,71 @@
 import ProfileModel from './profile-model'
 import StyleModel from '../style/style-model'
 import {
-  DemanderProfile,
   ProfileDemanderGet,
-  ProfileDemanderPatch,
   ProfileSupplierGet,
-  ProfileSupplierPatch,
-  ProfileUser,
   ReviewData,
-  SupplierProfile,
 } from './profile-type'
 import ResourcePath from '../resource/resource-path'
 import Data from '../../data/data'
 import DIContainer from '../../config/inversify.config'
 import { ParameterInvalidError } from '../../config/Error'
 import { injectable } from 'inversify'
-import { keys } from 'ts-transformer-keys'
+import { UserManager } from '../auth/auth-model'
 
 @injectable()
 export default class ProfileService {
   model = DIContainer.get(ProfileModel)
   styleModel = DIContainer.get(StyleModel)
+  userManager = DIContainer.get(UserManager)
+
+  getProfile = async (userId: number): Promise<unknown> => {
+    const userType = await this.userManager.getUserType(userId)
+    switch (userType) {
+      case 'S':
+      case 'W':
+        return await this.getSupplierProfile(userId)
+      case 'D':
+        return await this.getDemanderProfile(userId)
+      default:
+        throw new ParameterInvalidError()
+    }
+  }
 
   getMyProfile = async (userId: number, userType: string): Promise<unknown> => {
     switch (userType) {
       case 'S':
       case 'W':
-        const profile = await this.model.getSupplier(userId)
-        const point = await this.model.getSupplierPoint(userId)
-
-        return { ...profile, ...point }
+        return await this.getSupplierProfile(userId, false)
       case 'D':
-        return await this.model.getDemander(userId)
+        return await this.getDemanderProfile(userId, false)
 
       default:
         throw new ParameterInvalidError()
     }
+  }
+
+  private getDemanderProfile = async (userId: number, isHideInfo = true) => {
+    const result = await this.model.getDemander(userId)
+
+    if (isHideInfo) {
+      result.email = undefined
+      result.phone = undefined
+      if (result.bodyStat?.isPublic == false) {
+        result.bodyStat = undefined
+      }
+    }
+
+    return result
+  }
+  private getSupplierProfile = async (userId: number, isHideInfo = true) => {
+    const profile = await this.model.getSupplier(userId)
+    const point = await this.model.getSupplierPoint(userId)
+
+    if (isHideInfo) {
+      profile.email = undefined
+      profile.phone = undefined
+    }
+    return { ...profile, ...point }
   }
 
   saveProfile = async (

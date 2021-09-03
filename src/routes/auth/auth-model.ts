@@ -176,6 +176,7 @@ export class TokenManager {
   }
 }
 
+@injectable()
 export class UserManager {
   db = DIContainer.get(DB)
 

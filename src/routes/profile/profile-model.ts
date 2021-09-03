@@ -16,6 +16,7 @@ import Data from '../../data/data'
 @injectable()
 export default class ProfileModel {
   db = DIContainer.get(DB)
+
   getDemander = async (
     userId: number,
   ): Promise<BasicProfile & DemanderProfile> => {

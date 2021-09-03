@@ -11,25 +11,17 @@ export default class ProfileController {
   userManager = new UserManager()
 
   getProfile = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.params['id'] as any
-
     try {
-      const userType = await this.userManager.getUserType(userId)
+      const { id } = req.params as any
+      const result = await this.service.getProfile(id)
 
-      switch (userType) {
-        case 'S':
-        case 'W':
-          res.status(200).send(await this.service.getProfileSupplier(userId))
-          break
-        case 'D':
-          res.status(200).send(await this.service.getProfileDemander(userId))
-          break
-        default:
-          res.sendStatus(204)
-          return
-      }
+      res.status(200).send(result)
     } catch (e) {
-      res.sendStatus(500)
+      if (e instanceof NotFoundError) {
+        res.sendStatus(404)
+      } else {
+        res.sendStatus(500)
+      }
     }
   }
 

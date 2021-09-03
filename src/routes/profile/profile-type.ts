@@ -18,6 +18,7 @@ export interface DemanderProfile {
   hopeToSupplier: string | undefined
   body: IdValuePair | undefined
   skin: IdValuePair | undefined
+  bodyStat: BodyStat | undefined
   clothSize: ClothSize | undefined
   clothPrice: Price[] | undefined
 }

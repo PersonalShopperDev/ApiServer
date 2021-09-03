@@ -1,5 +1,10 @@
 import { Container, interfaces } from 'inversify'
-import { AuthThirdParty, NaverAuth, KaKaoAuth } from '../routes/auth/auth-model'
+import {
+  AuthThirdParty,
+  NaverAuth,
+  KaKaoAuth,
+  UserManager,
+} from '../routes/auth/auth-model'
 import S3 from './s3'
 import ProfileModel from '../routes/profile/profile-model'
 import DB from './db'
@@ -28,6 +33,8 @@ DIContainer.bind<interfaces.Factory<AuthThirdParty>>(
 })
 DIContainer.bind<S3>(S3).toSelf().inSingletonScope()
 DIContainer.bind<DB>(DB).toSelf().inSingletonScope()
+
+DIContainer.bind<UserManager>(UserManager).toSelf().inSingletonScope()
 
 DIContainer.bind<ProfileController>(ProfileController)
   .toSelf()
