@@ -27,6 +27,8 @@ router.post(
   s3.uploadProfile.single('img'),
   controller.postProfileImg,
 )
+router.delete('/img', AuthRequire, controller.postProfileImg)
+
 router.post(
   '/lookbook',
   AuthRequire,
@@ -39,5 +41,8 @@ router.post(
   s3.uploadCloset.single('img'),
   controller.postCloset,
 )
+
+router.delete('/lookbook/:lookbookId', AuthRequire, controller.deleteLookbook)
+router.delete('/closet/:closetId', AuthRequire, controller.deleteCloset)
 
 export default router

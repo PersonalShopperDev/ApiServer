@@ -426,7 +426,7 @@ path:
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
         '403':
           description: 권한이 없음. 온보딩 처리를 하지 않은 userType='N' 인 사용자의 경우에 발생합니다.
-  /profile/{id}:
+  /profile/{userId}:
     get:
       summary: 프로필 정보 가져오기 (타인)
       description: |
@@ -435,7 +435,7 @@ path:
         미리보기나 남의 프로필 정보를 볼 때 사용할 수 있습니다.
       tags: [ Profile ]
       parameters:
-        - name: id
+        - name: userId
           in: 'path'
           description: 열람하고자 하는 Id
       responses:
@@ -449,7 +449,7 @@ path:
                   - $ref: '#/components/getOther/demander'
                   - $ref: '#/components/getOther/supplier'
 
-  /profile/{id}/lookbook:
+  /profile/{userId}/lookbook:
     get:
       summary: 코디 룩북 리스트
       description: |
@@ -460,7 +460,7 @@ path:
         paging 처리가 되어 있습니다.
       tags: [ Profile ]
       parameters:
-        - name: id
+        - name: userId
           in: 'path'
           description: 열람하고자 하는 supplier Id
           schema:
@@ -486,7 +486,7 @@ path:
                           type: string
                           description: Img URL
 
-  /profile/{id}/review:
+  /profile/{userId}/review:
     get:
       summary: 코디 리뷰 리스트
       description: |
@@ -495,7 +495,7 @@ path:
         paging 처리가 되어 있습니다.
       tags: [ Profile ]
       parameters:
-        - name: id
+        - name: userId
           in: 'path'
           description: 열람하고자 하는 supplier Id
           schema:
@@ -590,6 +590,17 @@ path:
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+    delete:
+      summary: 프로필 이미지 삭제하기
+      description: 프로필 이미지를 삭제합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
 
   /profile/lookbook:
     post:
@@ -617,7 +628,29 @@ path:
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
 
-  /profile/{id}/closet:
+
+  /profile/lookbook/{lookbookId}:
+    delete:
+      summary: 룩북 삭제하기
+      description: 사용자의 룩북을 삭제합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: lookbookId
+          in: 'path'
+          description: 삭제하고자 하는 lookbook Id
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '403':
+          description: 해당 이미지에 권한 없음
+
+  /profile/{userId}/closet:
     get:
       summary: 옷장 보기
       description: 사용자의 옷장에 이미지를 추가합니다.
@@ -627,7 +660,7 @@ path:
         paging 처리가 되어 있습니다.
       tags: [ Profile ]
       parameters:
-        - name: id
+        - name: userId
           in: 'path'
           description: 열람하고자 하는 supplier Id
           schema:
@@ -644,7 +677,12 @@ path:
                   list:
                     type: array
                     items:
-                      type: string
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        img:
+                          type: string
   /profile/closet:
     post:
       summary: 내 옷장 추가하기
@@ -667,6 +705,27 @@ path:
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+
+  /profile/closet/{closetId}:
+    delete:
+      summary: 옷장 하나 삭제하기
+      description: 사용자의 옷장에 있는 이미지를 삭제합니다.
+      tags: [ Profile ]
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: closetId
+          in: 'path'
+          description: 삭제하고자 하는 Closet Id
+          schema:
+            type: number
+      responses:
+        '200':
+          description: OK
+        '401':
+          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
+        '403':
+          description: 해당 이미지에 권한 없음
 
   /profile/body:
     get:

@@ -10,12 +10,14 @@ import ResourcePath from '../resource/resource-path'
 import DIContainer from '../../config/inversify.config'
 import DB from '../../config/db'
 import { injectable } from 'inversify'
-import { NotFoundError } from '../../config/Error'
+import { ForbiddenError, NotFoundError } from '../../config/Error'
 import Data from '../../data/data'
+import S3 from '../../config/s3'
 
 @injectable()
 export default class ProfileModel {
   db = DIContainer.get(DB)
+  s3 = DIContainer.get(S3)
 
   getDemander = async (
     userId: number,
@@ -287,20 +289,57 @@ GROUP BY r.user_id;`
       }
     })
   }
+  deleteLookbook = async (
+    lookbookId: number,
+    userId: number,
+  ): Promise<void> => {
+    const sql =
+      'DELETE from lookbooks where lookbook_id = :lookbookId and user_id = :userId '
+
+    const value = { lookbookId, userId }
+
+    const [rows] = await this.db.query(sql, value)
+
+    if (rows['affectedRows'] != 1) throw ForbiddenError
+  }
 
   getCloset = async (userId: number, page: number): Promise<Img[]> => {
     const pageAmount = 20
 
     const sql =
-      'SELECT img_path AS img FROM closets WHERE user_id=:userId LIMIT :pageOffset, :pageAmount;'
+      'SELECT closet_id AS id, img_path AS img FROM closets WHERE user_id=:userId LIMIT :pageOffset, :pageAmount;'
 
     const value = { userId, pageAmount, pageOffset: page * pageAmount }
 
     const [rows] = await this.db.query(sql, value)
 
-    return rows.map((row) => ResourcePath.lookbookImg(row.img))
+    return rows.map((row) => {
+      const { id, img } = row
+      return {
+        id,
+        img: ResourcePath.lookbookImg(img),
+      }
+    })
   }
 
+  deleteCloset = async (closetId: number, userId: number): Promise<void> => {
+    const sql =
+      'DELETE from closets where closet_id = :closetId and user_id = :userId '
+
+    const value = { closetId, userId }
+
+    const [rows] = await this.db.query(sql, value)
+
+    if (rows['affectedRows'] != 1) throw ForbiddenError
+  }
+
+  deleteProfileImg = async (userId: number): Promise<void> => {
+    const sql = 'Update users SET img = null where user_id = :userId '
+
+    const value = { userId }
+
+    await this.db.query(sql, value)
+  }
   getReviewListDemander = async (demanderId: number): Promise<Review[]> => {
     const sql = `SELECT r.coord_id AS reviewId, c.img, rs.user_id AS supplierId, 1 as status  FROM coord_reviews r
 LEFT JOIN coords c ON c.coord_id = r.coord_id

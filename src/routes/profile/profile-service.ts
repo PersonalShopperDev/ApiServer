@@ -297,11 +297,32 @@ export default class ProfileService {
       list: await this.model.getCloset(userId, page),
     }
   }
+  deleteCloset = async (closetId: number, userId: number): Promise<void> => {
+    // TODO : S3 에서도 처리
+    await this.model.deleteCloset(closetId, userId)
+  }
+  postCloset = async (userId: number, path: string): Promise<number> => {
+    return await this.model.postCloset(userId, path)
+  }
 
   getLookbook = async (userId: number, page: number): Promise<{ list }> => {
     return {
       list: await this.model.getLookbookList(userId, page),
     }
+  }
+  deleteLookbook = async (
+    lookbookId: number,
+    userId: number,
+  ): Promise<void> => {
+    // TODO : S3 에서도 처리
+    await this.model.deleteLookbook(lookbookId, userId)
+  }
+  postLookbook = async (
+    userId: number,
+    path: string,
+    represent: boolean,
+  ): Promise<number> => {
+    return await this.model.postLookbook(userId, path, represent)
   }
 
   getSupplierReview = async (
@@ -380,14 +401,8 @@ export default class ProfileService {
   postProfileImg = async (userId: number, path: string): Promise<number> => {
     return await this.model.postProfileImg(userId, path)
   }
-  postLookbook = async (
-    userId: number,
-    path: string,
-    represent: boolean,
-  ): Promise<number> => {
-    return await this.model.postLookbook(userId, path, represent)
-  }
-  postCloset = async (userId: number, path: string): Promise<number> => {
-    return await this.model.postCloset(userId, path)
+  deleteProfileImg = async (userId: number): Promise<void> => {
+    // TODO : S3 에서도 처리
+    await this.model.deleteProfileImg(userId)
   }
 }

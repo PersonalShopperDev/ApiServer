@@ -3,7 +3,11 @@ import ProfileService from './profile-service'
 import { UserManager } from '../auth/auth-model'
 import { injectable } from 'inversify'
 import DIContainer from '../../config/inversify.config'
-import { NotFoundError, ParameterInvalidError } from '../../config/Error'
+import {
+  ForbiddenError,
+  NotFoundError,
+  ParameterInvalidError,
+} from '../../config/Error'
 import Data from '../../data/data'
 
 @injectable()
@@ -122,6 +126,16 @@ export default class ProfileController {
       res.sendStatus(500)
     }
   }
+  deleteProfileImg = async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req['auth']
+
+    try {
+      await this.service.deleteProfileImg(userId)
+      res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
 
   postLookbook = async (req: Request, res: Response): Promise<void> => {
     const { key } = req['file']
@@ -139,6 +153,22 @@ export default class ProfileController {
     }
   }
 
+  deleteLookbook = async (req: Request, res: Response): Promise<void> => {
+    const { lookbookId } = req.params as any
+    const { userId } = req['auth']
+
+    try {
+      await this.service.deleteLookbook(lookbookId, userId)
+      res.sendStatus(200)
+    } catch (e) {
+      if (e instanceof ForbiddenError) {
+        res.sendStatus(403)
+      } else {
+        res.sendStatus(500)
+      }
+    }
+  }
+
   postCloset = async (req: Request, res: Response): Promise<void> => {
     const { key } = req['file']
     const { userId } = req['auth']
@@ -151,6 +181,22 @@ export default class ProfileController {
       res.sendStatus(200)
     } catch (e) {
       res.sendStatus(500)
+    }
+  }
+
+  deleteCloset = async (req: Request, res: Response): Promise<void> => {
+    const { closetId } = req.params as any
+    const { userId } = req['auth']
+
+    try {
+      await this.service.deleteCloset(closetId, userId)
+      res.sendStatus(200)
+    } catch (e) {
+      if (e instanceof ForbiddenError) {
+        res.sendStatus(403)
+      } else {
+        res.sendStatus(500)
+      }
     }
   }
 
