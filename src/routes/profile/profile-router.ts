@@ -3,9 +3,10 @@ import { body } from 'express-validator'
 import { AuthCheck, AuthRequire } from '../../config/auth-check'
 import ProfileController from './profile-controller'
 import S3 from '../../config/s3'
+import DIContainer from '../../config/inversify.config'
 
 const router = express.Router()
-const controller = new ProfileController()
+const controller = DIContainer.get(ProfileController)
 
 router.get('/', AuthRequire, controller.getMyProfile)
 router.patch('/', AuthRequire, controller.patchMyProfile)

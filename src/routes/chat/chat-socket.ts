@@ -249,7 +249,13 @@ export default class ChatSocket {
 
     for (const item of dataList) {
       const { userId, time, phone } = item
+      console.log(`notify|${this.userSocketMap.hasOwnProperty(userId)}`)
+
       if (this.userSocketMap.hasOwnProperty(userId)) continue
+
+      console.log(
+        `${userId}|${phone}|${time?.getTime()}|${new Date().getTime()}`,
+      )
 
       if (
         phone != null &&

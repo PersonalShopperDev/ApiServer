@@ -1,21 +1,27 @@
 import { StyleType } from '../style/style-type'
 import { IdValuePair } from '../../data/data-type'
-import { resolveSrv } from 'dns'
+
+export type Profile =
+  | (BasicProfile & SupplierProfile)
+  | (BasicProfile & DemanderProfile)
+
+export interface BasicProfile {
+  name: string
+  email: string | undefined
+  profileImg: string | undefined
+  introduction: string | undefined
+  styles: IdValuePair[] | undefined
+  phone: string | undefined
+}
 
 export interface DemanderProfile {
-  userType: string
-  name: string
-  email: string
-  profileImg: string
-  introduction: string
-  styles: IdValuePair[]
-  phone: string
-  hopeToSupplier: string
-  body: IdValuePair
-  skin: IdValuePair
-  clothSize: ClothSize
-  clothPrice: Price[]
+  hopeToSupplier: string | undefined
+  body: IdValuePair | undefined
+  skin: IdValuePair | undefined
+  clothSize: ClothSize | undefined
+  clothPrice: Price[] | undefined
 }
+
 export interface ClothSize {
   topSize: number | undefined
   bottomSize: number | undefined
@@ -24,6 +30,7 @@ export interface ClothSize {
   bellySize: number | undefined
   hipSize: number | undefined
 }
+
 export interface Price {
   topPrice: PriceContent | undefined
   bottomPrice: PriceContent | undefined
@@ -32,9 +39,19 @@ export interface Price {
   bagPrice: PriceContent | undefined
   accessoryPrice: PriceContent | undefined
 }
+
 interface PriceContent {
   min: number
   max: number
+}
+
+export interface SupplierProfile {
+  phone: string | undefined
+  price: number | undefined
+  coord: string[] | undefined
+  account: string | undefined
+  bank: string | undefined
+  accountUser: string | undefined
 }
 
 export type ProfileDemanderGet = UserProfileGet &

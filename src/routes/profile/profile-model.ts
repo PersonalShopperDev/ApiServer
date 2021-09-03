@@ -1,71 +1,130 @@
-import { Img, Review, ReviewModelData } from './profile-type'
+import {
+  BasicProfile,
+  DemanderProfile,
+  Img,
+  Review,
+  ReviewModelData,
+  SupplierProfile,
+} from './profile-type'
 import ResourcePath from '../resource/resource-path'
 import DIContainer from '../../config/inversify.config'
 import DB from '../../config/db'
 import { injectable } from 'inversify'
+import { NotFoundError } from '../../config/Error'
+import Data from '../../data/data'
 
 @injectable()
 export default class ProfileModel {
   db = DIContainer.get(DB)
-  // getDemander = async (userId: number): Promise<DemanderProfile> => {
-  //   const sql = `SELECT * FROM users WHERE user_id=:userId`
-  //   const value = { userId }
-  //   await db.query(sql, value)
-  // }
+  getDemander = async (
+    userId: number,
+  ): Promise<BasicProfile & DemanderProfile> => {
+    const sql = `SELECT u.name, u.email, u.img AS u.profileImg, u.profile, u.phone, t.styles FROM users u 
+LEFT JOIN (SELECT user_id, json_arrayagg(style_id) as styles FROM user_style GROUP BY user_id) t ON t.user_id = u.user_id
+WHERE u.user_id=:userId`
+    const value = { userId }
+    const [rows] = await this.db.query(sql, value)
+
+    if (rows[0] == null) {
+      throw new NotFoundError()
+    }
+
+    const { name, email, profileImg, phone, profile } = rows[0]
+    const styles =
+      rows[0].styles != null ? Data.getStyleItemList(rows[0].styles) : undefined
+    if (profile.body != null) {
+      profile.body = Data.getBodyItem(profile.body)
+    }
+    if (profile.skin != null) {
+      profile.skin = Data.getSkinItem(profile.skin)
+    }
+    return {
+      userType: 'D',
+      name,
+      email,
+      profileImg,
+      phone,
+      styles,
+      ...profile,
+    }
+  }
+  getSupplier = async (
+    userId: number,
+  ): Promise<BasicProfile & SupplierProfile> => {
+    const sql = `SELECT u.name, u.email, u.img AS profileImg, u.phone, u.profile, s.price, t.styles FROM users u
+LEFT JOIN (SELECT user_id, json_arrayagg(style_id) as styles FROM user_style GROUP BY user_id) t ON t.user_id = u.user_id
+LEFT JOIN suppliers s ON s.user_id = u.user_id
+WHERE u.user_id=:userId;`
+    const value = { userId }
+    const [rows] = await this.db.query(sql, value)
+
+    if (rows[0] == null) {
+      throw new NotFoundError()
+    }
+
+    const { name, email, profileImg, phone, price, profile } = rows[0]
+    const styles =
+      rows[0].styles != null ? Data.getStyleItemList(rows[0].styles) : undefined
+    return {
+      userType: 'S',
+      name,
+      email,
+      profileImg,
+      styles,
+      phone,
+      price,
+      ...profile,
+    }
+  }
+
+  saveBasic = async (userId: number, basicProfile: BasicProfile) => {
+    let fields = ''
+    for (const key of ['name', 'email', 'profileImg', 'phone']) {
+      if (basicProfile[key] != null) fields += `${key}=:${key},`
+    }
+    if (fields.length == 0) return
+    fields = fields.substring(0, fields.length - 1)
+
+    const sql = `UPDATE users SET ${fields} where user_id=:userId`
+
+    await this.db.query(sql, {
+      userId,
+      ...basicProfile,
+    })
+  }
 
   saveProfile = async (
     userId: number,
-    name: string | undefined,
-    phone: string | undefined,
-    introduction: string | undefined,
-    profile: string | undefined,
+    profile: DemanderProfile | SupplierProfile,
   ): Promise<void> => {
-    if (
-      name == null &&
-      introduction == null &&
-      phone == null &&
-      profile == null
-    )
-      return
+    const sql = 'UPDATE users SET profile=:profile where user_id=:userId'
 
-    const data = {
-      name,
-      introduction,
-      profile,
-      phone: phone?.replace?.(/-/gi, '')?.replace(/ /gi, ''),
-    }
-    let fields = ''
-    for (const key in data) {
-      if (data[key] != null) fields += `${key}=:${key},`
-    }
-
-    fields = fields.substring(0, fields.length - 1)
-
-    const sql = `UPDATE users SET ${fields} WHERE user_id=:userId`
-
-    const value = { userId, name, introduction, phone, profile }
-
-    await this.db.query(sql, value)
+    await this.db.query(sql, {
+      userId,
+      profile: JSON.stringify(profile),
+    })
   }
 
-  getBasicProfile = async (
+  getProfile = async (
     userId: number,
-  ): Promise<{
-    name: string | undefined
-    introduction: string | undefined
-    img: string | undefined
-    phone: string | undefined
-    profile: any
-    onboard: any
-  }> => {
-    const sql =
-      'SELECT name, introduction, profile, phone, img, onboard FROM users WHERE user_id=:userId'
+  ): Promise<DemanderProfile | SupplierProfile> => {
+    const sql = 'SELECT profile FROM users where user_id=:userId'
 
-    const value = { userId }
+    const [rows] = await this.db.query(sql, {
+      userId,
+    })
 
-    const [rows] = await this.db.query(sql, value)
+    if (rows[0] == null) {
+      throw NotFoundError
+    }
 
-    return rows[0] as any
+    return rows[0].profile ?? {}
+  }
+
+  savePrice = async (userId: number, price: number): Promise<void> => {
+    const sql = 'UPDATE suppliers SET price=:price where user_id=:userId'
+
+    await this.db.query(sql, { userId, price })
   }
 
   getSupplierPoint = async (
@@ -95,6 +154,61 @@ GROUP BY r.user_id;`
     }
 
     return rows[0]
+  }
+
+  // saveProfile = async (
+  //   userId: number,
+  //   name: string | undefined,
+  //   phone: string | undefined,
+  //   introduction: string | undefined,
+  //   profile: string | undefined,
+  // ): Promise<void> => {
+  //   if (
+  //     name == null &&
+  //     introduction == null &&
+  //     phone == null &&
+  //     profile == null
+  //   )
+  //     return
+  //
+  //   const data = {
+  //     name,
+  //     introduction,
+  //     profile,
+  //     phone: phone?.replace?.(/-/gi, '')?.replace(/ /gi, ''),
+  //   }
+  //   let fields = ''
+  //   for (const key in data) {
+  //     if (data[key] != null) fields += `${key}=:${key},`
+  //   }
+  //
+  //   fields = fields.substring(0, fields.length - 1)
+  //
+  //   const sql = `UPDATE users SET ${fields} WHERE user_id=:userId`
+  //
+  //   const value = { userId, name, introduction, phone, profile }
+  //
+  //   await this.db.query(sql, value)
+  // }
+
+  getBasicProfile = async (
+    userId: number,
+  ): Promise<{
+    name: string | undefined
+    introduction: string | undefined
+    img: string | undefined
+    phone: string | undefined
+    profile: any
+    onboard: any
+  }> => {
+    const sql =
+      'SELECT name, introduction, profile, phone, img, onboard FROM users WHERE user_id=:userId'
+
+    const value = { userId }
+
+    const [rows] = await this.db.query(sql, value)
+
+    return rows[0] as any
   }
 
   getClosetList = async (userId: number): Promise<Img[]> => {

@@ -1,9 +1,13 @@
 import { Request, Response } from 'express'
 import ProfileService from './profile-service'
 import { UserManager } from '../auth/auth-model'
+import { injectable } from 'inversify'
+import DIContainer from '../../config/inversify.config'
+import { NotFoundError, ParameterInvalidError } from '../../config/Error'
 
+@injectable()
 export default class ProfileController {
-  service = new ProfileService()
+  service = DIContainer.get(ProfileService)
   userManager = new UserManager()
 
   getProfile = async (req: Request, res: Response): Promise<void> => {
@@ -30,22 +34,19 @@ export default class ProfileController {
   }
 
   getMyProfile = async (req: Request, res: Response): Promise<void> => {
-    const { userId, userType } = req['auth']
     try {
-      switch (userType) {
-        case 'S':
-        case 'W':
-          res.status(200).send(await this.service.getMyProfileSupplier(userId))
-          break
-        case 'D':
-          res.status(200).send(await this.service.getMyProfileDemander(userId))
-          break
-        default:
-          res.sendStatus(204)
-          return
-      }
+      const { userId, userType } = req['auth']
+      const result = await this.service.getMyProfile(userId, userType)
+
+      res.status(200).send(result)
     } catch (e) {
-      res.sendStatus(500)
+      if (e instanceof NotFoundError) {
+        res.sendStatus(401)
+      } else if (e instanceof ParameterInvalidError) {
+        res.sendStatus(403)
+      } else {
+        res.sendStatus(500)
+      }
     }
   }
 
@@ -53,22 +54,18 @@ export default class ProfileController {
     const { userId, userType } = req['auth']
 
     try {
-      switch (userType) {
-        case 'D':
-          await this.service.patchDemander(userId, req.body)
-          break
-        case 'S':
-        case 'W':
-          await this.service.patchSupplier(userId, req.body)
-          break
-        default:
-          res.sendStatus(403)
-          return
-      }
+      await this.service.saveProfile(userId, userType, req.body)
 
       res.sendStatus(200)
     } catch (e) {
-      res.sendStatus(500)
+      if (e instanceof NotFoundError) {
+        res.sendStatus(401)
+      } else if (e instanceof ParameterInvalidError) {
+        res.sendStatus(403)
+      } else {
+        console.log(e)
+        res.sendStatus(500)
+      }
     }
   }
 

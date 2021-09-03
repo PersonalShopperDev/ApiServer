@@ -4,13 +4,17 @@ components:
       type: object
       properties:
         name:
-          $ref: '#/components/scheme/common/name'
-        introduction:
-          $ref: '#/components/scheme/common/introduction'
-        styles:
-          $ref: '#/components/scheme/common/styles'
+          $ref: '#/components/scheme/name'
+        email:
+          $ref: '#/components/scheme/email'
         profileImg:
-          $ref: '#/components/scheme/common/profileImg'
+          $ref: '#/components/scheme/profileImg'
+        introduction:
+          $ref: '#/components/scheme/introduction'
+        styles:
+          $ref: '#/components/scheme/styles'
+        phone:
+          $ref: '#/components/scheme/phone'
     demander:
       type: object
       allOf:
@@ -24,13 +28,17 @@ components:
         - type: object
           properties:
             hopeToSupplier:
-              $ref: '#/components/scheme/demander/hopeToSupplier'
+              $ref: '#/components/scheme/hopeToSupplier'
+            body:
+              $ref: '#/components/scheme/body'
+            skin:
+              $ref: '#/components/scheme/skin'
             bodyStat:
-              $ref: '#/components/scheme/demander/bodyStat'
-            closet:
-              $ref: '#/components/scheme/demander/closet'
-            reviewList:
-              $ref: '#/components/scheme/demander/reviewList'
+              $ref: '#/components/scheme/bodyStat'
+            clothSize:
+              $ref: '#/components/scheme/clothSize'
+            clothPrice:
+              $ref: '#/components/scheme/clothPrice'
       required:
         - userType
     supplier:
@@ -45,18 +53,24 @@ components:
         - $ref: '#/components/get/common'
         - type: object
           properties:
-            careerList:
-              $ref: '#/components/scheme/supplier/careerList'
+            rating:
+              $ref: '#/components/scheme/rating'
+
+            reviewCount:
+              $ref: '#/components/scheme/reviewCount'
+            hireCount:
+              $ref: '#/components/scheme/hireCount'
+
             price:
-              $ref: '#/components/scheme/supplier/price'
+              $ref: '#/components/scheme/price'
             coord:
-              $ref: '#/components/scheme/supplier/coord'
+              $ref: '#/components/scheme/coord'
             account:
-              $ref: '#/components/scheme/supplier/account'
+              $ref: '#/components/scheme/account'
             bank:
-              $ref: '#/components/scheme/supplier/bank'
+              $ref: '#/components/scheme/bank'
             accountUser:
-              $ref: '#/components/scheme/supplier/accountUser'
+              $ref: '#/components/scheme/accountUser'
       required:
         - userType
   getOther:
@@ -64,13 +78,13 @@ components:
       type: object
       properties:
         name:
-          $ref: '#/components/scheme/common/name'
+          $ref: '#/components/scheme/name'
         introduction:
-          $ref: '#/components/scheme/common/introduction'
+          $ref: '#/components/scheme/introduction'
         styles:
-          $ref: '#/components/scheme/common/styles'
+          $ref: '#/components/scheme/styles'
         profileImg:
-          $ref: '#/components/scheme/common/profileImg'
+          $ref: '#/components/scheme/profileImg'
     demander:
       type: object
       allOf:
@@ -84,11 +98,19 @@ components:
         - type: object
           properties:
             hopeToSupplier:
-              $ref: '#/components/scheme/demander/hopeToSupplier'
+              $ref: '#/components/scheme/hopeToSupplier'
+            body:
+              $ref: '#/components/scheme/body'
+            skin:
+              $ref: '#/components/scheme/skin'
             bodyStat:
-              $ref: '#/components/scheme/demander/bodyStat+'
+              $ref: '#/components/scheme/bodyStat'
+            clothSize:
+              $ref: '#/components/scheme/clothSize'
+            clothPrice:
+              $ref: '#/components/scheme/clothPrice'
             closet:
-              $ref: '#/components/scheme/demander/closet'
+              $ref: '#/components/scheme/closet'
       required:
         - userType
     supplier:
@@ -113,11 +135,11 @@ components:
               type: number
               description: 리뷰 개수
             careerList:
-              $ref: '#/components/scheme/supplier/careerList'
+              $ref: '#/components/scheme/careerList'
             price:
-              $ref: '#/components/scheme/supplier/price'
+              $ref: '#/components/scheme/price'
             coord:
-              $ref: '#/components/scheme/supplier/coord'
+              $ref: '#/components/scheme/coord'
       required:
         - userType
         - hireCOunt
@@ -127,12 +149,13 @@ components:
       type: object
       properties:
         name:
-          $ref: '#/components/scheme/common/name'
+          $ref: '#/components/scheme/name'
+        email:
+          $ref: '#/components/scheme/email'
         introduction:
-          $ref: '#/components/scheme/common/introduction'
+          $ref: '#/components/scheme/introduction'
         phone:
-          type: string
-          description: 회원 전화 번호
+          $ref: '#/components/scheme/phone'
     demander:
       type: object
       allOf:
@@ -140,148 +163,226 @@ components:
         - type: object
           properties:
             hopeToSupplier:
-              $ref: '#/components/scheme/demander/hopeToSupplier'
+              $ref: '#/components/scheme/hopeToSupplier'
+            body:
+              $ref: '#/components/scheme/bodyId'
+            skin:
+              $ref: '#/components/scheme/skinId'
             bodyStat:
-              $ref: '#/components/scheme/demander/bodyStat'
+              $ref: '#/components/scheme/bodyStat'
+            clothSize:
+              $ref: '#/components/scheme/clothSize'
+            clothPrice:
+              $ref: '#/components/scheme/clothPrice'
     supplier:
       type: object
       allOf:
         - $ref: '#/components/patch/common'
         - type: object
           properties:
-            careerList:
-              $ref: '#/components/scheme/supplier/careerList'
             price:
-              $ref: '#/components/scheme/supplier/price'
+              $ref: '#/components/scheme/price'
             account:
-              $ref: '#/components/scheme/supplier/account'
+              $ref: '#/components/scheme/account'
             bank:
-              $ref: '#/components/scheme/supplier/bank'
+              $ref: '#/components/scheme/bank'
             accountUser:
-              $ref: '#/components/scheme/supplier/accountUser'
+              $ref: '#/components/scheme/accountUser'
   scheme:
-    common:
-      name:
-        type: string
-        description: 이름
-      introduction:
-        type: string
-        description: 자기소개
-        maxLength: 100
-      styles:
-        type: array
-        description: 사용자가 선택한 Style Type
-        items:
+    name:
+      type: string
+      description: 이름
+    email:
+      type: string
+      description: 이메일
+    introduction:
+      type: string
+      description: 자기소개
+      maxLength: 100
+    styles:
+      type: array
+      description: 사용자가 선택한 Style Type
+      items:
+        $ref: './swagger.yaml#/components/scheme/StyleTypeList'
+    profileImg:
+      type: string
+      description: 프로필 이미지 URL
+    hopeToSupplier:
+      type: string
+      description: 스타일리스트에게 바라는 점
+      maxLength: 500
+    bodyStat:
+      type: object
+      description: 신체 정보
+      properties:
+        isPublic:
+          type: boolean
+          description: 공개 여부
+          default: false
+        height:
+          type: number
+          description: 키
+        weight:
+          type: number
+          description: 몸무게
+    body:
+      type: object
+      description: 사용자의 체형
+      properties:
+        id:
+          type: number
+        value:
           type: string
-      profileImg:
-        type: string
-        description: 프로필 이미지 URL
-    demander:
-      hopeToSupplier:
-        type: string
-        description: 스타일리스트에게 바라는 점
-        maxLength: 500
-      bodyStat:
+    skin:
+      type: object
+      description: 사용자의 피부톤
+      properties:
+        id:
+          type: number
+        value:
+          type: string
+    bodyId:
+      type: number
+      description: 체형 ID
+    skinId:
+      type: number
+      description: 피부톤 ID
+    closet:
+      type: array
+      description: 옷장
+      maxItems: 20
+      items:
         type: object
-        description: 신체 정보
-        properties:
-          isPublic:
-            type: boolean
-            description: 공개 여부
-            default: false
-          height:
-            type: number
-            description: 키
-          weight:
-            type: number
-            description: 몸무게
-      bodyStat+:
-        type: object
-        description: 신체 정보
-        allOf:
-          - type: object
-            properties:
-              body:
-                $ref: '#/components/scheme/demander/body'
-          - $ref: '#/components/scheme/demander/bodyStat'
-      body:
-        type: object
-        description: 사용자의 체형
         properties:
           id:
             type: number
+            description: 옷장 ID
+          img:
+            type: string
+            description: 옷 이미지 URL
+        required:
+          - id
+          - img
+    reviewList:
+      type: array
+      description: 내 리뷰 목록
+      maxItems: 3
+      items:
+        type: object
+        properties:
+          reviewId:
+            type: number
+            description: 리뷰 ID
+          supplierId:
+            type: number
+            description: 공급자 ID
+          status:
+            type: number
+            description: |
+              리뷰의 작성 상태
+
+              0: 미작성
+              1: 완료
+          img:
+            type: string
+            description: 리뷰 썸네일 Image URL
+    careerList:
+      type: array
+      description: 경력 목록
+      items:
+        type: object
+        properties:
           value:
             type: string
-      closet:
-        type: array
-        description: 옷장
-        maxItems: 20
-        items:
-          type: object
-          properties:
-            id:
-              type: number
-              description: 옷장 ID
-            img:
-              type: string
-              description: 옷 이미지 URL
-          required:
-            - id
-            - img
-      reviewList:
-        type: array
-        description: 내 리뷰 목록
-        maxItems: 3
-        items:
-          type: object
-          properties:
-            reviewId:
-              type: number
-              description: 리뷰 ID
-            supplierId:
-              type: number
-              description: 공급자 ID
-            status:
-              type: number
-              description: |
-                리뷰의 작성 상태
-
-                0: 미작성
-                1: 완료
-            img:
-              type: string
-              description: 리뷰 썸네일 Image URL
-    supplier:
-      careerList:
-        type: array
-        description: 경력 목록
-        items:
-          type: object
-          properties:
-            value:
-              type: string
-              description: 경력 내용
-            type:
-              type: number
-              description: 경력 종류 (아이콘이 다르기에 추가)
-      price:
-        type: number
-        description: 코디 가격
-      account:
+            description: 경력 내용
+          type:
+            type: number
+            description: 경력 종류 (아이콘이 다르기에 추가)
+    price:
+      type: number
+      description: 코디 가격
+    account:
+      type: string
+      description: 계좌 번호
+    bank:
+      type: number
+      description: 계좌 은행
+    accountUser:
+      type: string
+      description: 계좌주 이름
+    coord:
+      type: array
+      description: 대표 코디 목록, Image Url Array
+      maxItems: 4
+      items:
         type: string
-        description: 계좌 번호
-      bank:
-        type: number
-        description: 계좌 은행
-      accountUser:
-        type: string
-        description: 계좌주 이름
-      coord:
-        type: array
-        description: 대표 코디 목록, Image Url Array
-        maxItems: 4
-        items:
-          type: string
+    phone:
+      type: string
+      description: 회원 전화 번호
+    clothSize:
+      type: object
+      properties:
+        topSize:
+          type: number
+          description: 상의 Size ID
+        bottomSize:
+          type: number
+          description: 하의 Size ID
+        shoulderSize:
+          type: number
+          description: 어깨 Size ID
+        waistSize:
+          type: number
+          description: 허리 Size ID
+        bellySize:
+          type: number
+          description: 배 Size ID
+        hipSize:
+          type: number
+          description: 엉덩이 Size ID
+    clothPrice:
+      type: object
+      properties:
+        topPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 상의 선호 가격
+        bottomPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 하의 선호 가격
+        dressPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 원피스/세트 선호 가격
+        shoesPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 신발 선호 가격
+        bagPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 가방 선호 가격
+        accessoryPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 악세서리 선호 가격
+        hatPrice:
+          $ref: '#/components/scheme/priceContent'
+          description: 모자 선호 가격
+    priceContent:
+      type: object
+      properties:
+        min:
+          type: number
+        max:
+          type: number
+      requirement:
+        - min
+        - max
+    rating:
+      type: number
+      description: 리뷰 평점
+    hireCount:
+      type: number
+      description: 고용된 횟수
+    reviewCount:
+      type: number
+      description: 리뷰 개수
 
 path:
   /profile:
@@ -453,7 +554,7 @@ path:
                           type: number
                           description: 리뷰 작성자의 몸무게 (체형 비공개 시 생략)
                         body:
-                          $ref: '#/components/scheme/demander/body'
+                          $ref: '#/components/scheme/body'
                         styleTypeList:
                           $ref: './swagger.yaml#/components/scheme/StyleTypeList'
                       required:

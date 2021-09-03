@@ -10,9 +10,11 @@ import {
 } from './onboard-type'
 import OnboardModel from './onboard-model'
 import StyleModel from '../style/style-model'
+import DIContainer from '../../config/inversify.config'
 
 export default class OnboardService {
   model = new OnboardModel()
+  styleModel = DIContainer.get(StyleModel)
 
   getOnboardData = async (
     targetId: number,
@@ -20,7 +22,7 @@ export default class OnboardService {
     const { gender, onboard } = await this.model.getOnboardData(targetId)
     if (onboard == null) return null
 
-    const styles = await StyleModel.getUserStyle(targetId)
+    const styles = await this.styleModel.getUserStyle(targetId)
 
     const result = { styles: styles, gender, ...onboard }
 

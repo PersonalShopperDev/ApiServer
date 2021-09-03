@@ -134,4 +134,22 @@ export default class Data {
   }
 
   // endregion
+
+  // region Skin
+  static getSkinItem(id: number): IdValuePair {
+    switch (id) {
+      case 0:
+        return { id, value: '첫번쨰' }
+      case 1:
+        return { id, value: '두번쨰' }
+      case 2:
+        return { id, value: '세번쨰' }
+      case 3:
+        return { id, value: '네번쨰' }
+    }
+
+    return { id, value: '알수없음' } // TODO: 데이터 없을 때 예외 처리
+  }
+
+  //endregion
 }

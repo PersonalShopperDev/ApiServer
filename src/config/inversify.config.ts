@@ -3,6 +3,9 @@ import { AuthThirdParty, NaverAuth, KaKaoAuth } from '../routes/auth/auth-model'
 import S3 from './s3'
 import ProfileModel from '../routes/profile/profile-model'
 import DB from './db'
+import ProfileService from '../routes/profile/profile-service'
+import ProfileController from '../routes/profile/profile-controller'
+import StyleModel from '../routes/style/style-model'
 
 const DIContainer = new Container()
 
@@ -23,12 +26,15 @@ DIContainer.bind<interfaces.Factory<AuthThirdParty>>(
     )
   }
 })
-
-// region Model
 DIContainer.bind<S3>(S3).toSelf().inSingletonScope()
 DIContainer.bind<DB>(DB).toSelf().inSingletonScope()
+
+DIContainer.bind<ProfileController>(ProfileController)
+  .toSelf()
+  .inSingletonScope()
+DIContainer.bind<ProfileService>(ProfileService).toSelf().inSingletonScope()
 DIContainer.bind<ProfileModel>(ProfileModel).toSelf().inSingletonScope()
 
-// endregion
+DIContainer.bind<StyleModel>(StyleModel).toSelf().inSingletonScope()
 
 export default DIContainer
