@@ -8,6 +8,7 @@ export type Profile =
 export interface BasicProfile {
   name: string
   email: string | undefined
+  gender: string | undefined
   profileImg: string | undefined
   introduction: string | undefined
   styles: IdValuePair[] | undefined

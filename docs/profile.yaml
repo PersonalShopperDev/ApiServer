@@ -5,6 +5,8 @@ components:
       properties:
         name:
           $ref: '#/components/scheme/name'
+        gender:
+          $ref: '#/components/scheme/gender'
         email:
           $ref: '#/components/scheme/email'
         profileImg:
@@ -85,6 +87,8 @@ components:
           $ref: '#/components/scheme/introduction'
         profileImg:
           $ref: '#/components/scheme/profileImg'
+        gender:
+          $ref: '#/components/scheme/gender'
     demander:
       type: object
       allOf:
@@ -196,6 +200,10 @@ components:
     name:
       type: string
       description: 이름
+    gender:
+      type: string
+      enum: [ M, F ]
+      description: 성별
     email:
       type: string
       description: 이메일
