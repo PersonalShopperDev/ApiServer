@@ -22,7 +22,7 @@ export default class ProfileModel {
   getDemander = async (
     userId: number,
   ): Promise<BasicProfile & DemanderProfile> => {
-    const sql = `SELECT u.name, u.email, u.img AS u.profileImg, u.profile, u.phone, t.styles FROM users u 
+    const sql = `SELECT u.name, u.email, u.img AS profileImg, u.profile, u.phone, t.styles FROM users u 
 LEFT JOIN (SELECT user_id, json_arrayagg(style_id) as styles FROM user_style GROUP BY user_id) t ON t.user_id = u.user_id
 WHERE u.user_id=:userId`
     const value = { userId }
