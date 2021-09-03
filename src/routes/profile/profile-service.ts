@@ -54,18 +54,25 @@ export default class ProfileService {
             await this.model.savePrice(userId, data.price)
           }
 
-          let k: keyof SupplierProfile
+          const fields = ['price', 'account', 'bank', 'accountUser'] as const
 
-          for (k in data as SupplierProfile) {
-            if (data[k] != null) profile[k] = data[k]
+          for (const key in fields) {
+            if (data[key] != null) profile[key] = data[key]
           }
         }
         break
       case 'D':
         {
-          let k: keyof DemanderProfile
-          for (k in data as DemanderProfile) {
-            if (data[k] != null) profile[k] = data[k]
+          const fields = [
+            'body',
+            'skin',
+            'bodyStat',
+            'clothSize',
+            'clothPrice',
+          ] as const
+
+          for (const key in fields) {
+            if (data[key] != null) profile[key] = data[key]
           }
         }
         break
