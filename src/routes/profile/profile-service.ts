@@ -106,7 +106,7 @@ export default class ProfileService {
 
           const fields = ['price', 'account', 'bank', 'accountUser'] as const
 
-          for (const key in fields) {
+          for (const key of fields) {
             if (data[key] != null) profile[key] = data[key]
           }
         }
@@ -121,7 +121,7 @@ export default class ProfileService {
             'clothPrice',
           ] as const
 
-          for (const key in fields) {
+          for (const key of fields) {
             if (data[key] != null) profile[key] = data[key]
           }
         }
