@@ -64,6 +64,9 @@ export default class ProfileService {
     if (isHideInfo) {
       profile.email = undefined
       profile.phone = undefined
+      profile.account = undefined
+      profile.accountUser = undefined
+      profile.bank = undefined
     }
     return { ...profile, ...point }
   }

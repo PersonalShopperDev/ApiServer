@@ -44,6 +44,9 @@
 /profile/closet:
   $ref: 'profile.yaml#/path/~1profile~1closet'
 
+/profile/body:
+  $ref: 'profile.yaml#/path/~1profile~1body'
+
 
 /review/:paymentId:
   $ref: 'review.yaml#/path/~1review~1:paymentId'

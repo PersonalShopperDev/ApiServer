@@ -17,6 +17,8 @@ router.get('/:id/closet', controller.getCloset)
 router.get('/:id/lookbook', controller.getLookbook)
 router.get('/:id/review', controller.getReview)
 
+router.get('/body', controller.getBody)
+
 const s3 = new S3()
 
 router.post(

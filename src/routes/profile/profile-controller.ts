@@ -4,6 +4,7 @@ import { UserManager } from '../auth/auth-model'
 import { injectable } from 'inversify'
 import DIContainer from '../../config/inversify.config'
 import { NotFoundError, ParameterInvalidError } from '../../config/Error'
+import Data from '../../data/data'
 
 @injectable()
 export default class ProfileController {
@@ -148,6 +149,17 @@ export default class ProfileController {
         key.substring(key.lastIndexOf('/') + 1),
       )
       res.sendStatus(200)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  getBody = async (req: Request, res: Response): Promise<void> => {
+    const { gender } = req.query as any
+    try {
+      const result = Data.getBodyList(gender)
+
+      res.status(200).json(result)
     } catch (e) {
       res.sendStatus(500)
     }
