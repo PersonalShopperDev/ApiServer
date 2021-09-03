@@ -1,6 +1,5 @@
 import express from 'express'
-import { body } from 'express-validator'
-import { AuthCheck, AuthRequire } from '../../config/auth-check'
+import { AuthRequire } from '../../config/auth-check'
 import ProfileController from './profile-controller'
 import S3 from '../../config/s3'
 import DIContainer from '../../config/inversify.config'
@@ -10,8 +9,11 @@ const controller = DIContainer.get(ProfileController)
 
 router.get('/', AuthRequire, controller.getMyProfile)
 router.patch('/', AuthRequire, controller.patchMyProfile)
+router.get('/closet', AuthRequire, controller.getCloset)
+router.get('/lookbook', AuthRequire, controller.getLookbook)
 
 router.get('/:id', controller.getProfile)
+router.get('/:id/closet', controller.getCloset)
 router.get('/:id/lookbook', controller.getLookbook)
 router.get('/:id/review', controller.getReview)
 

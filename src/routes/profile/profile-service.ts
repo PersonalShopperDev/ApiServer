@@ -289,6 +289,12 @@ export default class ProfileService {
   //   }
   // }
 
+  getCloset = async (userId: number, page: number): Promise<{ list }> => {
+    return {
+      list: await this.model.getCloset(userId, page),
+    }
+  }
+
   getLookbook = async (userId: number, page: number): Promise<{ list }> => {
     return {
       list: await this.model.getLookbookList(userId, page),

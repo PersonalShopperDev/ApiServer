@@ -61,12 +61,32 @@ export default class ProfileController {
     }
   }
 
-  getLookbook = async (req: Request, res: Response): Promise<void> => {
+  getCloset = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params as any
+    const { userId } = req['auth']
     const { page } = req.query as any
 
     try {
-      const result = await this.service.getLookbook(id, page == null ? 0 : page)
+      const result = await this.service.getCloset(
+        id ?? userId,
+        page == null ? 0 : page,
+      )
+      res.status(200).send(result)
+    } catch (e) {
+      res.sendStatus(500)
+    }
+  }
+
+  getLookbook = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params as any
+    const { userId } = req['auth']
+    const { page } = req.query as any
+
+    try {
+      const result = await this.service.getLookbook(
+        id ?? userId,
+        page == null ? 0 : page,
+      )
       res.status(200).send(result)
     } catch (e) {
       res.sendStatus(500)

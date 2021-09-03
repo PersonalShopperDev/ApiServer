@@ -288,6 +288,19 @@ GROUP BY r.user_id;`
     })
   }
 
+  getCloset = async (userId: number, page: number): Promise<Img[]> => {
+    const pageAmount = 20
+
+    const sql =
+      'SELECT img_path AS img FROM closets WHERE user_id=:userId LIMIT :pageOffset, :pageAmount;'
+
+    const value = { userId, pageAmount, pageOffset: page * pageAmount }
+
+    const [rows] = await this.db.query(sql, value)
+
+    return rows.map((row) => ResourcePath.lookbookImg(row.img))
+  }
+
   getReviewListDemander = async (demanderId: number): Promise<Review[]> => {
     const sql = `SELECT r.coord_id AS reviewId, c.img, rs.user_id AS supplierId, 1 as status  FROM coord_reviews r
 LEFT JOIN coords c ON c.coord_id = r.coord_id

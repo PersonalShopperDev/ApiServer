@@ -617,6 +617,34 @@ path:
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
 
+  /profile/{id}/closet:
+    get:
+      summary: 옷장 보기
+      description: 사용자의 옷장에 이미지를 추가합니다.
+
+        id를 생략시 자기 자신의 룩북을 가져옵니다.
+
+        paging 처리가 되어 있습니다.
+      tags: [ Profile ]
+      parameters:
+        - name: id
+          in: 'path'
+          description: 열람하고자 하는 supplier Id
+          schema:
+            type: number
+        - $ref: './swagger.yaml#/components/Request/page'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  list:
+                    type: array
+                    items:
+                      type: string
   /profile/closet:
     post:
       summary: 내 옷장 추가하기
