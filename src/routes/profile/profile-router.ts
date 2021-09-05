@@ -11,13 +11,12 @@ router.get('/', AuthRequire, controller.getMyProfile)
 router.patch('/', AuthRequire, controller.patchMyProfile)
 router.get('/closet', AuthRequire, controller.getCloset)
 router.get('/lookbook', AuthRequire, controller.getLookbook)
+router.get('/body', controller.getBody)
 
 router.get('/:id', controller.getProfile)
 router.get('/:id/closet', controller.getCloset)
 router.get('/:id/lookbook', controller.getLookbook)
 router.get('/:id/review', controller.getReview)
-
-router.get('/body', controller.getBody)
 
 const s3 = new S3()
 
