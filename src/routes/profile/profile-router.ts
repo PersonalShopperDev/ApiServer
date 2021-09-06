@@ -1,5 +1,5 @@
 import express from 'express'
-import { AuthRequire } from '../../config/auth-check'
+import { AuthCheck, AuthRequire } from '../../config/auth-check'
 import ProfileController from './profile-controller'
 import S3 from '../../config/s3'
 import DIContainer from '../../config/inversify.config'
@@ -14,9 +14,9 @@ router.get('/lookbook', AuthRequire, controller.getLookbook)
 router.get('/body', controller.getBody)
 
 router.get('/:id', controller.getProfile)
-router.get('/:id/closet', controller.getCloset)
-router.get('/:id/lookbook', controller.getLookbook)
-router.get('/:id/review', controller.getReview)
+router.get('/:id/closet', AuthCheck, controller.getCloset)
+router.get('/:id/lookbook', AuthCheck, controller.getLookbook)
+router.get('/:id/review', AuthCheck, controller.getReview)
 
 const s3 = new S3()
 

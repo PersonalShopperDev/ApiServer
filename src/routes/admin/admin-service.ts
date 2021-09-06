@@ -18,8 +18,9 @@ export default class AdminService {
       list: data.map((item) => {
         return {
           ...item,
-          career: item.onboard['career'],
-          careerTxt: this.convertCareer(item.onboard['career']),
+          // TODO: Career 처리
+          // career: item.onboard['career'],
+          // careerTxt: this.convertCareer(item.onboard['career']),
           sf: (item.supplyGender & 0x10) === 0x10 ? 'O' : 'X',
           sm: (item.supplyGender & 0x01) === 0x01 ? 'O' : 'X',
         }

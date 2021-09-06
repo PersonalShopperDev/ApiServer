@@ -116,10 +116,10 @@ LIMIT 6;`
       content: string
       img: string
       style: number[]
-      onboard: any
+      profile: any
     }[]
   > => {
-    const sql = `SELECT r.coord_id, rd.user_id AS demanderId, rs.user_id AS supplierId, r.content, i.img, t.style, u.onboard FROM coord_reviews r
+    const sql = `SELECT r.coord_id, rd.user_id AS demanderId, rs.user_id AS supplierId, r.content, i.img, t.style, u.profile FROM coord_reviews r
 LEFT JOIN coord_review_imgs i ON i.coord_id = r.coord_id AND i.type = 'H'
 LEFT JOIN coords c ON c.coord_id = r.coord_id
 LEFT JOIN payments e ON e.payment_id = c.payment_id

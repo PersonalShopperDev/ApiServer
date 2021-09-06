@@ -215,10 +215,9 @@ GROUP BY r.user_id;`
     img: string | undefined
     phone: string | undefined
     profile: any
-    onboard: any
   }> => {
     const sql =
-      'SELECT name, introduction, profile, phone, img, onboard FROM users WHERE user_id=:userId'
+      'SELECT name, introduction, profile, phone, img FROM users WHERE user_id=:userId'
 
     const value = { userId }
 
@@ -375,7 +374,7 @@ LIMIT 3`
   ): Promise<ReviewModelData[]> => {
     const pageAmount = 20
 
-    const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, cc.coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, u.onboard, r.create_time AS date  FROM coord_reviews r
+    const sql = `SELECT r.coord_id AS id, u.name, u.img AS profileImg, cc.coordImg, r.content, r.rating, r.public_body AS publicBody, t.type, u.profile, r.create_time AS date  FROM coord_reviews r
 LEFT JOIN coords c ON c.coord_id = r.coord_id
 LEFT JOIN payments e ON e.payment_id = c.payment_id
 LEFT JOIN (

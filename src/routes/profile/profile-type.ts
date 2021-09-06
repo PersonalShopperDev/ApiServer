@@ -134,7 +134,6 @@ export interface ReviewModelData extends _ReviewData {
   coordImg: string[]
   type: number[]
   profile: any | null
-  onboard: any
 }
 
 export interface ReviewData extends _ReviewData {

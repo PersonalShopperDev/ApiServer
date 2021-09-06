@@ -15,13 +15,12 @@ export default class AdminModel {
       supplyGender: number
       status: number
       profile: string
-      onboard: string
       introduction: string
       create_time: Date
       update_time: Date
     }[]
   > => {
-    const sql = `SELECT s.user_id as id, s.price, s.supplyGender, s.status, u.name, u.gender, u.email, u.img, u.profile, u.onboard, u.introduction, u.create_time, u.update_time FROM suppliers s
+    const sql = `SELECT s.user_id as id, s.price, s.supplyGender, s.status, u.name, u.gender, u.email, u.img, u.profile, u.introduction, u.create_time, u.update_time FROM suppliers s
 LEFT JOIN users u ON u.user_id = s.user_id
 WHERE s.status = -1`
     const [rows] = await this.db.query(sql)

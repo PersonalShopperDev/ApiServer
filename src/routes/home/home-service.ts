@@ -25,14 +25,14 @@ export default class HomeService {
         : await this.model.getSupplierWithLogin(userId, gender)
 
     const reviews = (await this.model.getReviews()).map((item) => {
-      const { demanderId, supplierId, content, img, style, onboard } = item
+      const { demanderId, supplierId, content, img, style, profile } = item
 
       return {
         demanderId,
         supplierId,
         content,
         styleList: style == null ? [] : Data.getStyleItemList(style),
-        body: Data.getBodyItem(onboard.body),
+        body: Data.getBodyItem(profile.body),
         img: ResourcePath.homeReviewImg(img),
       }
     })

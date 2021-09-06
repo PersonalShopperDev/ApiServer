@@ -139,14 +139,14 @@ export class TokenManager {
 
   generateAccessToken = async (userId: number): Promise<string> => {
     const sql =
-      'SELECT gender, onboard, u.email, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
+      'SELECT gender, profile, u.email, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
     const value = { userId }
 
     const [rows] = await this.db.query(sql, value)
 
-    const { onboard, gender, status, email } = rows[0]
+    const { profile, gender, status, email } = rows[0]
     const userType =
-      onboard == null ? 'N' : status == null ? 'D' : status == -1 ? 'W' : 'S'
+      profile == null ? 'N' : status == null ? 'D' : status == -1 ? 'W' : 'S'
 
     return jwt.sign({ userId, gender, userType, email }, process.env.JWT_KEY, {
       expiresIn:
@@ -182,14 +182,14 @@ export class UserManager {
 
   getUserType = async (userId: number): Promise<string> => {
     const sql =
-      'SELECT onboard, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
+      'SELECT profile, s.status FROM users u LEFT JOIN suppliers s on u.user_id = s.user_id WHERE u.user_id=:userId '
     const value = { userId }
 
     const [rows] = await this.db.query(sql, value)
 
-    const { onboard, status } = rows[0]
+    const { profile, status } = rows[0]
     const userType =
-      onboard == null ? 'N' : status == null ? 'D' : status == -1 ? 'W' : 'S'
+      profile == null ? 'N' : status == null ? 'D' : status == -1 ? 'W' : 'S'
     return userType
   }
   getUserIdWithThirdPartyID = async (resource: string, id: string) => {

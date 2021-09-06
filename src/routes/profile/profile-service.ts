@@ -132,183 +132,6 @@ export default class ProfileService {
     await this.model.saveProfile(userId, profile)
   }
 
-  getProfileSupplier = async (userId: number): Promise<ProfileSupplierGet> => {
-    const {
-      name,
-      introduction,
-      img,
-      profile,
-    } = await this.model.getBasicProfile(userId)
-    const styles = await this.styleModel.getUserStyleOnlyValue(userId)
-
-    const price = await this.model.getPrice(userId)
-    const coord = await this.model.getCoordList(userId)
-    const {
-      rating,
-      reviewCount,
-      hireCount,
-    } = await this.model.getSupplierPoint(userId)
-
-    return {
-      userType: 'S',
-      name,
-      introduction,
-      img: ResourcePath.profileImg(img),
-      ...profile,
-      styles,
-      price,
-      coord,
-      reviewCount,
-      hireCount,
-      rating,
-    } as ProfileSupplierGet
-  }
-
-  getProfileDemander = async (userId: number): Promise<ProfileDemanderGet> => {
-    const baseData = await this.model.getBasicProfile(userId)
-    const { name, introduction, img, onboard } = baseData
-    let { profile } = baseData
-    const styles = await this.styleModel.getUserStyleOnlyValue(userId)
-    const closetList = await this.model.getClosetList(userId)
-
-    const additionalBodyStat = Data.getBodyItem(onboard['body'])
-    if (profile == null) {
-      profile = { bodyStat: { body: additionalBodyStat } }
-    } else if (profile['bodyStat'] == null) {
-      profile['bodyStat'] = additionalBodyStat
-    } else if (profile.bodyStat.isPublic != true) {
-      profile['bodyStat'] = additionalBodyStat
-    } else {
-      profile['bodyStat']['body'] = additionalBodyStat
-    }
-
-    return {
-      userType: 'D',
-      name,
-      introduction,
-      img: ResourcePath.profileImg(img),
-      ...profile,
-      styles,
-      closet: closetList,
-    } as ProfileDemanderGet
-  }
-
-  getMyProfileSupplier = async (
-    userId: number,
-  ): Promise<ProfileSupplierGet> => {
-    const {
-      name,
-      introduction,
-      img,
-      profile,
-    } = await this.model.getBasicProfile(userId)
-    const styles = await this.styleModel.getUserStyleOnlyValue(userId)
-
-    const price = await this.model.getPrice(userId)
-    const coord = await this.model.getCoordList(userId)
-
-    return {
-      userType: 'S',
-      name,
-      introduction,
-      img: ResourcePath.profileImg(img),
-      ...profile,
-      styles,
-      price,
-      coord,
-    } as ProfileSupplierGet
-  }
-
-  getMyProfileDemander = async (
-    userId: number,
-  ): Promise<ProfileDemanderGet> => {
-    const {
-      name,
-      introduction,
-      img,
-      profile,
-    } = await this.model.getBasicProfile(userId)
-    const styles = await this.styleModel.getUserStyleOnlyValue(userId)
-
-    const closetList = await this.model.getClosetList(userId)
-    const reviewList = await this.model.getReviewListDemander(userId)
-
-    for (const item of reviewList) {
-      item.img = ResourcePath.coordImg(item.img)
-    }
-
-    return {
-      userType: 'D',
-      name,
-      introduction,
-      img: ResourcePath.profileImg(img),
-      ...profile,
-      styles,
-      closet: closetList,
-      reviewList,
-    } as ProfileDemanderGet
-  }
-
-  // patchDemander = async (
-  //   userId: number,
-  //   data: ProfileUser & ProfileDemanderPatch,
-  // ) => {
-  //   const baseData = await this.model.getBasicProfile(userId)
-  //   const oldData = { ...baseData, ...baseData.profile }
-  //   const {
-  //     name,
-  //     introduction,
-  //     phone,
-  //     hopeToSupplier,
-  //     bodyStat,
-  //   } = this.dataOverlap(oldData, data, ['hopeToSupplier', 'bodyStat'])
-  //
-  //   const profile = { hopeToSupplier, bodyStat }
-  //
-  //   await this.model.saveProfile(
-  //     userId,
-  //     name,
-  //     phone,
-  //     introduction,
-  //     JSON.stringify(profile),
-  //   )
-  // }
-  //
-  // patchSupplier = async (
-  //   userId: number,
-  //   data: ProfileUser & ProfileSupplierPatch,
-  // ) => {
-  //   const baseData = await this.model.getBasicProfile(userId)
-  //   const {
-  //     name,
-  //     introduction,
-  //     phone,
-  //     careerList,
-  //     price,
-  //     bank,
-  //     account,
-  //     accountUser,
-  //   } = this.dataOverlap({ ...baseData, ...baseData.profile }, data, [
-  //     'careerList',
-  //     'price',
-  //     'bank',
-  //     'account',
-  //     'accountUser',
-  //   ])
-  //
-  //   await this.model.saveProfile(
-  //     userId,
-  //     name,
-  //     phone,
-  //     introduction,
-  //     JSON.stringify({ careerList, account, bank, accountUser }),
-  //   )
-  //
-  //   if (price != null) {
-  //     await this.model.updateSupplierData(userId, price)
-  //   }
-  // }
-
   getCloset = async (userId: number, page: number): Promise<{ list }> => {
     return {
       list: await this.model.getCloset(userId, page),
@@ -368,7 +191,6 @@ export default class ProfileService {
         publicBody,
         type,
         profile,
-        onboard,
         date,
       } = base[index]
 
@@ -392,7 +214,7 @@ export default class ProfileService {
             : coordImg.map((img) => ResourcePath.coordImg(img)),
         profileImg: ResourcePath.profileImg(profileImg),
         date: `${year}-${month}-${day}`,
-        body: Data.getBodyItem(onboard['body']),
+        body: Data.getBodyItem(profile['body']),
         styleTypeList: type == null ? [] : Data.getStyleItemList(type),
         weight: undefined,
         height: undefined,
