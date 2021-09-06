@@ -17,6 +17,8 @@ tags:
     description: 홈 화면 관련
   - name: User
     description: Demander/Supplier 모든 유저의 관련 정보
+  - name: Onboard
+    description: 온보딩 관련
   - name: Profile
     description: 프로필 관련
   - name: Style Type

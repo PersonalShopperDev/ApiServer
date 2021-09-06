@@ -27,6 +27,11 @@
 /style/img:
   $ref: 'style.yaml#/path/~1style~1img'
 
+/onboard:
+  $ref: 'onboard.yaml#/path/~1onboard'
+/onboard/nickname:
+  $ref: 'onboard.yaml#/path/~1onboard~1nickname'
+
 /profile:
   $ref: 'profile.yaml#/path/~1profile'
 /profile/{userId}:

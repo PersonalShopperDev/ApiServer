@@ -1,79 +1,26 @@
-import { RowDataPacket } from 'mysql2'
-import { OnboardDemander, OnboardSupplier } from './onboard-type'
+import { OnboardData } from './onboard-type'
 import DIContainer from '../../config/inversify.config'
 import DB from '../../config/db'
 
 export default class OnboardModel {
   db = DIContainer.get(DB)
 
-  getOnboardData = async (
-    userId: number,
-  ): Promise<{
-    gender: string | undefined
-    onboard: OnboardDemander | OnboardSupplier | undefined
-  }> => {
-    const sql = 'SELECT gender, onboard FROM users WHERE user_id=:userId'
-
-    const value = { userId }
-
-    const [rows] = (await this.db.query(sql, value)) as RowDataPacket[]
-
-    if (rows[0] == null)
-      return {
-        gender: undefined,
-        onboard: undefined,
-      }
-
-    return rows[0]
-  }
-
-  saveBasicUserData = async (
-    userId: number,
-    gender: string,
-    onboard: OnboardDemander | OnboardSupplier,
-  ): Promise<void> => {
-    const sql =
-      'UPDATE users SET gender=:gender, onboard=:onboard WHERE user_id=:userId;'
-    const value = { userId, gender, onboard: JSON.stringify(onboard) }
-
+  saveBasicUserData = async (userId: number, gender: string): Promise<void> => {
+    const sql = 'UPDATE users SET gender=:gender WHERE user_id=:userId;'
+    const value = { userId, gender }
     await this.db.query(sql, value)
   }
 
-  newSupplier = async (
+  createSupplier = async (
     userId: number,
-    supplyMale: boolean | undefined,
-    supplyFemale: boolean | undefined,
+    onboard: OnboardData,
   ): Promise<void> => {
-    const sql = `INSERT INTO suppliers(user_id, supplyGender) VALUES(:userId, :supplyGender) 
+    const sql = `INSERT INTO suppliers(user_id, supplyGender, career) VALUES(:userId, :supplyGender, :career) 
         ON DUPLICATE KEY UPDATE supplyGender=:supplyGender `
 
+    const { supplyMale, supplyFemale, career } = onboard
     const supplyGender = this.getSupplyGenderNumber(supplyMale, supplyFemale)
-    const value = { userId, supplyGender }
-
-    await this.db.query(sql, value)
-  }
-
-  saveOnboardData = async (
-    userId: number,
-    onboard: OnboardDemander | OnboardSupplier,
-  ): Promise<void> => {
-    const sql = 'UPDATE users SET onboard=:onboard WHERE user_id=:userId'
-
-    const value = { userId, onboard: JSON.stringify(onboard) }
-
-    await this.db.query(sql, value)
-  }
-
-  saveSupplyGender = async (
-    userId: number,
-    supplyMale: boolean | undefined,
-    supplyFemale: boolean | undefined,
-  ): Promise<void> => {
-    const sql = `UPDATE suppliers SET supplyGender=:supplyGender WHERE user_id=:userId`
-
-    const supplyGender = this.getSupplyGenderNumber(supplyMale, supplyFemale)
-
-    const value = { userId, supplyGender }
+    const value = { userId, supplyGender, career }
 
     await this.db.query(sql, value)
   }
@@ -110,5 +57,18 @@ export default class OnboardModel {
     }
 
     return supplyGender
+  }
+
+  getRandomNickname = async (): Promise<[string, number]> => {
+    const sql = `SELECT name, number FROM nicknames ORDER BY rand()`
+
+    const [rows] = await this.db.query(sql)
+
+    return [rows[0].name, rows[0].number]
+  }
+
+  increaseNicknameCount = async (nickname: string): Promise<void> => {
+    const sql = `UPDATE nicknames SET number = number + 1 where name=:nickname`
+    await this.db.query(sql, { nickname })
   }
 }

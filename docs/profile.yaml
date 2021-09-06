@@ -757,7 +757,7 @@ path:
     get:
       summary: 체형 목록 불러오기
       description: 성별에 맞춰 체형 목록을 불러옵니다.
-      tags: [ Onboard ]
+      tags: [ Profile ]
       parameters:
         - name: gender
           in: 'query'

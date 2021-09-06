@@ -6,10 +6,6 @@ import OnboardController from './onboard-controller'
 const router = express.Router()
 const controller = new OnboardController()
 
-router.get('/', AuthRequire, controller.getOnboard)
-router.get('/body', controller.getBody)
-router.get('/:id', AuthCheck, controller.getOnboard)
-
 router.put(
   '/',
   body('userType').isIn(['D', 'S']),
@@ -17,6 +13,7 @@ router.put(
   AuthRequire,
   controller.putOnboard,
 )
-router.patch('/', AuthRequire, controller.patchOnboard)
+
+router.get('/nickname', controller.randomNickname)
 
 export default router

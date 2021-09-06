@@ -1,55 +1,25 @@
 components:
-  get:
-    demander:
-      allOf:
-        - type: object
-          properties:
-            gender:
-              type: string
-              description: 사용자의 성별
-              enum: [ M,F ]
-        - $ref: './swagger.yaml#/components/scheme/StyleTypeList'
-        - $ref: '#/components/scheme/demander'
-    supplier:
-      allOf:
-        - type: object
-          properties:
-            gender:
-              type: string
-              description: 사용자의 성별
-              enum: [ M,F ]
-        - $ref: './swagger.yaml#/components/scheme/StyleTypeList'
-        - $ref: '#/components/scheme/supplier'
-
   put:
     demander:
       allOf:
         - $ref: '#/components/scheme/put'
-        - $ref: '#/components/scheme/demanderBasic'
-        - $ref: '#/components/scheme/demanderSize'
-        - $ref: '#/components/scheme/demanderPrice'
-      required:
-        - userType
-        - gender
-        - body
-        - skin
-        - topSize
-        - bottomSize
-        - shoulderSize
-        - waistSize
-        - bellySize
-        - hipSize
+        - type: object
+          properties:
+            body:
+              $ref: 'profile.yaml#/components/scheme/body'
+            skin:
+              $ref: 'profile.yaml#/components/scheme/skin'
+            bodyStat:
+              $ref: 'profile.yaml#/components/scheme/bodyStat'
+            clothSize:
+              $ref: 'profile.yaml#/components/scheme/clothSize'
+            clothPrice:
+              $ref: 'profile.yaml#/components/scheme/clothPrice'
+
     supplier:
       allOf:
         - $ref: '#/components/scheme/put'
         - $ref: '#/components/scheme/supplier'
-      required:
-        - userType
-        - gender
-        - supplyMale
-        - supplyFemale
-        - career
-
   scheme:
     put:
       type: object
@@ -62,6 +32,12 @@ components:
           type: string
           description: 사용자의 성별
           enum: [ M,F ]
+        name:
+          $ref: 'profile.yaml#/components/scheme/name'
+      required:
+        - userType
+        - gender
+        - name
     supplier:
       type: object
       properties:
@@ -74,112 +50,13 @@ components:
         career:
           type: number
           description: 코디 경력 종류 ID
-    demander:
-      type: object
-      allOf:
-        - $ref: '#/components/scheme/demanderBasic'
-        - $ref: '#/components/scheme/demanderSize'
-        - $ref: '#/components/scheme/demanderPrice'
-    demanderBasic:
-      type: object
-      properties:
-        body:
-          type: number
-          description: 체형 ID
-        skin:
-          type: number
-          description: 피부톤 ID
-    demanderSize:
-      type: object
-      properties:
-        topSize:
-          type: number
-          description: 상의 Size ID
-        bottomSize:
-          type: number
-          description: 하의 Size ID
-        shoulderSize:
-          type: number
-          description: 어깨 Size ID
-        waistSize:
-          type: number
-          description: 허리 Size ID
-        bellySize:
-          type: number
-          description: 배 Size ID
-        hipSize:
-          type: number
-          description: 엉덩이 Size ID
-    demanderPrice:
-      type: object
-      properties:
-        topPrice:
-          $ref: '#/components/scheme/priceContent'
-          description: 상의 선호 가격
-        bottomPrice:
-          $ref: '#/components/scheme/priceContent'
-          description: 하의 선호 가격
-        dressPrice:
-          $ref: '#/components/scheme/priceContent'
-          description: 원피스/세트 선호 가격
-        shoesPrice:
-          $ref: '#/components/scheme/priceContent'
-          description: 신발 선호 가격
-        bagPrice:
-          $ref: '#/components/scheme/priceContent'
-          description: 가방 선호 가격
-        accessoryPrice:
-          $ref: '#/components/scheme/priceContent'
-          description: 악세서리 선호 가격
-        hatPrice:
-          $ref: '#/components/scheme/priceContent'
-          description: 모자 선호 가격
-    priceContent:
-      type: object
-      properties:
-        min:
-          type: number
-        max:
-          type: number
-      requirement:
-        - min
-        - max
-    styles:
-      type: array
-      description:
-        선택한 스타일 목록
-      items:
-        type: object
-        properties:
-          id:
-            type: number
-          value:
-            type: string
-        required:
-          - id
-          - value
-
-
+      required:
+        - supplyMale
+        - supplyFemale
+        - career
 
 path:
   /onboard:
-    get:
-      summary: 온보딩 데이터 불러오기
-      description: 사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
-      tags: [ Onboard ]
-      security:
-        - bearerAuth: [ ]
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/get/demander'
-                  - $ref: '#/components/get/supplier'
-        '401':
-          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
     put:
       summary: 온보딩 입력
       description: |
@@ -205,81 +82,11 @@ path:
           description: OK
         '401':
           $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-    patch:
-      summary: 온보딩 데이터 수정
-      description: 온보딩 데이터 부분 정보 수정. 입력된 내용만 수정 됩니다.
-      tags: [ Onboard ]
-      security:
-        - bearerAuth: [ ]
-      requestBody:
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/scheme/demander'
-                - $ref: '#/components/scheme/supplier'
-      responses:
-        '200':
-          description: OK
-        '401':
-          $ref: './swagger.yaml#/components/Errors/UnauthorizedError'
-
-  /onboard/{id}:
+  /onboard/nickname:
     get:
-      summary: 다른 유저 온보딩 데이터 불러오기
-      description: |
-        사용자의 신체 사이즈, 선호 가격, 스타일 등 온보딩에서 설정했던 데이터를 불러옵니다.
-
-        Response는 온보딩 데이터 불러오기 (profile) 와 똑같습니다.
+      summary: 닉네임 랜덤 생성
+      description: 랜덤으로 닉네임을 생성합니다.
       tags: [ Onboard ]
-      parameters:
-        - name: id
-          in: 'path'
-          description: 열람하고자 하는 demanderId
-          schema:
-            type: number
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - $ref: '#/components/get/demander'
-                  - $ref: '#/components/get/supplier'
-        '404':
-          description: User Not Found
-
-  /onboard/body:
-    get:
-      summary: 체형 목록 불러오기
-      description: 성별에 맞춰 체형 목록을 불러옵니다.
-      tags: [ Onboard ]
-      parameters:
-        - name: gender
-          in: 'query'
-          description: 열람하고자 하는 demanderId
-          enum: [ M, F ]
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  list:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: number
-                        value:
-                          type: string
-                        img:
-                          type: string
-
