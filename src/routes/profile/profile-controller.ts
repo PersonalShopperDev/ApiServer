@@ -5,8 +5,8 @@ import { injectable } from 'inversify'
 import DIContainer from '../../config/inversify.config'
 import {
   ForbiddenError,
-  NotFoundError,
   NoContentError,
+  NotFoundError,
 } from '../../config/Error'
 import Data from '../../data/data'
 
@@ -42,6 +42,7 @@ export default class ProfileController {
       } else if (e instanceof NoContentError) {
         res.sendStatus(204)
       } else {
+        console.log(e)
         res.sendStatus(500)
       }
     }

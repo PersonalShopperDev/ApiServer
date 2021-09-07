@@ -13,10 +13,8 @@ router.get('/closet', AuthRequire, controller.getCloset)
 router.get('/lookbook', AuthRequire, controller.getLookbook)
 router.get('/body', controller.getBody)
 
-router.get('/:id', controller.getProfile)
-router.get('/:id/closet', AuthCheck, controller.getCloset)
-router.get('/:id/lookbook', AuthCheck, controller.getLookbook)
-router.get('/:id/review', AuthCheck, controller.getReview)
+router.delete('/lookbook/:lookbookId', AuthRequire, controller.deleteLookbook)
+router.delete('/closet/:closetId', AuthRequire, controller.deleteCloset)
 
 const s3 = new S3()
 
@@ -41,7 +39,9 @@ router.post(
   controller.postCloset,
 )
 
-router.delete('/lookbook/:lookbookId', AuthRequire, controller.deleteLookbook)
-router.delete('/closet/:closetId', AuthRequire, controller.deleteCloset)
+router.get('/:id', controller.getProfile)
+router.get('/:id/closet', AuthCheck, controller.getCloset)
+router.get('/:id/lookbook', AuthCheck, controller.getLookbook)
+router.get('/:id/review', AuthCheck, controller.getReview)
 
 export default router

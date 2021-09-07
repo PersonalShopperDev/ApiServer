@@ -1,10 +1,6 @@
 import ProfileModel from './profile-model'
 import StyleModel from '../style/style-model'
-import {
-  ProfileDemanderGet,
-  ProfileSupplierGet,
-  ReviewData,
-} from './profile-type'
+import { ReviewData } from './profile-type'
 import ResourcePath from '../resource/resource-path'
 import Data from '../../data/data'
 import DIContainer from '../../config/inversify.config'

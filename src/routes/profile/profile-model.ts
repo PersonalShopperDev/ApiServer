@@ -32,7 +32,7 @@ WHERE u.user_id=:userId`
       throw new NotFoundError()
     }
 
-    const { name, email, gender, profileImg, phone, profile } = rows[0]
+    const { name, profileImg, email, gender, phone, profile } = rows[0]
     const styles =
       rows[0].styles != null ? Data.getStyleItemList(rows[0].styles) : undefined
     if (profile.body != null) {
@@ -44,9 +44,9 @@ WHERE u.user_id=:userId`
     return {
       userType: 'D',
       name,
+      profileImg: ResourcePath.profileImg(profileImg),
       email,
       gender,
-      profileImg,
       phone,
       styles,
       ...profile,
@@ -69,6 +69,7 @@ WHERE u.user_id=:userId;`
 
     const {
       name,
+      img,
       email,
       gender,
       profileImg,
@@ -82,13 +83,21 @@ WHERE u.user_id=:userId;`
     return {
       userType: 'S',
       name,
+      profileImg: ResourcePath.profileImg(profileImg),
       email,
       gender,
-      profileImg,
       styles,
       phone,
       price,
-      coord,
+      coord:
+        coord == null
+          ? []
+          : coord.map((item) => {
+              return {
+                id: item.id,
+                img: ResourcePath.lookbookImg(item.img),
+              }
+            }),
       ...profile,
     }
   }
@@ -329,7 +338,7 @@ GROUP BY r.user_id;`
       const { id, img } = row
       return {
         id,
-        img: ResourcePath.lookbookImg(img),
+        img: ResourcePath.closetImg(img),
       }
     })
   }
