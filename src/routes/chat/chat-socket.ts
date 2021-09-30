@@ -251,7 +251,11 @@ export default class ChatSocket {
       const { userId, time, phone } = item
       console.log(`notify|${this.userSocketMap.hasOwnProperty(userId)}`)
 
-      if (this.userSocketMap.hasOwnProperty(userId)) continue
+      if (
+        this.userSocketMap.hasOwnProperty(userId) &&
+        this.userSocketMap[userId] != undefined
+      )
+        continue
 
       console.log(
         `${userId}|${phone}|${time?.getTime()}|${new Date().getTime()}`,
